@@ -402,7 +402,11 @@ export interface paths {
          * @description Get info about one event.
          */
         get: operations["federations_get_federation"];
-        put?: never;
+        /**
+         * Update Federation
+         * @description Update one federation.
+         */
+        put: operations["federations_update_federation"];
         /**
          * Accredite Federation
          * @description Accredit federation.
@@ -872,6 +876,11 @@ export interface components {
             /** Federation */
             federation?: string | null;
         };
+        /**
+         * UserRole
+         * @enum {string}
+         */
+        UserRole: "default" | "admin";
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -890,6 +899,7 @@ export interface components {
             id: string;
             /** Login */
             login: string;
+            role: components["schemas"]["UserRole"];
             /** Federation */
             federation?: string | null;
         };
@@ -924,6 +934,7 @@ export type SchemaSelection = components['schemas']['Selection'];
 export type SchemaSort = components['schemas']['Sort'];
 export type SchemaStatusEnum = components['schemas']['StatusEnum'];
 export type SchemaUpdateUser = components['schemas']['UpdateUser'];
+export type SchemaUserRole = components['schemas']['UserRole'];
 export type SchemaValidationError = components['schemas']['ValidationError'];
 export type SchemaViewUser = components['schemas']['ViewUser'];
 export type $defs = Record<string, never>;
@@ -1781,6 +1792,55 @@ export interface operations {
             };
             /** @description Federation not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    federations_update_federation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FederationSchema"];
+            };
+        };
+        responses: {
+            /** @description Update federation */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Federation"];
+                };
+            };
+            /** @description Unable to verify credentials OR Credentials not provided */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Only admin or federation owner can update federation */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

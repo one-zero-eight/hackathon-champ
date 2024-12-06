@@ -85,7 +85,7 @@ export function TopBar() {
             </Button>
           </>
         )}
-        {me?.role === 'regional' && (
+        {me?.federation && (
           <>
             <div className="text-lg">{me.login}</div>
             <Button asChild variant="link">
