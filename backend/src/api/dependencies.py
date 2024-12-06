@@ -31,4 +31,4 @@ async def get_current_user_auth(request: Request) -> UserAuthData:
     return UserAuthData(user_id=user_id)
 
 
-USER_AUTH = Annotated[UserAuthData, Depends(get_current_user_auth)]
+type USER_AUTH = Annotated[UserAuthData, Depends(get_current_user_auth)]

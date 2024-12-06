@@ -78,9 +78,10 @@ app.add_middleware(
 
 app.mount(settings.static_mount_path, StaticFiles(directory=settings.static_directory), name="static")
 
-
 from src.modules.events.routes import router as router_events  # noqa: E402
+from src.modules.federation.routes import router as router_federation  # noqa: E402
 from src.modules.users.routes import router as router_users  # noqa: E402
 
 app.include_router(router_users)
 app.include_router(router_events)
+app.include_router(router_federation)

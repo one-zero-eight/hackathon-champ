@@ -2,6 +2,7 @@ __all__ = ["User", "UserRole"]
 
 from enum import StrEnum
 
+from beanie import PydanticObjectId
 from pymongo import IndexModel
 
 from src.pydantic_base import BaseSchema
@@ -16,6 +17,7 @@ class UserRole(StrEnum):
 class UserSchema(BaseSchema):
     login: str
     password_hash: str
+    federation: PydanticObjectId | None = None
     role: UserRole = UserRole.DEFAULT
 
 
