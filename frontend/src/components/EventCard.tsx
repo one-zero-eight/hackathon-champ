@@ -3,7 +3,7 @@ import type { Temporal } from 'temporal-polyfill'
 import { useMe } from '@/api/me.ts'
 import { EventExportToCalButton } from '@/components/EventExportToCalButton'
 import { Button } from '@/components/ui/button.tsx'
-import { cn, infoForDateRange, locationText } from '@/lib/utils.ts'
+import { cn, infoForDateRange, locationText, urlToMaps } from '@/lib/utils.ts'
 import { Link } from '@tanstack/react-router'
 import LinkIcon from '~icons/lucide/link'
 import MapPin from '~icons/lucide/map-pin'
@@ -107,7 +107,7 @@ export function EventCard({
           {event.location.map(loc => (
             <a
               key={locationText(loc)}
-              href={`https://yandex.ru/maps/?text=${encodeURIComponent(locationText(loc))}`}
+              href={urlToMaps(loc)}
               target="_blank"
               rel="noreferrer"
             >

@@ -2,6 +2,7 @@ import { $api } from '@/api'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
+import { urlToMaps } from '@/lib/utils'
 import { createFileRoute } from '@tanstack/react-router'
 import Building from '~icons/lucide/building'
 import Globe from '~icons/lucide/globe'
@@ -105,7 +106,7 @@ function RouteComponent() {
           <CardHeader>
             <CardTitle>Контактная информация</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="flex flex-col gap-4">
             {federation.head && (
               <div>
                 <SectionLabel>Руководитель</SectionLabel>
@@ -130,7 +131,7 @@ function RouteComponent() {
                 <SectionLabel>Телефон</SectionLabel>
                 <Button variant="link" className="mt-1 h-auto p-0" asChild>
                   <a href={`tel:${federation.phone}`} className="flex items-center gap-2">
-                    <Phone className="size-4" />
+                    <Phone />
                     {federation.phone}
                   </a>
                 </Button>
@@ -142,7 +143,7 @@ function RouteComponent() {
                 <SectionLabel>Сайт</SectionLabel>
                 <Button variant="link" className="mt-1 h-auto p-0" asChild>
                   <a href={federation.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
-                    <Globe className="size-4" />
+                    <Globe />
                     {federation.website}
                   </a>
                 </Button>
@@ -152,10 +153,16 @@ function RouteComponent() {
             {federation.address && (
               <div>
                 <SectionLabel>Адрес</SectionLabel>
-                <div className="mt-1 flex items-start gap-2">
-                  <MapPin className="mt-1 size-4" />
-                  <span>{federation.address}</span>
-                </div>
+                <Button variant="link" className="mt-1 flex h-auto items-start gap-2 whitespace-break-spaces p-0" asChild>
+                  <a
+                    href={urlToMaps({ country: 'Россия', region: federation.region, city: federation.address })}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <MapPin className="mt-1" />
+                    <span>{federation.address}</span>
+                  </a>
+                </Button>
               </div>
             )}
           </CardContent>

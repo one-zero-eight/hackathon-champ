@@ -125,3 +125,7 @@ export function normalizeFilters(f: Filters): Filters {
   }
   return out
 }
+
+export function urlToMaps(location: Location) {
+  return `https://yandex.ru/maps/?text=${encodeURIComponent(locationText(location))}`
+}
