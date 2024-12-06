@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button.tsx'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { plainDatesForFilter } from '@/lib/utils'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useMemo } from 'react'
 import { motion } from 'framer-motion'
+import { useMemo } from 'react'
 import CountUp from 'react-countup'
 import { Temporal } from 'temporal-polyfill'
 import BarChart from '~icons/lucide/bar-chart'
@@ -25,9 +25,9 @@ function RouteComponent() {
   })
 
   return (
-    <main className="flex w-full flex-col">
+    <main className="mt-[calc(var(--header-height)*-1)] flex w-full flex-col">
       {/* Hero Section */}
-      <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 px-4 pt-[calc(var(--header-height)-6rem)]">
+      <section className="relative mt-[-var(--header-height)] min-h-screen overflow-hidden bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 px-4">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-30 mix-blend-overlay" />
           <div className="absolute inset-0 animate-gradient bg-gradient-to-br from-purple-400/20 via-fuchsia-500/20 to-indigo-500/20" />

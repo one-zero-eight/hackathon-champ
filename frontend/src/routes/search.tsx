@@ -132,7 +132,7 @@ function RouteComponent() {
   const loading = dataLoading || filtersChanging || sharedLoading
 
   return (
-    <div className="flex gap-4 pl-[var(--search-sidebar-width)]">
+    <div className="flex flex-grow flex-col pl-[var(--search-sidebar-width)]">
       <aside className="fixed left-0 h-[calc(100vh-var(--header-height))] w-[var(--search-sidebar-width)] shrink-0 grow-0 overflow-auto border-r p-4">
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
@@ -150,7 +150,7 @@ function RouteComponent() {
         </div>
       </aside>
 
-      <main className="grow gap-2">
+      <main className="flex w-full flex-grow flex-col">
         <div className="sticky top-[var(--header-height)] z-[1] border-b bg-white bg-opacity-90 p-4 backdrop-blur">
           <Input
             className="rounded-md border border-gray-300 px-2 py-1"
@@ -158,7 +158,7 @@ function RouteComponent() {
             onChange={e => handleQueryChange(e.target.value)}
             placeholder="Название, вид спорта, город..."
           />
-          <div className="mt-2">
+          <div className="mt-2 ">
             <Select value={sortPreset} onValueChange={setSortPreset as any}>
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Сортировка" />
@@ -175,7 +175,7 @@ function RouteComponent() {
             </Select>
           </div>
         </div>
-        <div className="flex flex-col gap-4 bg-stone-100 p-4">
+        <div className="flex flex-grow flex-col gap-4 bg-stone-100 p-4">
           {loading
             ? (
                 <>
