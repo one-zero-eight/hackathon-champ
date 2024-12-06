@@ -11,9 +11,9 @@
 
 > [!IMPORTANT]
 > Точность извлечения таблиц (TEA): 99.34%
-> 
+>
 > Обработано 2500 страниц за 6 минут
-> 
+>
 > Извлечена информация о 14000 событиях в 152 видах спорта
 
 ![image](https://github.com/user-attachments/assets/3c133607-0b72-4c34-9f74-93942c97a7fc)
@@ -48,7 +48,7 @@
    Он взят с [сайта Министерства спорта Российской Федерации](https://minsport.gov.ru/).
 2. Установите необходимые зависимости:
    ```bash
-   pip install pandas pdfplumber pypdf tqdm six pydantic pyyaml
+   pip install pandas pdfplumber pypdf tqdm six pydantic pyyaml requests fake_headers beautifulsoup4
    ```
 3. Запустите скрипт в режиме отладки:
    ```bash
