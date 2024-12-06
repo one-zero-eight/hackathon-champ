@@ -1,5 +1,6 @@
-import React, { PropsWithChildren } from "react";
-import { Label } from "../ui/label";
+import type { PropsWithChildren } from 'react'
+import React from 'react'
+import { Label } from '../ui/label'
 
 export function BaseFilter({
   label,
@@ -10,5 +11,5 @@ export function BaseFilter({
       {label && <Label>{label}</Label>}
       {children}
     </div>
-  );
+  )
 }

@@ -1,12 +1,12 @@
-import { $api } from "@/api/index";
+import { $api } from '@/api/index'
 
 export function useMe() {
   return $api.useQuery(
-    "get",
-    "/users/me",
+    'get',
+    '/users/me',
     {},
     {
       refetchInterval: 1000 * 60 * 5, // 5 minutes
     },
-  );
+  )
 }
