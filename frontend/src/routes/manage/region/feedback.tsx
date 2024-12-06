@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import MessageSquare from '~icons/lucide/message-square'
@@ -13,6 +13,12 @@ import { $api } from '@/api'
 export const Route = createFileRoute('/manage/region/feedback')({
   component: FederationFeedbackPage,
 })
+
+// Extend the SchemaFeedback type with additional properties
+type FeedbackWithMeta = SchemaFeedback & {
+  created_at?: string;
+  status?: 'new' | 'in_progress' | 'answered';
+}
 
 function FederationFeedbackPage() {
   const { toast } = useToast()
@@ -80,7 +86,7 @@ function FederationFeedbackPage() {
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Ошибка",
+        title: "шибка",
         description: "Не удалось отправить запрос. Попробуйте позже.",
       })
     } finally {
@@ -89,30 +95,86 @@ function FederationFeedbackPage() {
   }
 
   return (
-    <div className="container mx-auto py-8 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Запросы федерации</h1>
-        <p className="text-muted-foreground mt-2">
+    <div className="container mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mb-8 space-y-2">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Запросы федерации</h1>
+        <p className="text-sm text-muted-foreground sm:text-base">
           Просмотр и отправка запросов в федерацию {federation?.region}
         </p>
       </div>
 
       {/* List of existing feedback */}
       {feedbackList && feedbackList.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>История запросов</CardTitle>
+        <Card className="mb-6">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-xl">История запросов</CardTitle>
+            <CardDescription className="text-sm">
+              Последние отправленные запросы в федерацию
+            </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {feedbackList.map((feedback: SchemaFeedback) => (
-              <div key={feedback.id} className="border-b pb-4 last:border-0">
-                <h3 className="font-medium">{feedback.subject}</h3>
-                <p className="text-sm text-muted-foreground mt-1">{feedback.text}</p>
-                {feedback.email && (
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Контакт: {feedback.email}
-                  </p>
-                )}
+          <CardContent className="grid gap-4 sm:gap-6">
+            {feedbackList.map((feedback: FeedbackWithMeta) => (
+              <div 
+                key={feedback.id} 
+                className="relative rounded-lg border bg-card p-4 text-card-foreground shadow-sm transition-colors hover:bg-muted/50"
+              >
+                <div className="flex flex-col gap-3">
+                  {/* Header with subject and timestamp */}
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div className="space-y-1">
+                      <h3 className="font-semibold">{feedback.subject}</h3>
+                      {feedback.created_at && (
+                        <p className="text-sm text-muted-foreground">
+                          {new Date(feedback.created_at).toLocaleString('ru-RU', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </p>
+                      )}
+                    </div>
+                    {feedback.email && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          className="h-4 w-4"
+                        >
+                          <path d="M3 4a2 2 0 00-2 2v1.161l8.441 4.221a1.25 1.25 0 001.118 0L19 7.162V6a2 2 0 00-2-2H3z" />
+                          <path d="M19 8.839l-7.77 3.885a2.75 2.75 0 01-2.46 0L1 8.839V14a2 2 0 002 2h14a2 2 0 002-2V8.839z" />
+                        </svg>
+                        <span>{feedback.email}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Message content */}
+                  <div className="rounded-md bg-muted/50 p-3">
+                    <p className="text-sm whitespace-pre-wrap">{feedback.text}</p>
+                  </div>
+
+                  {/* Status indicator */}
+                  <div className="flex items-center gap-2">
+                    <div className={`h-2 w-2 rounded-full ${
+                      feedback.status === 'answered' 
+                        ? 'bg-green-500' 
+                        : feedback.status === 'in_progress'
+                          ? 'bg-yellow-500'
+                          : 'bg-blue-500'
+                    }`} />
+                    <span className="text-sm text-muted-foreground">
+                      {feedback.status === 'answered' 
+                        ? 'Отвечено'
+                        : feedback.status === 'in_progress'
+                          ? 'В обработке'
+                          : 'Новый запрос'
+                      }
+                    </span>
+                  </div>
+                </div>
               </div>
             ))}
           </CardContent>
@@ -121,7 +183,7 @@ function FederationFeedbackPage() {
 
       {submitSuccess ? (
         <Card>
-          <CardContent className="pt-6">
+          <CardContent className="grid gap-4 sm:gap-6 pt-6">
             <div className="flex items-center gap-2 text-green-600">
               <MessageSquare className="h-5 w-5" />
               <span>Спасибо за ваш запрос! Мы ответим вам в ближайшее время.</span>
@@ -130,22 +192,49 @@ function FederationFeedbackPage() {
         </Card>
       ) : (
         <Card>
-          <CardHeader>
-            <CardTitle>Новый запрос</CardTitle>
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-xl">Новый запрос</CardTitle>
+            <CardDescription className="text-sm">
+              Отправьте запрос в федерацию
+            </CardDescription>
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <label htmlFor="subject" className="text-sm font-medium">
-                  Тема запроса *
-                </label>
-                <Input
-                  id="subject"
-                  required
-                  maxLength={100}
-                  value={request.subject}
-                  onChange={(e) => setRequest(prev => ({ ...prev, subject: e.target.value }))}
-                />
+          <CardContent className="grid gap-4 sm:gap-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <label htmlFor="subject" className="text-sm font-medium">
+                    Тема запроса *
+                  </label>
+                  <Input
+                    id="subject"
+                    required
+                    maxLength={100}
+                    value={request.subject}
+                    onChange={(e) => setRequest(prev => ({ ...prev, subject: e.target.value }))}
+                    className="w-full"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="email" className="text-sm font-medium">
+                    Email
+                  </label>
+                  <Input
+                    type="email"
+                    id="email"
+                    value={request.email || ''}
+                    onChange={(e) => setRequest(prev => ({ 
+                      ...prev, 
+                      email: e.target.value ? e.target.value.trim() : me?.login ?? null 
+                    }))}
+                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                    placeholder={me?.login ?? ''}
+                    className="w-full"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Ответ будет отправлен на этот email
+                  </p>
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -159,44 +248,26 @@ function FederationFeedbackPage() {
                   value={request.text}
                   onChange={(e) => setRequest(prev => ({ ...prev, text: e.target.value }))}
                   rows={4}
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="w-full min-h-[120px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </div>
 
-              <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium">
-                  Email
-                </label>
-                <Input
-                  type="email"
-                  id="email"
-                  value={request.email || ''}
-                  onChange={(e) => setRequest(prev => ({ 
-                    ...prev, 
-                    email: e.target.value ? e.target.value.trim() : me?.login ?? null 
-                  }))}
-                  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-                  placeholder={me?.login ?? ''}
-                />
-                <p className="text-sm text-muted-foreground">
-                  Ответ будет отправлен на этот email
-                </p>
+              <div className="flex flex-col justify-end gap-3 sm:flex-row sm:gap-4">
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full sm:w-auto"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <span className="mr-2">Отправка...</span>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    </>
+                  ) : (
+                    'Отправить запрос'
+                  )}
+                </Button>
               </div>
-
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full"
-              >
-                {isSubmitting ? (
-                  <>
-                    <span className="mr-2">Отправка...</span>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  </>
-                ) : (
-                  'Отправить запрос'
-                )}
-              </Button>
             </form>
           </CardContent>
         </Card>

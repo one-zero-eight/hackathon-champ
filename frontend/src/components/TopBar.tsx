@@ -6,7 +6,7 @@ import { Link } from '@tanstack/react-router'
 import HelpCircle from '~icons/lucide/help-circle'
 
 export function TopBar() {
-  const { data: me } = useMe()
+  const { data: me, isLoading } = useMe()
 
   const queryClient = useQueryClient()
   const { mutate: performLogout } = $api.useMutation('post', '/users/logout', {
@@ -60,30 +60,36 @@ export function TopBar() {
         </div>
 
         <div className="flex items-center gap-2">
-          {(me?.role === 'admin' || me?.federation) && (
-            <Button asChild variant="link">
-              <Link
-                to="/manage"
-                activeProps={{ className: 'underline' }}
-              >
-                Панель управления
-              </Link>
-            </Button>
-          )}
-          {!me && (
-            <Button asChild variant="link">
-              <Link
-                to="/auth/login"
-                activeProps={{ className: 'underline' }}
-              >
-                Войти
-              </Link>
-            </Button>
-          )}
-          {me && (
-            <Button variant="link" onClick={() => performLogout({})}>
-              Выйти
-            </Button>
+          {isLoading ? (
+            <div className="h-9 w-24 animate-pulse rounded bg-muted" />
+          ) : (
+            <>
+              {(me?.role === 'admin' || me?.federation) && (
+                <Button asChild variant="link">
+                  <Link
+                    to="/manage"
+                    activeProps={{ className: 'underline' }}
+                  >
+                    Панель управления
+                  </Link>
+                </Button>
+              )}
+              {!me && (
+                <Button asChild variant="link">
+                  <Link
+                    to="/auth/login"
+                    activeProps={{ className: 'underline' }}
+                  >
+                    Войти
+                  </Link>
+                </Button>
+              )}
+              {me && (
+                <Button variant="link" onClick={() => performLogout({})}>
+                  Выйти
+                </Button>
+              )}
+            </>
           )}
           <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
             <Link
