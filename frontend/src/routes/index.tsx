@@ -7,10 +7,10 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
 import { plainDatesForFilter } from '@/lib/utils'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { ArrowDown } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import CountUp from 'react-countup'
 import { Temporal } from 'temporal-polyfill'
+import ArrowDown from '~icons/lucide/arrow-down'
 
 export const Route = createFileRoute('/')({
   component: RouteComponent,

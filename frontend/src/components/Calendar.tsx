@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import ChevronLeft from '~icons/lucide/chevron-left'
+import ChevronRight from '~icons/lucide/chevron-right'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
 

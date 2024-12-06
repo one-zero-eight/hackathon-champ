@@ -2,23 +2,11 @@ import type { Event } from '@/lib/types'
 import type { Temporal } from 'temporal-polyfill'
 import { Button } from '@/components/ui/button.tsx'
 import { cn, infoForDateRange, locationText } from '@/lib/utils.ts'
-import { Link as LinkIcon, MapPin, Users } from 'lucide-react'
-import { ImMan, ImWoman } from 'react-icons/im'
+import LinkIcon from '~icons/lucide/link'
+import MapPin from '~icons/lucide/map-pin'
+import Users from '~icons/lucide/users'
 import { Badge } from './ui/badge'
 import { Separator } from './ui/separator'
-
-function ageText(min?: number | null, max?: number | null) {
-  if (min != null && max != null) {
-    return `${min}-${max} лет`
-  }
-  else if (min != null) {
-    return `${min}+ лет`
-  }
-  else if (max != null) {
-    return `до ${max} лет`
-  }
-  return ''
-}
 
 const MONTH_NAMES: Record<number, string> = {
   1: 'ЯНВ',
@@ -57,7 +45,6 @@ export function EventCard({
   )
 
   const singleDay = start.toString() === end.toString()
-  const age = ageText(event.age_min, event.age_max)
 
   return (
     <div
@@ -121,7 +108,7 @@ export function EventCard({
                 className="flex items-center gap-1 text-xs underline hover:text-blue-700"
                 variant="outline"
               >
-                <MapPin size={18} />
+                <MapPin className="text-[18px]" />
                 <span>{locationText(loc)}</span>
               </Badge>
             </a>
@@ -131,25 +118,8 @@ export function EventCard({
               className="flex items-center gap-1 text-xs"
               variant="outline"
             >
-              <Users size={18} />
+              <Users className="text-[18px]" />
               <span>{`${event.participant_count} чел.`}</span>
-            </Badge>
-          )}
-          {(event.gender || age) && (
-            <Badge
-              className="flex items-center gap-1 text-xs"
-              variant="outline"
-            >
-              {event.gender === 'male'
-                ? (
-                    <ImMan className="inline text-blue-500" size={18} />
-                  )
-                : event.gender === 'female'
-                  ? (
-                      <ImWoman className="inline text-pink-500" size={18} />
-                    )
-                  : null}
-              {age && <span>{ageText(event.age_min, event.age_max)}</span>}
             </Badge>
           )}
         </div>

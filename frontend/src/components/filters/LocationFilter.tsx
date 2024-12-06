@@ -15,9 +15,11 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover.tsx'
 import { cn, locationText } from '@/lib/utils'
-import { Check, ChevronsUpDown, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useDebounce } from 'react-use'
+import Check from '~icons/lucide/check'
+import ChevronsUpDown from '~icons/lucide/chevrons-up-down'
+import X from '~icons/lucide/x'
 import { Badge } from '../ui/badge'
 import { BaseFilter } from './BaseFilter'
 

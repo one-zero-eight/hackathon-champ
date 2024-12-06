@@ -1,7 +1,6 @@
 import type { Filters } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { DatesFilter } from './DatesFilter'
-import { DisciplineFilter } from './DisciplineFilter'
 import { GenderSelect } from './GenderSelect'
 import { LocationFilter } from './LocationFilter'
 import { MinMaxFilter } from './MinMaxFilter'
@@ -29,12 +28,6 @@ export function AllFilters({
 
   return (
     <div className={cn('flex flex-col gap-6', className)}>
-      <DisciplineFilter
-        disabled={disabled}
-        label="Виды спорта"
-        value={filters.discipline}
-        onChange={getOnChange('discipline')}
-      />
       <LocationFilter
         disabled={disabled}
         label="Место проведения"

@@ -9,9 +9,9 @@ import {
 } from '@/components/ui/popover.tsx'
 import { cn, plainDatesForFilter } from '@/lib/utils.ts'
 import { ru } from 'date-fns/locale/ru'
-import { Calendar as CalendarIcon } from 'lucide-react'
 import { useState } from 'react'
 import { Temporal } from 'temporal-polyfill'
+import CalendarIcon from '~icons/lucide/calendar'
 import { BaseFilter } from './BaseFilter'
 
 export function DatesFilter(props: FilterBaseProps<Filters['date']>) {
