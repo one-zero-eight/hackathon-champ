@@ -50,13 +50,13 @@ export function EventCard({
   return (
     <div
       className={cn(
-        'flex overflow-hidden rounded-lg border bg-white shadow-sm',
+        'relative flex overflow-hidden rounded-lg border bg-white shadow-sm',
         className,
       )}
     >
       <div
         className={cn(
-          'flex w-[175px] flex-shrink-0 flex-grow-0 flex-col items-center justify-center text-white',
+          'flex w-[175px] flex-shrink-0 flex-grow-0 py-6 flex-col items-center justify-center text-white',
           time === 'present' && 'bg-green-600',
           time === 'future' && 'bg-blue-600',
           time === 'past' && 'bg-stone-600 text-stone-400',
@@ -78,24 +78,25 @@ export function EventCard({
       </div>
 
       <div className="flex grow flex-col gap-2 p-4">
-        <div className="flex items-center justify-between gap-2">
-          <Button
-            asChild
-            className="h-7 w-fit rounded-md px-2 text-xs"
-            variant="secondary"
-          >
-            <a
-              href={`https://storage.minsport.gov.ru/cms-uploads/cms/II_chast_EKP_2024_14_11_24_65c6deea36.pdf#page=${event.page}&search=${event.ekp_id}`}
-              target="_blank"
-              rel="noreferrer"
-              className="!text-blue-500"
+        <div className="flex items-center gap-2">
+          {event.ekp_id && (
+            <Button
+              asChild
+              className="h-7 w-fit rounded-md px-2 text-xs"
+              variant="secondary"
             >
-              <LinkIcon />
-              ЕКП СМ №
-              {event.ekp_id}
-            </a>
-          </Button>
-          <EventStatusBadge status={event.status} />
+              <a
+                href={`https://storage.minsport.gov.ru/cms-uploads/cms/II_chast_EKP_2024_14_11_24_65c6deea36.pdf#page=${event.page}&search=${event.ekp_id}`}
+                target="_blank"
+                rel="noreferrer"
+                className="!text-blue-500"
+              >
+                <LinkIcon />
+                ЕКП СМ №
+                {event.ekp_id}
+              </a>
+            </Button>
+          )}
         </div>
         <h4 className="text-xl font-bold">{event.title}</h4>
         <div className="flex flex-wrap gap-1">
@@ -151,6 +152,8 @@ export function EventCard({
           </>
         )}
       </div>
+
+      <EventStatusBadge className="absolute right-4 top-4" status={event.status} />
     </div>
   )
 }
