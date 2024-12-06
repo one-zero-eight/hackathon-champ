@@ -1,0 +1,7 @@
+$schema: "./settings.schema.yaml"
+app_root_path: "/api"
+environment: development
+database_uri: "mongodb://mongoadmin:secret@db:27017/db?authSource=admin" # Database URL, f.e. "mongodb://mongoadmin:secret@localhost:27017/db?authSource=admin"
+session_secret_key: "very-secret-key" # use `openssl rand -hex 32` to generate a random key
+static_mount_path: /static
+static_directory: .

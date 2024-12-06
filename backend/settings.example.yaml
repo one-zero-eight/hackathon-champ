@@ -1,0 +1,4 @@
+$schema: "./settings.schema.yaml"
+environment: development
+database_uri: null # Database URL, f.e. "mongodb://mongoadmin:secret@localhost:27017/db?authSource=admin"
+session_secret_key: null # use `openssl rand -hex 32` to generate a random key
