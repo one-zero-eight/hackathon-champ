@@ -61,53 +61,53 @@ function RouteComponent() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside className="fixed left-0 top-[var(--header-height)] h-[calc(100vh-var(--header-height))] w-64 border-r bg-white p-4">
-        <div className="mb-8">
-          <h2 className="px-2 text-lg font-semibold">{me?.region}</h2>
-          <p className="px-2 text-sm text-gray-500">Кабинет регионального представителя</p>
+      <aside className="fixed left-0 top-[var(--header-height)] h-[calc(100vh-var(--header-height))] w-64 border-r bg-white">
+        <div className="border-b p-4">
+          <h2 className="text-lg font-medium">{me?.region}</h2>
+          <p className="text-sm text-muted-foreground">Кабинет регионального представителя</p>
         </div>
-        <nav className="space-y-1">
-          <Button variant="ghost" className="w-full justify-start hover:bg-gray-100">
-            <div className="flex w-5 items-center">
-              <FileText className="size-[18px]" />
-            </div>
-            <span className="flex-1 px-3 text-left">Управление заявками</span>
-            <ChevronRight className="size-4 opacity-50" />
+        
+        <nav className="flex flex-col p-2">
+          <Button asChild variant="ghost" className="mb-1 justify-start">
+            <Link to="/manage/regional" className="relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-[15px] font-medium">
+              <FileText className="h-5 w-5" />
+              Управление заявками
+            </Link>
           </Button>
-          <Button variant="ghost" className="w-full justify-start hover:bg-gray-100">
-            <div className="flex w-5 items-center">
-              <Award className="size-[18px]" />
-            </div>
-            <span className="flex-1 px-3 text-left">Протоколы соревнований</span>
-            <ChevronRight className="size-4 opacity-50" />
+
+          <Button asChild variant="ghost" className="mb-1 justify-start">
+            <Link to="/manage/regional" className="relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-[15px] font-medium">
+              <Award className="h-5 w-5" />
+              Протоколы соревнований
+            </Link>
           </Button>
-          <Button variant="ghost" className="w-full justify-start hover:bg-gray-100">
-            <div className="flex w-5 items-center">
-              <Users className="size-[18px]" />
-            </div>
-            <span className="flex-1 px-3 text-left">Реестр участников</span>
-            <ChevronRight className="size-4 opacity-50" />
+
+          <Button asChild variant="ghost" className="mb-1 justify-start">
+            <Link to="/manage/regional" className="relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-[15px] font-medium">
+              <Users className="h-5 w-5" />
+              Реестр участников
+            </Link>
           </Button>
-          <Button variant="ghost" className="w-full justify-start hover:bg-gray-100">
-            <div className="flex w-5 items-center">
-              <CalendarIcon className="size-[18px]" />
-            </div>
-            <span className="flex-1 px-3 text-left">Спортивный календарь</span>
-            <ChevronRight className="size-4 opacity-50" />
+
+          <Button asChild variant="ghost" className="mb-1 justify-start">
+            <Link to="/calendar" className="relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-[15px] font-medium">
+              <CalendarIcon className="h-5 w-5" />
+              Спортивный календарь
+            </Link>
           </Button>
-          <Button variant="ghost" className="w-full justify-start hover:bg-gray-100">
-            <div className="flex w-5 items-center">
-              <MessageSquare className="size-[18px]" />
-            </div>
-            <span className="flex-1 px-3 text-left">Связь с федерацией</span>
-            <ChevronRight className="size-4 opacity-50" />
+
+          <Button asChild variant="ghost" className="mb-1 justify-start">
+            <Link to="/manage/regional" className="relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-[15px] font-medium">
+              <MessageSquare className="h-5 w-5" />
+              Связь с федерацией
+            </Link>
           </Button>
-          <Button variant="ghost" className="w-full justify-start hover:bg-gray-100">
-            <div className="flex w-5 items-center">
-              <User className="size-[18px]" />
-            </div>
-            <span className="flex-1 px-3 text-left">Настройки профиля</span>
-            <ChevronRight className="size-4 opacity-50" />
+
+          <Button asChild variant="ghost" className="mb-1 justify-start">
+            <Link to="/manage/regional" className="relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-[15px] font-medium">
+              <User className="h-5 w-5" />
+              Настройки профиля
+            </Link>
           </Button>
         </nav>
       </aside>
@@ -221,7 +221,7 @@ function RouteComponent() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="size-2 rounded-full bg-red-500"></div>
-                      <span>Отклонены</span>
+                      <span>Отклонен</span>
                     </div>
                     <Badge className="bg-red-100 text-red-700 hover:bg-red-100">1</Badge>
                   </div>
