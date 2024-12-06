@@ -21,6 +21,8 @@ class FederationSchema(BaseSchema):
     "Статус федерации (на рассмотрении, аккредитована, отклонена)"
     status_comment: str | None = Field(None, examples=[None])
     "Комментарий к статусу"
+    accreditation_comment: str | None = Field(None, examples=[None])
+    "Комментарий к аккредитации. Заполняет представитель для того, чтобы сообщить о положении для аккредитации"
     description: str | None = Field(None, examples=[None])
     "Описание"
     head: str | None = Field(None, examples=["Анашкин Евгений Юрьевич"])
