@@ -6,6 +6,9 @@ import { Link } from '@tanstack/react-router'
 
 export function TopBar() {
   const { data: me } = useMe()
+  const { data: myFederation } = $api.useQuery('get', '/federations/{id}', {
+    params: { path: { id: me?.federation ?? '' } },
+  }, { enabled: !!me?.federation })
 
   const queryClient = useQueryClient()
   const { mutate: performLogout } = $api.useMutation('post', '/users/logout', {
@@ -90,7 +93,7 @@ export function TopBar() {
                 to="/manage/regional"
                 activeProps={{ className: 'underline' }}
               >
-                {me.region}
+                {myFederation?.region || 'Панель управления'}
               </Link>
             </Button>
             <Button variant="link" onClick={() => performLogout({})}>

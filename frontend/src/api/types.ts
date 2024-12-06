@@ -44,6 +44,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/users/create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create User
+         * @description Create user
+         */
+        post: operations["users_create_user"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get All Users
+         * @description Get info about all users.
+         */
+        get: operations["users_get_all_users"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get User
+         * @description Get info about one user.
+         */
+        get: operations["users_get_user"];
+        put?: never;
+        /**
+         * Update User
+         * @description Update user info
+         */
+        post: operations["users_update_user"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/users/login": {
         parameters: {
             query?: never;
@@ -364,6 +428,15 @@ export interface components {
         Body_events_share_selection: {
             filters: components["schemas"]["Filters"];
             sort: components["schemas"]["Sort"];
+        };
+        /** CreateUser */
+        CreateUser: {
+            /** Login */
+            login: string;
+            /** Password */
+            password: string;
+            /** Federation */
+            federation?: string | null;
         };
         /** DateFilter */
         DateFilter: {
@@ -790,6 +863,15 @@ export interface components {
          * @enum {string}
          */
         StatusEnum: "on_consideration" | "accredited" | "rejected";
+        /** UpdateUser */
+        UpdateUser: {
+            /** Login */
+            login?: string | null;
+            /** Password */
+            password?: string | null;
+            /** Federation */
+            federation?: string | null;
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -808,6 +890,8 @@ export interface components {
             id: string;
             /** Login */
             login: string;
+            /** Federation */
+            federation?: string | null;
         };
     };
     responses: never;
@@ -818,6 +902,7 @@ export interface components {
 }
 export type SchemaBodyEventsSearchEvents = components['schemas']['Body_events_search_events'];
 export type SchemaBodyEventsShareSelection = components['schemas']['Body_events_share_selection'];
+export type SchemaCreateUser = components['schemas']['CreateUser'];
 export type SchemaDateFilter = components['schemas']['DateFilter'];
 export type SchemaDisciplinesFilterVariants = components['schemas']['DisciplinesFilterVariants'];
 export type SchemaEventInput = components['schemas']['Event-Input'];
@@ -838,6 +923,7 @@ export type SchemaSearchEventsResponse = components['schemas']['SearchEventsResp
 export type SchemaSelection = components['schemas']['Selection'];
 export type SchemaSort = components['schemas']['Sort'];
 export type SchemaStatusEnum = components['schemas']['StatusEnum'];
+export type SchemaUpdateUser = components['schemas']['UpdateUser'];
 export type SchemaValidationError = components['schemas']['ValidationError'];
 export type SchemaViewUser = components['schemas']['ViewUser'];
 export type $defs = Record<string, never>;
@@ -892,6 +978,188 @@ export interface operations {
             };
             /** @description Unable to verify credentials OR Credentials not provided */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    users_create_user: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateUser"];
+            };
+        };
+        responses: {
+            /** @description Successfully created */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ViewUser"];
+                };
+            };
+            /** @description Unable to verify credentials OR Credentials not provided */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Only admin can create users */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    users_get_all_users: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Info about all users */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ViewUser"][];
+                };
+            };
+            /** @description Unable to verify credentials OR Credentials not provided */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Only admin can get users */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    users_get_user: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Info about user */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ViewUser"];
+                };
+            };
+            /** @description Unable to verify credentials OR Credentials not provided */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Only admin can get users */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    users_update_user: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateUser"];
+            };
+        };
+        responses: {
+            /** @description User info updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ViewUser"];
+                };
+            };
+            /** @description Unable to verify credentials OR Credentials not provided */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Only admin can update users */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description User not found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
