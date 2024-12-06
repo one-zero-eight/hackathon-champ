@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "login-pass"
+name = "fsp-link"
 version = "0.1.0"
 description = ""
 authors = ["one-zero-eight <https://t.me/one_zero_eight>"]
@@ -22,10 +22,11 @@ minio = "^7.2.12"
 passlib = "^1.7.4"
 pre-commit = "^3.8.0"
 pydantic = "^2.9.2"
+python-magic = "^0.4.27"
+python-multipart = "^0.0.19"
 pywebpush = "^2.0.3"
 ruff = "^0.6.7"
 uvicorn = "^0.31.0"
-python-magic = "^0.4.27"
 
 [tool.poetry.group.mongo.dependencies]
 beanie = "^1.26.0"
