@@ -39,7 +39,7 @@ class FederationSchema(BaseSchema):
         None, examples=["https://fsp-russia.com/upload/iblock/7b0/5n5imvtfzfn32tcqsdr2ce5adv7z73qv.jpg"]
     )
     "Ссылка на логотип (полный URL)"
-    telegram: str | None = Field(None, examples=["https://t.me/fsp_msk"])
+    telegram: str | None = Field(None, examples=["https://t.me/fsprussia"])
     "Ссылка на канал в Telegram"
 
 

@@ -39,6 +39,8 @@ async def create_federation(federation: FederationSchema, auth: USER_AUTH) -> Fe
     """
     user = await user_repository.read(auth.user_id)
     if user.role == UserRole.ADMIN:
+        federation.status = StatusEnum.ACCREDITED
+        federation.status_comment = "Загружено администратором"
         return await federation_repository.create(federation)
     else:
         federation.status = StatusEnum.ON_CONSIDERATION
@@ -53,7 +55,15 @@ async def create_federations(federations: list[FederationSchema], auth: USER_AUT
     """
     user = await user_repository.read(auth.user_id)
     if user.role == UserRole.ADMIN:
-        return [await federation_repository.create(federation) for federation in federations]
+        for f in federations:
+            f.status = StatusEnum.ACCREDITED
+            f.status_comment = "Загружено администратором"
+        # create only if no with the same region
+        return [
+            await federation_repository.create(federation)
+            for federation in federations
+            if not await federation_repository.read_by_region(federation.region)
+        ]
     else:
         raise HTTPException(status_code=403, detail="Only admin can create federations")
 

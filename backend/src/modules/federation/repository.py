@@ -10,6 +10,9 @@ class FederationRepository:
     async def read_one(self, id: PydanticObjectId) -> Federation | None:
         return await Federation.get(id)
 
+    async def read_by_region(self, region: str) -> Federation | None:
+        return await Federation.find_one(Federation.region == region)
+
     async def read_all(self) -> list[Federation] | None:
         return await Federation.all().to_list()
 
