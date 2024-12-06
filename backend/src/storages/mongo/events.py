@@ -83,8 +83,6 @@ class EventSchema(BaseSchema):
     "Минимальный возраст участников"
     age_max: int | None = None
     "Максимальный возраст участников"
-    sport: str
-    "Название вида спорта"
     discipline: list[str]
     "Названия дисциплин"
     start_date: datetime.datetime
@@ -110,7 +108,6 @@ class Event(EventSchema, CustomDocument):
                 [
                     ("title", pymongo.TEXT),
                     ("description", pymongo.TEXT),
-                    ("sport", pymongo.TEXT),
                     ("location.country", pymongo.TEXT),
                     ("location.region", pymongo.TEXT),
                     ("location.city", pymongo.TEXT),
@@ -118,14 +115,4 @@ class Event(EventSchema, CustomDocument):
                 default_language="russian",
                 name="text_index",
             ),
-            IndexModel([("start_date", pymongo.ASCENDING)]),
-            IndexModel([("end_date", pymongo.ASCENDING)]),
-            IndexModel([("location.country", pymongo.ASCENDING)]),
-            IndexModel([("location.region", pymongo.ASCENDING)]),
-            IndexModel([("location.city", pymongo.ASCENDING)]),
-            IndexModel([("sport", pymongo.ASCENDING)]),
-            IndexModel([("discipline", pymongo.ASCENDING)]),
-            IndexModel([("gender", pymongo.HASHED)]),
-            IndexModel([("age_min", pymongo.ASCENDING)]),
-            IndexModel([("age_max", pymongo.ASCENDING)]),
         ]

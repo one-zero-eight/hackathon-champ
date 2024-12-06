@@ -320,7 +320,7 @@ async def get_selection_ics(selection_id: PydanticObjectId):
         vevent = icalendar.Event()
         vevent.add("uid", uid)
 
-        vevent.add("summary", f"{event.sport}: {event.title}")
+        vevent.add("summary", f"{event.title}")
         vevent.add("dtstart", icalendar.vDate(event.start_date))
         vevent.add("dtend", icalendar.vDate(event.end_date))
         vevent.add("description", event.description)
