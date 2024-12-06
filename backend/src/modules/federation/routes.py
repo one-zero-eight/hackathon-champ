@@ -46,26 +46,8 @@ async def create_federation(federation: FederationSchema, auth: USER_AUTH) -> Fe
         return await federation_repository.create(federation)
 
 
-@router.put(
-    "/{id}",
-    responses={
-        200: {"description": "Update federation"},
-        403: {"description": "Only admin or federation owner can update federation"},
-    },
-)
-async def update_federation(id: PydanticObjectId, data: FederationSchema, auth: USER_AUTH) -> Federation:
-    """
-    Update one federation.
-    """
-    user = await user_repository.read(auth.user_id)
-    if user.role == UserRole.ADMIN or user.federation_id == id:
-        return await federation_repository.update(id, data)
-    else:
-        raise HTTPException(status_code=403, detail="Only admin or federation owner can update federation")
-
-
 @router.post(
-    "/{id}",
+    "/{id}/accredite",
     responses={
         200: {"description": "Federation info updated"},
         403: {"description": "Only admin can accredit federation"},
@@ -86,3 +68,21 @@ async def accredite_federation(
         return federation
     else:
         raise HTTPException(status_code=403, detail="Only admin can accredit federation")
+
+
+@router.put(
+    "/{id}/",
+    responses={
+        200: {"description": "Update federation"},
+        403: {"description": "Only admin or federation owner can update federation"},
+    },
+)
+async def update_federation(id: PydanticObjectId, data: FederationSchema, auth: USER_AUTH) -> Federation:
+    """
+    Update one federation.
+    """
+    user = await user_repository.read(auth.user_id)
+    if user.role == UserRole.ADMIN or user.federation_id == id:
+        return await federation_repository.update(id, data)
+    else:
+        raise HTTPException(status_code=403, detail="Only admin or federation owner can update federation")

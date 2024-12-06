@@ -1,6 +1,7 @@
 __all__ = ["Event", "EventSchema"]
 
 import datetime
+from enum import StrEnum
 
 import pymongo
 from beanie import PydanticObjectId
@@ -28,9 +29,24 @@ class EventLocation(BaseSchema):
         return s
 
 
+class EventStatusEnum(StrEnum):
+    ON_CONSIDERATION = "on_consideration"
+    "На рассмотрении"
+    ACCREDITED = "accredited"
+    "Аккредитовано"
+    REJECTED = "rejected"
+    "Отклонено"
+
+
 class EventSchema(BaseSchema):
     host_federation: PydanticObjectId | None = None
     "Федерация, организующая мероприятие (None - для парсинга со стороны разработчиков)"
+    status: EventStatusEnum = EventStatusEnum.ON_CONSIDERATION
+    "Статус мероприятия"
+    status_comment: str | None = None
+    "Комментарий к статусу"
+    accreditation_comment: str | None = None
+    "Комментарий к аккредитации. Заполняет представитель для того, чтобы сообщить доп. информацию администратору"
     title: str
     "Наименование спортивного мероприятия"
     description: str | None = None

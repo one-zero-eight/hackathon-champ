@@ -1,12 +1,11 @@
 __all__ = ["events_repository"]
 
-
 from beanie import PydanticObjectId, SortDirection
 from beanie.odm.operators.find.comparison import GTE, LTE, Eq, In
 from beanie.odm.operators.find.logical import And, Or
 
 from src.modules.events.schemas import Filters, Pagination, Sort
-from src.storages.mongo.events import Event
+from src.storages.mongo.events import Event, EventSchema
 from src.storages.mongo.selection import Selection
 
 
@@ -23,11 +22,23 @@ class EventsRepository:
         s = [i["location"] for i in s]
         return s
 
-    async def create_many(self, events: list[Event]) -> bool:
-        res = await Event.insert_many(events)
+    async def create_many(self, events: list[EventSchema]) -> bool:
+        res = await Event.insert_many([Event.model_validate(event, from_attributes=True) for event in events])
         if not res.acknowledged:
             return False
         return True
+
+    async def suggest(self, event: EventSchema) -> Event:
+        return await Event.model_validate(event, from_attributes=True).insert()
+
+    async def accredite(self, id_: PydanticObjectId, status: str, status_comment: str | None) -> Event | None:
+        event = await Event.get(id_)
+        if event is None:
+            return None
+        event.status = status
+        event.status_comment = status_comment
+        await event.save()
+        return event
 
     async def get_random_event(self) -> Event | None:
         random_docs = await Event.aggregate(
@@ -136,6 +147,12 @@ class EventsRepository:
 
     async def read_selection(self, id_: PydanticObjectId) -> Selection | None:
         return await Selection.get(id_)
+
+    async def update(self, id: PydanticObjectId, event: EventSchema) -> Event | None:
+        await Event.find_one(Event.id == id).update(
+            {"$set": event.model_dump(exclude={"id", "status", "status_comment"})}
+        )
+        return await Event.get(id)
 
 
 events_repository: EventsRepository = EventsRepository()

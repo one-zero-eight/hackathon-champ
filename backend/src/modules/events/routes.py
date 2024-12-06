@@ -11,7 +11,7 @@ from src.modules.events.repository import events_repository
 from src.modules.events.schemas import DateFilter, Filters, Pagination, Sort
 from src.modules.ics_utils import get_base_calendar
 from src.modules.users.repository import user_repository
-from src.storages.mongo.events import Event
+from src.storages.mongo.events import Event, EventSchema, EventStatusEnum
 from src.storages.mongo.selection import Selection
 from src.storages.mongo.users import UserRole
 
@@ -42,10 +42,28 @@ async def get_event(id: PydanticObjectId) -> Event:
     return e
 
 
+@router.put(
+    "/{id}",
+    responses={
+        200: {"description": "Event info updated"},
+        403: {"description": "Only admin or related federation can update event"},
+    },
+)
+async def update_event(id: PydanticObjectId, event: EventSchema, auth: USER_AUTH) -> Event:
+    """
+    Update event.
+    """
+    user = await user_repository.read(auth.user_id)
+    if user.role == UserRole.ADMIN or (event.host_federation and user.federation == event.host_federation):
+        return await events_repository.update(id, event)
+    else:
+        raise HTTPException(status_code=403, detail="Only admin or related federation can update event")
+
+
 @router.post(
     "/", responses={200: {"description": "Create many events"}, 403: {"description": "Only admin can create events"}}
 )
-async def create_many_events(events: list[Event], auth: USER_AUTH) -> bool:
+async def create_many_events(events: list[EventSchema], auth: USER_AUTH) -> bool:
     """
     Create multiple events.
     """
@@ -55,6 +73,36 @@ async def create_many_events(events: list[Event], auth: USER_AUTH) -> bool:
         return await events_repository.create_many(events)
     else:
         raise HTTPException(status_code=403, detail="Only admin can create events")
+
+
+@router.post("/suggest", responses={200: {"description": "Suggest event"}})
+async def suggest_event(event: EventSchema, auth: USER_AUTH) -> Event:
+    """
+    Suggest event.
+    """
+    user = await user_repository.read(auth.user_id)
+    event.host_federation = user.federation
+    event.status = EventStatusEnum.ON_CONSIDERATION
+    event.status_comment = None
+
+    return await events_repository.suggest(event)
+
+
+@router.post("/{id}/accredite", responses={200: {"description": "Event info updated"}})
+async def accredite_event(
+    id: PydanticObjectId, status: EventStatusEnum, auth: USER_AUTH, status_comment: str | None = None
+) -> Event:
+    """
+    Accredit event.
+    """
+    user = await user_repository.read(auth.user_id)
+    if user.role == UserRole.ADMIN:
+        event = await events_repository.accredite(id, status, status_comment)
+        if event is None:
+            raise HTTPException(status_code=404, detail="Event not found")
+        return event
+    else:
+        raise HTTPException(status_code=403, detail="Only admin can accredit event")
 
 
 class SearchEventsResponse(BaseModel):
