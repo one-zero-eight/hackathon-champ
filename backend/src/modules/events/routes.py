@@ -82,7 +82,6 @@ async def suggest_event(event: EventSchema, auth: USER_AUTH) -> Event:
     """
     user = await user_repository.read(auth.user_id)
     event.host_federation = user.federation
-    event.status = EventStatusEnum.ON_CONSIDERATION
     event.status_comment = None
 
     return await events_repository.suggest(event)
