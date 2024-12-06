@@ -302,6 +302,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/federations/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get All Federations
+         * @description Get info about all events.
+         */
+        get: operations["federations_get_all_federations"];
+        put?: never;
+        /**
+         * Create Federation
+         * @description Create one federation.
+         */
+        post: operations["federations_create_federation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/federations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Federation
+         * @description Get info about one event.
+         */
+        get: operations["federations_get_federation"];
+        put?: never;
+        /**
+         * Accredite Federation
+         * @description Accredit federation.
+         */
+        post: operations["federations_accredite_federation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -507,6 +555,130 @@ export interface components {
              */
             city?: string | null;
         };
+        /** Federation */
+        Federation: {
+            /**
+             * Id
+             * Format: objectid
+             * @description MongoDB document ObjectID
+             * @default None
+             * @example 5eb7cf5a86d9755df3a6c593
+             */
+            id: string;
+            /**
+             * Region
+             * @description Название региона (области)
+             */
+            region: string;
+            /**
+             * District
+             * @description Название федерального округа
+             */
+            district: string | null;
+            /**
+             * @description Статус федерации (на рассмотрении, аккредитована, отклонена)
+             * @default on_consideration
+             */
+            status: components["schemas"]["StatusEnum"];
+            /**
+             * Status Comment
+             * @description Комментарий к статусу
+             */
+            status_comment: string | null;
+            /**
+             * Description
+             * @description Описание
+             */
+            description: string | null;
+            /**
+             * Head
+             * @description ФИО руководителя
+             */
+            head: string | null;
+            /**
+             * Email
+             * @description Электронная почта
+             */
+            email: string | null;
+            /**
+             * Phone
+             * @description Телефон
+             */
+            phone: string | null;
+            /**
+             * Site
+             * @description Сайт
+             */
+            site: string | null;
+            /**
+             * Address
+             * @description Адрес офиса
+             */
+            address: string | null;
+            /**
+             * Logo
+             * @description Ссылка на логотип (полный URL)
+             */
+            logo: string | null;
+        };
+        /** FederationSchema */
+        FederationSchema: {
+            /**
+             * Region
+             * @description Название региона (области)
+             */
+            region: string;
+            /**
+             * District
+             * @description Название федерального округа
+             */
+            district?: string | null;
+            /**
+             * @description Статус федерации (на рассмотрении, аккредитована, отклонена)
+             * @default on_consideration
+             */
+            status: components["schemas"]["StatusEnum"];
+            /**
+             * Status Comment
+             * @description Комментарий к статусу
+             */
+            status_comment?: string | null;
+            /**
+             * Description
+             * @description Описание
+             */
+            description?: string | null;
+            /**
+             * Head
+             * @description ФИО руководителя
+             */
+            head?: string | null;
+            /**
+             * Email
+             * @description Электронная почта
+             */
+            email?: string | null;
+            /**
+             * Phone
+             * @description Телефон
+             */
+            phone?: string | null;
+            /**
+             * Site
+             * @description Сайт
+             */
+            site?: string | null;
+            /**
+             * Address
+             * @description Адрес офиса
+             */
+            address?: string | null;
+            /**
+             * Logo
+             * @description Ссылка на логотип (полный URL)
+             */
+            logo?: string | null;
+        };
         /**
          * Filters
          * @description Список фильтров, которые применяются через И
@@ -613,6 +785,11 @@ export interface components {
             age?: components["schemas"]["Order"] | null;
             participant_count?: components["schemas"]["Order"] | null;
         };
+        /**
+         * StatusEnum
+         * @enum {string}
+         */
+        StatusEnum: "on_consideration" | "accredited" | "rejected";
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -646,6 +823,8 @@ export type SchemaDisciplinesFilterVariants = components['schemas']['Disciplines
 export type SchemaEventInput = components['schemas']['Event-Input'];
 export type SchemaEventOutput = components['schemas']['Event-Output'];
 export type SchemaEventLocation = components['schemas']['EventLocation'];
+export type SchemaFederation = components['schemas']['Federation'];
+export type SchemaFederationSchema = components['schemas']['FederationSchema'];
 export type SchemaFilters = components['schemas']['Filters'];
 export type SchemaGender = components['schemas']['Gender'];
 export type SchemaHttpValidationError = components['schemas']['HTTPValidationError'];
@@ -658,6 +837,7 @@ export type SchemaRegionsFilterVariants = components['schemas']['RegionsFilterVa
 export type SchemaSearchEventsResponse = components['schemas']['SearchEventsResponse'];
 export type SchemaSelection = components['schemas']['Selection'];
 export type SchemaSort = components['schemas']['Sort'];
+export type SchemaStatusEnum = components['schemas']['StatusEnum'];
 export type SchemaValidationError = components['schemas']['ValidationError'];
 export type SchemaViewUser = components['schemas']['ViewUser'];
 export type $defs = Record<string, never>;
@@ -1220,6 +1400,173 @@ export interface operations {
                 content?: never;
             };
             /** @description Selection not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    federations_get_all_federations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Info about all federations */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Federation"][];
+                };
+            };
+            /** @description Unable to verify credentials OR Credentials not provided */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    federations_create_federation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FederationSchema"];
+            };
+        };
+        responses: {
+            /** @description Create federation */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Federation"];
+                };
+            };
+            /** @description Unable to verify credentials OR Credentials not provided */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    federations_get_federation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Info about federation */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Federation"];
+                };
+            };
+            /** @description Unable to verify credentials OR Credentials not provided */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Federation not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    federations_accredite_federation: {
+        parameters: {
+            query: {
+                status: components["schemas"]["StatusEnum"];
+                status_comment?: string | null;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Federation info updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Federation"];
+                };
+            };
+            /** @description Unable to verify credentials OR Credentials not provided */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Only admin can accredit federation */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Federation not found */
             404: {
                 headers: {
                     [name: string]: unknown;
