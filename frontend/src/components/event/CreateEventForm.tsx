@@ -41,13 +41,12 @@ export function CreateEventForm() {
     try {
       mutate({
         body: {
-          host_federation: me.federation,
+          host_federation: me?.federation,
           title: data.title,
           description: data.description,
           start_date: data.start_date,
           end_date: data.end_date,
           status: 'draft',
-          sport: '',
           discipline: [],
           location: [],
         },

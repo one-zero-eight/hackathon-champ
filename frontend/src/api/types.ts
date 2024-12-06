@@ -454,6 +454,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/federations/create-many": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Federations
+         * @description Create many federations.
+         */
+        post: operations["federations_create_federations"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/federations/{id}/accredite": {
         parameters: {
             query?: never;
@@ -538,6 +558,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/file_worker/upload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload File */
+        post: operations["fileworker_upload_file"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/file_worker/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download File */
+        get: operations["fileworker_download_file"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -552,6 +606,14 @@ export interface components {
         Body_events_share_selection: {
             filters: components["schemas"]["Filters"];
             sort: components["schemas"]["Sort"];
+        };
+        /** Body_fileworker_upload_file */
+        Body_fileworker_upload_file: {
+            /**
+             * File
+             * Format: binary
+             */
+            file: string;
         };
         /** CreateUser */
         CreateUser: {
@@ -628,11 +690,6 @@ export interface components {
              * @description Максимальный возраст участников
              */
             age_max: number | null;
-            /**
-             * Sport
-             * @description Название вида спорта
-             */
-            sport: string;
             /**
              * Discipline
              * @description Названия дисциплин
@@ -735,11 +792,6 @@ export interface components {
              * @description Максимальный возраст участников
              */
             age_max?: number | null;
-            /**
-             * Sport
-             * @description Название вида спорта
-             */
-            sport: string;
             /**
              * Discipline
              * @description Названия дисциплин
@@ -855,6 +907,11 @@ export interface components {
              * @description Ссылка на логотип (полный URL)
              */
             logo: string | null;
+            /**
+             * Telegram
+             * @description Ссылка на канал в Telegram
+             */
+            telegram: string | null;
         };
         /** FederationSchema */
         FederationSchema: {
@@ -918,6 +975,11 @@ export interface components {
              * @description Ссылка на логотип (полный URL)
              */
             logo?: string | null;
+            /**
+             * Telegram
+             * @description Ссылка на канал в Telegram
+             */
+            telegram?: string | null;
         };
         /** Feedback */
         Feedback: {
@@ -1180,6 +1242,7 @@ export interface components {
 }
 export type SchemaBodyEventsSearchEvents = components['schemas']['Body_events_search_events'];
 export type SchemaBodyEventsShareSelection = components['schemas']['Body_events_share_selection'];
+export type SchemaBodyFileworkerUploadFile = components['schemas']['Body_fileworker_upload_file'];
 export type SchemaCreateUser = components['schemas']['CreateUser'];
 export type SchemaDateFilter = components['schemas']['DateFilter'];
 export type SchemaDisciplinesFilterVariants = components['schemas']['DisciplinesFilterVariants'];
@@ -2044,6 +2107,39 @@ export interface operations {
             };
         };
     };
+    federations_create_federations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FederationSchema"][];
+            };
+        };
+        responses: {
+            /** @description Create federations */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Federation"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     federations_accredite_federation: {
         parameters: {
             query: {
@@ -2220,6 +2316,70 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    fileworker_upload_file: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_fileworker_upload_file"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    fileworker_download_file: {
+        parameters: {
+            query: {
+                url: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
             };
             /** @description Validation Error */
             422: {

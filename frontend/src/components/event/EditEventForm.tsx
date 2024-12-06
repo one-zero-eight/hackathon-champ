@@ -72,12 +72,12 @@ export function EditEventForm({
   const onSubmit = async (data: EditEventFormType) => {
     try {
       const updateData: SchemaEventSchema = {
+        ...event,
         title: data.title,
         description: data.description,
         start_date: data.start_date,
         end_date: data.end_date,
         status: 'draft',
-        sport: '',
         discipline: [],
         location: [],
       }
