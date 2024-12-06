@@ -1,8 +1,10 @@
 import type { Event } from '@/lib/types'
 import type { Temporal } from 'temporal-polyfill'
+import { useMe } from '@/api/me.ts'
 import { EventExportToCalButton } from '@/components/EventExportToCalButton'
 import { Button } from '@/components/ui/button.tsx'
 import { cn, infoForDateRange, locationText } from '@/lib/utils.ts'
+import { Link } from '@tanstack/react-router'
 import LinkIcon from '~icons/lucide/link'
 import MapPin from '~icons/lucide/map-pin'
 import Users from '~icons/lucide/users'
@@ -36,6 +38,7 @@ export function EventCard({
   event: Event
   className?: string
 }) {
+  const { data: me } = useMe()
   const {
     start,
     end,
@@ -157,6 +160,17 @@ export function EventCard({
 
         <div className="flex items-center gap-2">
           <EventExportToCalButton event={event} />
+          {((me?.federation && me.federation === event.host_federation) || me?.role === 'admin') && (
+            <Button
+              asChild
+              className="h-7 w-fit rounded-md px-2 text-xs"
+              variant="secondary"
+            >
+              <Link to="/manage/region/events/$id" params={{ id: event.id }} className="!text-blue-500">
+                Редактировать
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
 
