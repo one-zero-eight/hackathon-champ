@@ -16,7 +16,6 @@
       "unplugin-icons/types/react"
     ],
     "allowImportingTsExtensions": true,
-    /* Linting */
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
@@ -26,6 +25,7 @@
     "isolatedModules": true,
     "skipLibCheck": true,
     "noUncheckedSideEffectImports": true
+
   },
   "include": ["src"]
 }

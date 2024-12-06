@@ -1,3 +1,5 @@
+// @ts-check
+
 import antfu from '@antfu/eslint-config'
 import tailwind from 'eslint-plugin-tailwindcss'
 
