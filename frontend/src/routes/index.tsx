@@ -205,7 +205,7 @@ function RouteComponent() {
               {
                 value: 85,
                 suffix: '%',
-                label: 'Регионов уе с нами',
+                label: 'Регионов уже с нами',
               },
               {
                 value: 10000,
@@ -307,6 +307,99 @@ function RouteComponent() {
           </motion.div>
         </div>
       </section>
+
+      {/* Footer Section */}
+      <footer className="bg-gray-900 text-gray-400">
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Logo and Description */}
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3">
+                <img src="/favicon.png" alt="ФСП Линк" className="size-8" />
+                <span className="text-lg font-semibold text-white">ФСП Линк</span>
+              </div>
+              <p className="text-sm">
+                Единая платформа для организации и проведения соревнований по спортивному программированию
+              </p>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">
+                Быстрые ссылки
+              </h3>
+              <ul className="space-y-2">
+                <li>
+                  <a href="#" className="text-sm hover:text-white">О платформе</a>
+                </li>
+                <li>
+                  <a href="#" className="text-sm hover:text-white">Соревнования</a>
+                </li>
+                <li>
+                  <a href="#" className="text-sm hover:text-white">Регистрация</a>
+                </li>
+                <li>
+                  <a href="#" className="text-sm hover:text-white">Помощь</a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Resources */}
+            <div>
+              <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">
+                Ресурсы
+              </h3>
+              <ul className="space-y-2">
+                <li>
+                  <a href="#" className="text-sm hover:text-white">Документация</a>
+                </li>
+                <li>
+                  <a href="#" className="text-sm hover:text-white">Правила</a>
+                </li>
+                <li>
+                  <a href="#" className="text-sm hover:text-white">FAQ</a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Contact */}
+            <div>
+              <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">
+                Контакты
+              </h3>
+              <ul className="space-y-2">
+                <li>
+                  <a href="mailto:support@fsplink.ru" className="text-sm hover:text-white">
+                    support@fsplink.ru
+                  </a>
+                </li>
+                <li>
+                  <a href="https://t.me/fsplink" className="text-sm hover:text-white">
+                    Telegram
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom Bar */}
+          <div className="mt-12 border-t border-gray-800 pt-8">
+            <div className="flex flex-col items-center justify-between space-y-4 sm:flex-row sm:space-y-0">
+              <p className="text-xs">
+                © 2024 ФСП Линк. Все права защищены.
+              </p>
+              <div className="flex space-x-6">
+                <a href="#" className="text-xs hover:text-white">
+                  Условия использования
+                </a>
+                <a href="#" className="text-xs hover:text-white">
+                  Политика конфиденциальности
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
     </main>
   )
 }
