@@ -4,8 +4,6 @@ import { Button } from '@/components/ui/button.tsx'
 import { cn } from '@/lib/utils.ts'
 import { BaseFilter } from './BaseFilter'
 
-export type Gender = 'male' | 'female'
-
 export function GenderSelect(props: FilterBaseProps<Filters['gender']>) {
   const { disabled, value, onChange, ...rest } = props
 
@@ -13,6 +11,7 @@ export function GenderSelect(props: FilterBaseProps<Filters['gender']>) {
     <BaseFilter {...rest}>
       <div className="flex">
         <Button
+          type="button"
           disabled={disabled}
           variant="outline"
           className={cn(
@@ -25,6 +24,7 @@ export function GenderSelect(props: FilterBaseProps<Filters['gender']>) {
           любой
         </Button>
         <Button
+          type="button"
           disabled={disabled}
           variant="outline"
           className={cn(
@@ -37,6 +37,7 @@ export function GenderSelect(props: FilterBaseProps<Filters['gender']>) {
           муж
         </Button>
         <Button
+          type="button"
           disabled={disabled}
           variant="outline"
           className={cn(

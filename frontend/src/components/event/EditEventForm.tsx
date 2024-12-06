@@ -3,6 +3,8 @@ import { $api } from '@/api'
 import { useMe } from '@/api/me.ts'
 import { EventStatusBadge } from '@/components/EventStatusBadge.tsx'
 import { DatePicker } from '@/components/filters/DatesFilter.tsx'
+import { DisciplineFilter } from '@/components/filters/DisciplineFilter.tsx'
+import { GenderSelect } from '@/components/filters/GenderSelect.tsx'
 import { Button } from '@/components/ui/button.tsx'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.tsx'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form.tsx'
@@ -22,6 +24,17 @@ const editEventFormSchema = z.object({
   description: z.string().min(10, 'Описание должно содержать минимум 10 символов'),
   start_date: z.string().min(1, 'Выберите дату проведения'),
   end_date: z.string().min(1, 'Выберите дату проведения'),
+  age_min: z.number().min(0, 'Минимальный возраст должен быть неотрицательным числом').nullable(),
+  age_max: z.number().min(0, 'Максимальный возраст должен быть неотрицательным числом').nullable(),
+  participant_count: z.number().min(0, 'Количество участников должно быть неотрицательным числом').nullable(),
+  ekp_id: z.number().nullable(),
+  location: z.array(z.object({
+    country: z.string().min(1, 'Введите страну'),
+    region: z.string().nullable(),
+    city: z.string().nullable(),
+  })),
+  gender: z.enum(['male', 'female']).nullable(),
+  discipline: z.array(z.string().min(1, 'Введите дисциплину')),
 })
 
 type EditEventFormType = z.infer<typeof editEventFormSchema>
@@ -39,7 +52,10 @@ export function EditEventForm({
   const form = useForm<EditEventFormType>({
     resolver: zodResolver(editEventFormSchema),
     defaultValues: {
+      title: '',
       description: '',
+      location: [],
+      discipline: [],
     },
   })
 
@@ -53,6 +69,17 @@ export function EditEventForm({
         description: event.description ?? '',
         start_date: event.start_date,
         end_date: event.end_date,
+        age_min: event.age_min,
+        age_max: event.age_max,
+        participant_count: event.participant_count,
+        ekp_id: event.ekp_id,
+        location: event.location.map(v => ({
+          country: v.country,
+          region: v.region ?? null,
+          city: v.city ?? null,
+        })),
+        gender: event.gender,
+        discipline: event.discipline,
       }
       form.reset(values)
       setInitialValues(values)
@@ -185,6 +212,7 @@ export function EditEventForm({
             </CardHeader>
             <CardContent>
               <div className="grid gap-6 sm:grid-cols-2">
+                {/* Title */}
                 <FormField
                   control={form.control}
                   name="title"
@@ -203,6 +231,7 @@ export function EditEventForm({
                   )}
                 />
 
+                {/* Dates */}
                 <div className="flex flex-col gap-2">
                   <Label className="text-base font-medium">Даты проведения</Label>
                   <div className="flex items-center gap-2">
@@ -247,6 +276,7 @@ export function EditEventForm({
                 </div>
               </div>
 
+              {/* Description */}
               <FormField
                 control={form.control}
                 name="description"
@@ -264,6 +294,136 @@ export function EditEventForm({
                   </FormItem>
                 )}
               />
+
+              {/* Discipline */}
+              <FormField
+                control={form.control}
+                name="discipline"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base">Дисциплина</FormLabel>
+                    <FormControl>
+                      <DisciplineFilter
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Participant count */}
+              <FormField
+                control={form.control}
+                name="participant_count"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base">Количество участников</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Введите количество участников"
+                        type="number"
+                        {...field}
+                        value={field.value ?? ''}
+                        onChange={e => field.onChange(e.target.value ? Number(e.target.value) : null)}
+                        className="h-11"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid gap-6 sm:grid-cols-2">
+                {/* Gender */}
+                <FormField
+                  control={form.control}
+                  name="gender"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-base">Пол</FormLabel>
+                      <FormControl>
+                        <GenderSelect
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Ages */}
+                <div className="flex flex-col gap-2">
+                  <Label className="text-base font-medium">Возраст</Label>
+                  <div className="flex items-center gap-2">
+                    <FormField
+                      control={form.control}
+                      name="age_min"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              placeholder="От"
+                              type="number"
+                              {...field}
+                              value={field.value ?? ''}
+                              onChange={e => field.onChange(e.target.value ? Number(e.target.value) : null)}
+                              className="h-11 w-20"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <span>—</span>
+                    <FormField
+                      control={form.control}
+                      name="age_max"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              placeholder="До"
+                              type="number"
+                              {...field}
+                              value={field.value ?? ''}
+                              onChange={e => field.onChange(e.target.value ? Number(e.target.value) : null)}
+                              className="h-11 w-20"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* EKP ID */}
+              <FormField
+                control={form.control}
+                name="ekp_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base">Номер ЕКП</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Введите номер в ЕКП"
+                        type="number"
+                        {...field}
+                        value={field.value ?? ''}
+                        onChange={e => field.onChange(e.target.value ? Number(e.target.value) : null)}
+                        className="h-11"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Location */}
             </CardContent>
           </Card>
 
