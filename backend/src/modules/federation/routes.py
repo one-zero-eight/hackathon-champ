@@ -3,9 +3,11 @@ from fastapi import APIRouter, HTTPException
 
 from src.api.dependencies import USER_AUTH
 from src.modules.federation.repository import federation_repository
+from src.modules.notify.repository import notify_repository
 from src.modules.users.repository import user_repository
 from src.storages.mongo import Federation
 from src.storages.mongo.federation import FederationSchema, StatusEnum
+from src.storages.mongo.notify import AccreditationRequestFederation, NotifySchema
 from src.storages.mongo.users import UserRole
 
 router = APIRouter(prefix="/federations", tags=["Federations"])
@@ -45,7 +47,11 @@ async def create_federation(federation: FederationSchema, auth: USER_AUTH) -> Fe
     else:
         federation.status = StatusEnum.ON_CONSIDERATION
         federation.status_comment = None
-        return await federation_repository.create(federation)
+        created = await federation_repository.create(federation)
+        await notify_repository.create_notify(
+            NotifySchema(for_admin=True, inner=AccreditationRequestFederation(federation_id=created.id))
+        )
+        return created
 
 
 @router.post("/create-many", responses={200: {"description": "Create federations"}})
@@ -87,6 +93,9 @@ async def accredite_federation(
         federation = await federation_repository.accredite(id, status, status_comment)
         if federation is None:
             raise HTTPException(status_code=404, detail="Federation not found")
+        await notify_repository.create_notify(
+            NotifySchema(for_federation=id, inner=AccreditationRequestFederation(federation_id=id))
+        )
         return federation
     else:
         raise HTTPException(status_code=403, detail="Only admin can accredit federation")

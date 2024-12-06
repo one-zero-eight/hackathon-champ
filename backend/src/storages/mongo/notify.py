@@ -2,7 +2,7 @@ import datetime
 from typing import Annotated, Literal
 
 from beanie import PydanticObjectId
-from pydantic import Discriminator
+from pydantic import Discriminator, Field
 
 from src.pydantic_base import BaseSchema
 from src.storages.mongo.__base__ import CustomDocument
@@ -82,7 +82,7 @@ Inner = Annotated[
 
 
 class NotifySchema(BaseSchema):
-    created_at: datetime.datetime
+    created_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(datetime.UTC))
     "Дата создания уведомления"
     read_by: list[PydanticObjectId] = []
     "Список пользователей, которые прочитали уведомление"

@@ -10,8 +10,10 @@ from src.api.dependencies import USER_AUTH
 from src.modules.events.ics_utils import get_base_calendar
 from src.modules.events.repository import events_repository
 from src.modules.events.schemas import DateFilter, Filters, Pagination, Sort
+from src.modules.notify.repository import notify_repository
 from src.modules.users.repository import user_repository
 from src.storages.mongo.events import Event, EventSchema, EventStatusEnum
+from src.storages.mongo.notify import AccreditationRequestEvent, AccreditedEvent, NotifySchema
 from src.storages.mongo.selection import Selection
 from src.storages.mongo.users import UserRole
 
@@ -47,6 +49,7 @@ async def get_event(id: PydanticObjectId) -> Event:
     responses={
         200: {"description": "Event info updated"},
         403: {"description": "Only admin or related federation can update event"},
+        404: {"description": "Event not found"},
     },
 )
 async def update_event(id: PydanticObjectId, event: EventSchema, auth: USER_AUTH) -> Event:
@@ -55,7 +58,17 @@ async def update_event(id: PydanticObjectId, event: EventSchema, auth: USER_AUTH
     """
     user = await user_repository.read(auth.user_id)
     if user.role == UserRole.ADMIN or (event.host_federation and user.federation == event.host_federation):
-        return await events_repository.update(id, event)
+        was = await events_repository.read_one(id)
+        if was is None:
+            raise HTTPException(status_code=404, detail="Event not found")
+        updated = await events_repository.update(id, event)
+        if was.status != EventStatusEnum.ACCREDITED and updated.status == EventStatusEnum.ACCREDITED:
+            await notify_repository.create_notify(
+                NotifySchema(
+                    for_admin=True, inner=AccreditationRequestEvent(event_id=id, federation_id=event.host_federation)
+                )
+            )
+        return updated
     else:
         raise HTTPException(status_code=403, detail="Only admin or related federation can update event")
 
@@ -99,6 +112,13 @@ async def accredite_event(
         event = await events_repository.accredite(id, status, status_comment)
         if event is None:
             raise HTTPException(status_code=404, detail="Event not found")
+        if event.host_federation:
+            await notify_repository.create_notify(
+                NotifySchema(
+                    for_federation=event.host_federation,
+                    inner=AccreditedEvent(event_id=id, status=status, status_comment=status_comment),
+                )
+            )
         return event
     else:
         raise HTTPException(status_code=403, detail="Only admin can accredit event")
