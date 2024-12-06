@@ -5,12 +5,14 @@ import { GenderSelect } from './GenderSelect'
 import { LocationFilter } from './LocationFilter'
 import { MinMaxFilter } from './MinMaxFilter'
 
+const DEFAULT_EXCLUDE: ('date')[] = []
+
 export function AllFilters({
   disabled,
   filters,
   onChange,
   className,
-  exclude = [],
+  exclude = DEFAULT_EXCLUDE,
 }: {
   disabled?: boolean
   filters: Filters

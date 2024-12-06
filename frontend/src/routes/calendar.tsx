@@ -60,7 +60,7 @@ function RouteComponent() {
       }
     })
     return byMonth
-  }, [data])
+  }, [data, year])
 
   return (
     <div className="mx-auto mt-8 flex gap-4">

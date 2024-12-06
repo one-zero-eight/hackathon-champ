@@ -97,9 +97,9 @@ export function EventCard({
         </div>
         <h4 className="text-xl font-bold">{event.title}</h4>
         <div className="flex flex-wrap gap-1">
-          {event.location.map((loc, i) => (
+          {event.location.map(loc => (
             <a
-              key={i}
+              key={locationText(loc)}
               href={`https://yandex.ru/maps/?text=${encodeURIComponent(locationText(loc))}`}
               target="_blank"
               rel="noreferrer"

@@ -57,7 +57,7 @@ function compItems(a: LocationFilterItem, b: LocationFilterItem) {
 export function LocationFilter(props: FilterBaseProps<Filters['location']>) {
   const { disabled, value: valueRaw, onChange, ...rest } = props
 
-  const value = valueRaw ?? []
+  const value = useMemo(() => valueRaw ?? [], [valueRaw])
 
   const { data } = $api.useQuery('get', '/events/search/filters/locations')
 

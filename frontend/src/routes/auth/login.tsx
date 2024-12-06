@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button.tsx'
 import { Input } from '@/components/ui/input'
 import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Loader2 from '~icons/lucide/loader'
 
 export const Route = createFileRoute('/auth/login')({
@@ -45,7 +45,11 @@ function RouteComponent() {
     onSuccess: () => window.location.assign(redirectTo || '/'),
   })
 
-  console.log(errorLogin)
+  useEffect(() => {
+    if (errorLogin) {
+      console.error(errorLogin)
+    }
+  }, [errorLogin])
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()

@@ -199,7 +199,7 @@ function EventSelection({
     return shuffle
       ? data.events.slice().sort(() => Math.random() - 0.5)
       : data.events
-  }, [data])
+  }, [data, shuffle])
 
   return (
     <section className="my-[64px] w-full">
