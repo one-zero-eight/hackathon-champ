@@ -69,37 +69,33 @@ export function TopBar() {
             </Link>
           </Button>
         )}
-        {me?.role === 'admin' && (
-          <>
-            <div className="text-lg">{me.login}</div>
-            <Button asChild variant="link">
-              <Link
-                to="/manage/admin"
-                activeProps={{ className: 'underline' }}
-              >
-                Панель администратора
-              </Link>
-            </Button>
-            <Button variant="link" onClick={() => performLogout({})}>
-              Выйти
-            </Button>
-          </>
-        )}
         {me?.federation && (
           <>
-            <div className="text-lg">{me.login}</div>
+            <div className="text-lg">{myFederation?.region}</div>
             <Button asChild variant="link">
               <Link
                 to="/manage/regional"
                 activeProps={{ className: 'underline' }}
               >
-                {myFederation?.region || 'Панель управления'}
+                Управление федерацией
               </Link>
             </Button>
-            <Button variant="link" onClick={() => performLogout({})}>
-              Выйти
-            </Button>
           </>
+        )}
+        {me?.role === 'admin' && (
+          <Button asChild variant="link">
+            <Link
+              to="/manage/admin"
+              activeProps={{ className: 'underline' }}
+            >
+              Панель администратора
+            </Link>
+          </Button>
+        )}
+        {me && (
+          <Button variant="link" onClick={() => performLogout({})}>
+            Выйти
+          </Button>
         )}
       </div>
     </header>

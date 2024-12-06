@@ -663,6 +663,11 @@ export interface components {
              */
             status_comment: string | null;
             /**
+             * Accreditation Comment
+             * @description Комментарий к аккредитации. Заполняет представитель для того, чтобы сообщить о положении для аккредитации
+             */
+            accreditation_comment: string | null;
+            /**
              * Description
              * @description Описание
              */
@@ -720,6 +725,11 @@ export interface components {
              * @description Комментарий к статусу
              */
             status_comment?: string | null;
+            /**
+             * Accreditation Comment
+             * @description Комментарий к аккредитации. Заполняет представитель для того, чтобы сообщить о положении для аккредитации
+             */
+            accreditation_comment?: string | null;
             /**
              * Description
              * @description Описание
