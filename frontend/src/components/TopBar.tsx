@@ -23,10 +23,10 @@ export function TopBar() {
         </Button>
         <Button asChild variant="link">
           <Link
-            to="/sports"
+            to="/disciplines"
             activeProps={{ className: 'underline' }}
           >
-            Виды спорта
+            Дисциплины
           </Link>
         </Button>
         <Button asChild variant="link">
@@ -48,33 +48,48 @@ export function TopBar() {
       </div>
 
       <div className="flex items-center gap-2 px-2">
-        {!me
-          ? (
-              <Button asChild variant="link">
-                <Link
-                  to="/auth/login"
-                  activeProps={{ className: 'underline' }}
-                >
-                  Войти
-                </Link>
-              </Button>
-            )
-          : (
-              <>
-                <div className="text-lg">{me.login}</div>
-                <Button asChild variant="link">
-                  <Link
-                    to="/profile"
-                    activeProps={{ className: 'underline' }}
-                  >
-                    Профиль
-                  </Link>
-                </Button>
-                <Button variant="link" onClick={() => performLogout({})}>
-                  Выйти
-                </Button>
-              </>
-            )}
+        {!me && (
+          <Button asChild variant="link">
+            <Link
+              to="/auth/login"
+              activeProps={{ className: 'underline' }}
+            >
+              Войти
+            </Link>
+          </Button>
+        )}
+        {me?.role === 'admin' && (
+          <>
+            <div className="text-lg">{me.login}</div>
+            <Button asChild variant="link">
+              <Link
+                to="/manage/admin"
+                activeProps={{ className: 'underline' }}
+              >
+                Панель администратора
+              </Link>
+            </Button>
+            <Button variant="link" onClick={() => performLogout({})}>
+              Выйти
+            </Button>
+          </>
+        )}
+        {me?.role === 'regional' && (
+          <>
+            <div className="text-lg">{me.login}</div>
+            <Button asChild variant="link">
+              <Link
+                to="/manage/regional"
+                activeProps={{ className: 'underline' }}
+              >
+                {me.region}
+              </Link>
+            </Button>
+            <Button variant="link" onClick={() => performLogout({})}>
+              Выйти
+            </Button>
+          </>
+        )}
       </div>
     </header>
   )

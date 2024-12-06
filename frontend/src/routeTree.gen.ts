@@ -12,9 +12,11 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as SearchImport } from './routes/search'
-import { Route as ProfileImport } from './routes/profile'
+import { Route as DisciplinesImport } from './routes/disciplines'
 import { Route as CalendarImport } from './routes/calendar'
 import { Route as IndexImport } from './routes/index'
+import { Route as ManageRegionalImport } from './routes/manage/regional'
+import { Route as ManageAdminImport } from './routes/manage/admin'
 import { Route as EventsEventIdImport } from './routes/events/$eventId'
 import { Route as AuthLoginImport } from './routes/auth/login'
 
@@ -26,9 +28,9 @@ const SearchRoute = SearchImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const ProfileRoute = ProfileImport.update({
-  id: '/profile',
-  path: '/profile',
+const DisciplinesRoute = DisciplinesImport.update({
+  id: '/disciplines',
+  path: '/disciplines',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -41,6 +43,18 @@ const CalendarRoute = CalendarImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ManageRegionalRoute = ManageRegionalImport.update({
+  id: '/manage/regional',
+  path: '/manage/regional',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ManageAdminRoute = ManageAdminImport.update({
+  id: '/manage/admin',
+  path: '/manage/admin',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -74,11 +88,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CalendarImport
       parentRoute: typeof rootRoute
     }
-    '/profile': {
-      id: '/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProfileImport
+    '/disciplines': {
+      id: '/disciplines'
+      path: '/disciplines'
+      fullPath: '/disciplines'
+      preLoaderRoute: typeof DisciplinesImport
       parentRoute: typeof rootRoute
     }
     '/search': {
@@ -102,6 +116,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EventsEventIdImport
       parentRoute: typeof rootRoute
     }
+    '/manage/admin': {
+      id: '/manage/admin'
+      path: '/manage/admin'
+      fullPath: '/manage/admin'
+      preLoaderRoute: typeof ManageAdminImport
+      parentRoute: typeof rootRoute
+    }
+    '/manage/regional': {
+      id: '/manage/regional'
+      path: '/manage/regional'
+      fullPath: '/manage/regional'
+      preLoaderRoute: typeof ManageRegionalImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -110,29 +138,35 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/calendar': typeof CalendarRoute
-  '/profile': typeof ProfileRoute
+  '/disciplines': typeof DisciplinesRoute
   '/search': typeof SearchRoute
   '/auth/login': typeof AuthLoginRoute
   '/events/$eventId': typeof EventsEventIdRoute
+  '/manage/admin': typeof ManageAdminRoute
+  '/manage/regional': typeof ManageRegionalRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/calendar': typeof CalendarRoute
-  '/profile': typeof ProfileRoute
+  '/disciplines': typeof DisciplinesRoute
   '/search': typeof SearchRoute
   '/auth/login': typeof AuthLoginRoute
   '/events/$eventId': typeof EventsEventIdRoute
+  '/manage/admin': typeof ManageAdminRoute
+  '/manage/regional': typeof ManageRegionalRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/calendar': typeof CalendarRoute
-  '/profile': typeof ProfileRoute
+  '/disciplines': typeof DisciplinesRoute
   '/search': typeof SearchRoute
   '/auth/login': typeof AuthLoginRoute
   '/events/$eventId': typeof EventsEventIdRoute
+  '/manage/admin': typeof ManageAdminRoute
+  '/manage/regional': typeof ManageRegionalRoute
 }
 
 export interface FileRouteTypes {
@@ -140,45 +174,55 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/calendar'
-    | '/profile'
+    | '/disciplines'
     | '/search'
     | '/auth/login'
     | '/events/$eventId'
+    | '/manage/admin'
+    | '/manage/regional'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/calendar'
-    | '/profile'
+    | '/disciplines'
     | '/search'
     | '/auth/login'
     | '/events/$eventId'
+    | '/manage/admin'
+    | '/manage/regional'
   id:
     | '__root__'
     | '/'
     | '/calendar'
-    | '/profile'
+    | '/disciplines'
     | '/search'
     | '/auth/login'
     | '/events/$eventId'
+    | '/manage/admin'
+    | '/manage/regional'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CalendarRoute: typeof CalendarRoute
-  ProfileRoute: typeof ProfileRoute
+  DisciplinesRoute: typeof DisciplinesRoute
   SearchRoute: typeof SearchRoute
   AuthLoginRoute: typeof AuthLoginRoute
   EventsEventIdRoute: typeof EventsEventIdRoute
+  ManageAdminRoute: typeof ManageAdminRoute
+  ManageRegionalRoute: typeof ManageRegionalRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CalendarRoute: CalendarRoute,
-  ProfileRoute: ProfileRoute,
+  DisciplinesRoute: DisciplinesRoute,
   SearchRoute: SearchRoute,
   AuthLoginRoute: AuthLoginRoute,
   EventsEventIdRoute: EventsEventIdRoute,
+  ManageAdminRoute: ManageAdminRoute,
+  ManageRegionalRoute: ManageRegionalRoute,
 }
 
 export const routeTree = rootRoute
@@ -193,10 +237,12 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/calendar",
-        "/profile",
+        "/disciplines",
         "/search",
         "/auth/login",
-        "/events/$eventId"
+        "/events/$eventId",
+        "/manage/admin",
+        "/manage/regional"
       ]
     },
     "/": {
@@ -205,8 +251,8 @@ export const routeTree = rootRoute
     "/calendar": {
       "filePath": "calendar.tsx"
     },
-    "/profile": {
-      "filePath": "profile.tsx"
+    "/disciplines": {
+      "filePath": "disciplines.tsx"
     },
     "/search": {
       "filePath": "search.tsx"
@@ -216,6 +262,12 @@ export const routeTree = rootRoute
     },
     "/events/$eventId": {
       "filePath": "events/$eventId.tsx"
+    },
+    "/manage/admin": {
+      "filePath": "manage/admin.tsx"
+    },
+    "/manage/regional": {
+      "filePath": "manage/regional.tsx"
     }
   }
 }
