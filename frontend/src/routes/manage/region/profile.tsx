@@ -214,7 +214,7 @@ function RouteComponent() {
                     <FormItem>
                       <FormLabel>Федеральный округ</FormLabel>
                       <FormControl>
-                        <Input placeholder="Название федералього округа" {...field} value={field.value || ''} onChange={e => field.onChange(e.target.value || null)} />
+                        <Input placeholder="Название федерального округа" {...field} value={field.value || ''} onChange={e => field.onChange(e.target.value || null)} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -229,7 +229,7 @@ function RouteComponent() {
                     <FormLabel>Описание</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Описние федерации"
+                        placeholder="Описание федерации"
                         className="min-h-[100px]"
                         {...field}
                         value={field.value || ''}
@@ -257,7 +257,7 @@ function RouteComponent() {
                   name="head"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>ФИО рководителя</FormLabel>
+                      <FormLabel>ФИО руководителя</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Иванов Иван Иванович"
