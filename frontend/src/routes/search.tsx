@@ -159,7 +159,7 @@ function RouteComponent() {
       </aside>
 
       <main className="grow gap-2">
-        <div className="sticky top-[var(--header-height)] z-10 border-b bg-white bg-opacity-90 p-4 backdrop-blur">
+        <div className="sticky top-[var(--header-height)] z-[1] border-b bg-white bg-opacity-90 p-4 backdrop-blur">
           <Input
             className="rounded-md border border-gray-300 px-2 py-1"
             value={query}
