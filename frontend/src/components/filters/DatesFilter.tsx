@@ -42,7 +42,7 @@ export function DatesFilter(props: FilterBaseProps<Filters['date']>) {
     </BaseFilter>
   )
 }
-function DatePicker({
+export function DatePicker({
   value,
   onChange,
   placeholder,
