@@ -32,6 +32,7 @@ import { Route as ManageRegionFeedbackImport } from './routes/manage/region/feed
 import { Route as ManageAdminHomeImport } from './routes/manage/admin/home'
 import { Route as ManageRegionEventsIndexImport } from './routes/manage/region/events/index'
 import { Route as ManageRegionEventsSuggestImport } from './routes/manage/region/events/suggest'
+import { Route as ManageRegionEventsIdImport } from './routes/manage/region/events/$id'
 
 // Create/Update Routes
 
@@ -158,6 +159,12 @@ const ManageRegionEventsIndexRoute = ManageRegionEventsIndexImport.update({
 const ManageRegionEventsSuggestRoute = ManageRegionEventsSuggestImport.update({
   id: '/region/events/suggest',
   path: '/region/events/suggest',
+  getParentRoute: () => ManageRouteRoute,
+} as any)
+
+const ManageRegionEventsIdRoute = ManageRegionEventsIdImport.update({
+  id: '/region/events/$id',
+  path: '/region/events/$id',
   getParentRoute: () => ManageRouteRoute,
 } as any)
 
@@ -298,6 +305,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageRegionRequestsImport
       parentRoute: typeof ManageRouteImport
     }
+    '/manage/region/events/$id': {
+      id: '/manage/region/events/$id'
+      path: '/region/events/$id'
+      fullPath: '/manage/region/events/$id'
+      preLoaderRoute: typeof ManageRegionEventsIdImport
+      parentRoute: typeof ManageRouteImport
+    }
     '/manage/region/events/suggest': {
       id: '/manage/region/events/suggest'
       path: '/region/events/suggest'
@@ -324,6 +338,7 @@ interface ManageRouteRouteChildren {
   ManageRegionHomeRoute: typeof ManageRegionHomeRoute
   ManageRegionProfileRoute: typeof ManageRegionProfileRoute
   ManageRegionRequestsRoute: typeof ManageRegionRequestsRoute
+  ManageRegionEventsIdRoute: typeof ManageRegionEventsIdRoute
   ManageRegionEventsSuggestRoute: typeof ManageRegionEventsSuggestRoute
   ManageRegionEventsIndexRoute: typeof ManageRegionEventsIndexRoute
 }
@@ -335,6 +350,7 @@ const ManageRouteRouteChildren: ManageRouteRouteChildren = {
   ManageRegionHomeRoute: ManageRegionHomeRoute,
   ManageRegionProfileRoute: ManageRegionProfileRoute,
   ManageRegionRequestsRoute: ManageRegionRequestsRoute,
+  ManageRegionEventsIdRoute: ManageRegionEventsIdRoute,
   ManageRegionEventsSuggestRoute: ManageRegionEventsSuggestRoute,
   ManageRegionEventsIndexRoute: ManageRegionEventsIndexRoute,
 }
@@ -363,6 +379,7 @@ export interface FileRoutesByFullPath {
   '/manage/region/home': typeof ManageRegionHomeRoute
   '/manage/region/profile': typeof ManageRegionProfileRoute
   '/manage/region/requests': typeof ManageRegionRequestsRoute
+  '/manage/region/events/$id': typeof ManageRegionEventsIdRoute
   '/manage/region/events/suggest': typeof ManageRegionEventsSuggestRoute
   '/manage/region/events': typeof ManageRegionEventsIndexRoute
 }
@@ -386,6 +403,7 @@ export interface FileRoutesByTo {
   '/manage/region/home': typeof ManageRegionHomeRoute
   '/manage/region/profile': typeof ManageRegionProfileRoute
   '/manage/region/requests': typeof ManageRegionRequestsRoute
+  '/manage/region/events/$id': typeof ManageRegionEventsIdRoute
   '/manage/region/events/suggest': typeof ManageRegionEventsSuggestRoute
   '/manage/region/events': typeof ManageRegionEventsIndexRoute
 }
@@ -411,6 +429,7 @@ export interface FileRoutesById {
   '/manage/region/home': typeof ManageRegionHomeRoute
   '/manage/region/profile': typeof ManageRegionProfileRoute
   '/manage/region/requests': typeof ManageRegionRequestsRoute
+  '/manage/region/events/$id': typeof ManageRegionEventsIdRoute
   '/manage/region/events/suggest': typeof ManageRegionEventsSuggestRoute
   '/manage/region/events/': typeof ManageRegionEventsIndexRoute
 }
@@ -437,6 +456,7 @@ export interface FileRouteTypes {
     | '/manage/region/home'
     | '/manage/region/profile'
     | '/manage/region/requests'
+    | '/manage/region/events/$id'
     | '/manage/region/events/suggest'
     | '/manage/region/events'
   fileRoutesByTo: FileRoutesByTo
@@ -459,6 +479,7 @@ export interface FileRouteTypes {
     | '/manage/region/home'
     | '/manage/region/profile'
     | '/manage/region/requests'
+    | '/manage/region/events/$id'
     | '/manage/region/events/suggest'
     | '/manage/region/events'
   id:
@@ -482,6 +503,7 @@ export interface FileRouteTypes {
     | '/manage/region/home'
     | '/manage/region/profile'
     | '/manage/region/requests'
+    | '/manage/region/events/$id'
     | '/manage/region/events/suggest'
     | '/manage/region/events/'
   fileRoutesById: FileRoutesById
@@ -556,6 +578,7 @@ export const routeTree = rootRoute
         "/manage/region/home",
         "/manage/region/profile",
         "/manage/region/requests",
+        "/manage/region/events/$id",
         "/manage/region/events/suggest",
         "/manage/region/events/"
       ]
@@ -615,6 +638,10 @@ export const routeTree = rootRoute
     },
     "/manage/region/requests": {
       "filePath": "manage/region/requests.tsx",
+      "parent": "/manage"
+    },
+    "/manage/region/events/$id": {
+      "filePath": "manage/region/events/$id.tsx",
       "parent": "/manage"
     },
     "/manage/region/events/suggest": {
