@@ -1,4 +1,5 @@
-import type { SchemaStatusEnum } from '../../../api/types'
+import type { SchemaEvent, SchemaStatusEnum } from '../../../api/types'
+import { $api } from '@/api'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -30,20 +31,10 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { useToast } from '@/components/ui/use-toast'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import Search from '~icons/lucide/search'
-
-interface SchemaEvent {
-  id: string
-  name: string
-  date: string
-  status: SchemaStatusEnum
-  status_comment?: string
-  organizer?: string
-  location?: string
-}
 
 export const Route = createFileRoute('/manage/admin/events')({
   component: RouteComponent,
@@ -56,16 +47,7 @@ function RouteComponent() {
   const [selectedStatus, setSelectedStatus] = useState<SchemaStatusEnum | null>(null)
   const { toast } = useToast()
 
-  const { data: events, isLoading } = useQuery<SchemaEvent[]>({
-    queryKey: ['events'],
-    queryFn: async () => {
-      const response = await fetch('/api/events/')
-      if (!response.ok)
-        throw new Error('Failed to fetch events')
-      const data = await response.json()
-      return Array.isArray(data) ? data : []
-    },
-  })
+  const { data: events, isLoading } = $api.useQuery('get', '/events/')
 
   const filteredEvents = useMemo(() => {
     if (!events)
@@ -75,9 +57,12 @@ function RouteComponent() {
         return false
 
       const matchesSearch = searchQuery === ''
-        || (event.name && event.name.toLowerCase().includes(searchQuery.toLowerCase()))
-        || (event.location && event.location.toLowerCase().includes(searchQuery.toLowerCase()))
-        || (event.organizer && event.organizer.toLowerCase().includes(searchQuery.toLowerCase()))
+        || (event.title && event.title.toLowerCase().includes(searchQuery.toLowerCase()))
+        || (event.location && event.location.some(loc =>
+          (loc.city && loc.city.toLowerCase().includes(searchQuery.toLowerCase()))
+          || (loc.region && loc.region.toLowerCase().includes(searchQuery.toLowerCase()))
+          || loc.country.toLowerCase().includes(searchQuery.toLowerCase()),
+        ))
 
       const matchesStatus = !selectedStatus || event.status === selectedStatus
 
@@ -85,31 +70,32 @@ function RouteComponent() {
     })
   }, [events, searchQuery, selectedStatus])
 
-  const accrediteMutation = useMutation({
-    mutationFn: async ({ id, status, comment }: { id: string, status: SchemaStatusEnum, comment?: string }) => {
-      const response = await fetch(`/api/events/${id}/accredite?status=${status}${comment ? `&status_comment=${encodeURIComponent(comment)}` : ''}`, {
-        method: 'POST',
-      })
-      if (!response.ok)
-        throw new Error('Failed to update event status')
-      return response.json()
+  const accrediteMutation = $api.useMutation(
+    'post',
+    '/events/{id}/accredite',
+    {
+      onSuccess: (data) => {
+        toast({
+          title: 'Статус обновлен',
+          description: 'Статус мероприятия успешно обновлен',
+        })
+        setStatusComment('')
+        queryClient.invalidateQueries({
+          queryKey: $api.queryOptions('get', '/events/').queryKey,
+        })
+        queryClient.invalidateQueries({
+          queryKey: $api.queryOptions('get', '/events/{id}', { params: { path: { id: data.id } } }).queryKey,
+        })
+      },
+      onError: (error: { detail?: { loc: (string | number)[], msg: string, type: string }[] }) => {
+        toast({
+          title: 'Ошибка',
+          description: `Не удалось обновить статус: ${error.detail?.[0]?.msg || 'Неизвестная ошибка'}`,
+          variant: 'destructive',
+        })
+      },
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['events'] })
-      toast({
-        title: 'Статус обновлен',
-        description: 'Статус мероприятия успешно обновлен',
-      })
-      setStatusComment('')
-    },
-    onError: (error) => {
-      toast({
-        title: 'Ошбка',
-        description: `Не удалось обновить статус: ${error.message}`,
-        variant: 'destructive',
-      })
-    },
-  })
+  )
 
   const getStatusBadgeVariant = (status: SchemaStatusEnum): 'default' | 'destructive' | 'secondary' | 'outline' => {
     switch (status) {
@@ -159,8 +145,8 @@ function RouteComponent() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {[...Array.from({ length: 5 })].map((_, index) => (
-                      <TableRow key={index}>
+                    {Array.from({ length: 5 }).map((_, index) => (
+                      <TableRow key={`loading-row-${index}`}>
                         <TableCell><div className="h-4 w-32 animate-pulse rounded bg-muted" /></TableCell>
                         <TableCell><div className="h-4 w-24 animate-pulse rounded bg-muted" /></TableCell>
                         <TableCell><div className="h-6 w-28 animate-pulse rounded bg-muted" /></TableCell>
@@ -220,11 +206,11 @@ function RouteComponent() {
                   {events?.map((event: SchemaEvent) => (
                     <CommandItem
                       key={event.id}
-                      value={event.name}
-                      onSelect={() => setSearchQuery(event.name)}
+                      value={event.title}
+                      onSelect={() => setSearchQuery(event.title)}
                       className="flex items-center"
                     >
-                      <span className="truncate">{event.name}</span>
+                      <span className="truncate">{event.title}</span>
                     </CommandItem>
                   ))}
                 </CommandGroup>
@@ -286,23 +272,35 @@ function RouteComponent() {
                 <TableBody>
                   {(filteredEvents || []).map((event: SchemaEvent) => (
                     <TableRow key={event.id}>
-                      <TableCell>{event.name || '-'}</TableCell>
-                      <TableCell>{event.date ? new Date(event.date).toLocaleDateString() : '-'}</TableCell>
+                      <TableCell>{event.title || '-'}</TableCell>
                       <TableCell>
-                        <Badge variant={getStatusBadgeVariant(event.status)}>
+                        {event.start_date ? new Date(event.start_date).toLocaleDateString() : '-'}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={getStatusBadgeVariant(event.status as SchemaStatusEnum)}>
                           {event.status === 'on_consideration'
                             ? 'На рассмотрении'
                             : event.status === 'accredited' ? 'Подтверждено' : 'Отклонено'}
                         </Badge>
                       </TableCell>
                       <TableCell>{event.status_comment || '-'}</TableCell>
-                      <TableCell>{event.organizer || '-'}</TableCell>
-                      <TableCell>{event.location || '-'}</TableCell>
+                      <TableCell>{event.host_federation || '-'}</TableCell>
+                      <TableCell>
+                        {event.location.map((loc, index) => (
+                          <span key={index}>
+                            {[
+                              loc.city,
+                              loc.region,
+                              loc.country,
+                            ].filter(Boolean).join(', ')}
+                          </span>
+                        )).reduce((prev, curr) => [prev, ', ', curr] as any, [])}
+                      </TableCell>
                       <TableCell>
                         <div className="space-y-2">
                           <div className="space-y-2">
                             <label className="text-sm font-medium">
-                              Комментарий к статус
+                              Комментарий к статусу
                             </label>
                             <Input
                               placeholder="Введите комментарий"
@@ -335,9 +333,13 @@ function RouteComponent() {
                                   <Button
                                     onClick={() => {
                                       accrediteMutation.mutate({
-                                        id: event.id,
-                                        status: 'accredited',
-                                        comment: statusComment,
+                                        params: {
+                                          path: { id: event.id },
+                                          query: {
+                                            status: 'accredited',
+                                            status_comment: statusComment,
+                                          },
+                                        },
                                       })
                                       document.querySelector('dialog')?.close()
                                     }}
@@ -373,9 +375,13 @@ function RouteComponent() {
                                     variant="destructive"
                                     onClick={() => {
                                       accrediteMutation.mutate({
-                                        id: event.id,
-                                        status: 'rejected',
-                                        comment: statusComment,
+                                        params: {
+                                          path: { id: event.id },
+                                          query: {
+                                            status: 'rejected',
+                                            status_comment: statusComment,
+                                          },
+                                        },
                                       })
                                       document.querySelector('dialog')?.close()
                                     }}

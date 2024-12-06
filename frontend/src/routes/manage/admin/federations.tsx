@@ -42,10 +42,12 @@ export const Route = createFileRoute('/manage/admin/federations')({
 
 function RouteComponent() {
   const queryClient = useQueryClient()
-  const [statusComment, setStatusComment] = useState<string>('')
+  const [statusComments, setStatusComments] = useState<Map<string, string>>(new Map())
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null)
   const [selectedStatus, setSelectedStatus] = useState<SchemaStatusEnum | null>(null)
+  const [openAccrediteDialogId, setOpenAccrediteDialogId] = useState<string | null>(null)
+  const [openRejectDialogId, setOpenRejectDialogId] = useState<string | null>(null)
   const { toast } = useToast()
 
   const { data: federations, isLoading } = $api.useQuery('get', '/federations/')
@@ -79,6 +81,10 @@ function RouteComponent() {
     })
   }, [federations, searchQuery, selectedDistrict, selectedStatus])
 
+  const updateStatusComment = (federationId: string, comment: string) => {
+    setStatusComments(prev => new Map(prev).set(federationId, comment))
+  }
+
   const { mutate: accrediteMutation } = $api.useMutation(
     'post',
     '/federations/{id}/accredite',
@@ -88,7 +94,11 @@ function RouteComponent() {
           title: 'Статус обновлен',
           description: 'Статус федерации успешно обновлен',
         })
-        setStatusComment('')
+        setStatusComments((prev) => {
+          const newMap = new Map(prev)
+          newMap.delete(data.id)
+          return newMap
+        })
         queryClient.invalidateQueries({
           queryKey: $api.queryOptions('get', '/federations/').queryKey,
         })
@@ -148,8 +158,8 @@ function RouteComponent() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {[...Array.from({ length: 5 })].map((_, index) => (
-                      <TableRow key={index}>
+                    {Array.from({ length: 5 }, (_, index) => `placeholder-${index}`).map(key => (
+                      <TableRow key={key}>
                         <TableCell><div className="h-4 w-32 animate-pulse rounded bg-muted" /></TableCell>
                         <TableCell><div className="h-4 w-24 animate-pulse rounded bg-muted" /></TableCell>
                         <TableCell><div className="h-6 w-28 animate-pulse rounded bg-muted" /></TableCell>
@@ -319,7 +329,13 @@ function RouteComponent() {
                             : federation.status === 'accredited' ? 'Аккредитована' : 'Отклонена'}
                         </Badge>
                       </TableCell>
-                      <TableCell>{federation.status_comment}</TableCell>
+                      <TableCell>
+                        <Input
+                          placeholder="Введите комментарий"
+                          value={statusComments.get(federation.id) || ''}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateStatusComment(federation.id, e.target.value)}
+                        />
+                      </TableCell>
                       <TableCell>{federation.head}</TableCell>
                       <TableCell>
                         <div className="space-y-1">
@@ -335,12 +351,15 @@ function RouteComponent() {
                             </label>
                             <Input
                               placeholder="Введите комментарий"
-                              value={statusComment}
-                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStatusComment(e.target.value)}
+                              value={statusComments.get(federation.id) || ''}
+                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateStatusComment(federation.id, e.target.value)}
                             />
                           </div>
                           <div className="flex gap-2">
-                            <Dialog>
+                            <Dialog
+                              open={openAccrediteDialogId === federation.id}
+                              onOpenChange={open => setOpenAccrediteDialogId(open ? federation.id : null)}
+                            >
                               <DialogTrigger asChild>
                                 <Button
                                   variant="default"
@@ -358,7 +377,7 @@ function RouteComponent() {
                                   </DialogDescription>
                                 </DialogHeader>
                                 <DialogFooter className="gap-2">
-                                  <Button variant="outline" onClick={() => document.querySelector('dialog')?.close()}>
+                                  <Button variant="outline" onClick={() => setOpenAccrediteDialogId(null)}>
                                     Отмена
                                   </Button>
                                   <Button
@@ -368,11 +387,11 @@ function RouteComponent() {
                                           path: { id: federation.id },
                                           query: {
                                             status: 'accredited',
-                                            status_comment: statusComment,
+                                            status_comment: statusComments.get(federation.id) || '',
                                           },
                                         },
                                       })
-                                      document.querySelector('dialog')?.close()
+                                      setOpenAccrediteDialogId(null)
                                     }}
                                   >
                                     Подтвердить
@@ -381,7 +400,10 @@ function RouteComponent() {
                               </DialogContent>
                             </Dialog>
 
-                            <Dialog>
+                            <Dialog
+                              open={openRejectDialogId === federation.id}
+                              onOpenChange={open => setOpenRejectDialogId(open ? federation.id : null)}
+                            >
                               <DialogTrigger asChild>
                                 <Button
                                   variant="destructive"
@@ -395,11 +417,11 @@ function RouteComponent() {
                                 <DialogHeader>
                                   <DialogTitle>Отклонение федерации</DialogTitle>
                                   <DialogDescription>
-                                    Вы уверены, что хоти��е отклонить эту федеацию?
+                                    Вы уверены, что хотите отклонить эту федерацию?
                                   </DialogDescription>
                                 </DialogHeader>
                                 <DialogFooter className="gap-2">
-                                  <Button variant="outline" onClick={() => document.querySelector('dialog')?.close()}>
+                                  <Button variant="outline" onClick={() => setOpenRejectDialogId(null)}>
                                     Отмена
                                   </Button>
                                   <Button
@@ -410,11 +432,11 @@ function RouteComponent() {
                                           path: { id: federation.id },
                                           query: {
                                             status: 'rejected',
-                                            status_comment: statusComment,
+                                            status_comment: statusComments.get(federation.id) || '',
                                           },
                                         },
                                       })
-                                      document.querySelector('dialog')?.close()
+                                      setOpenRejectDialogId(null)
                                     }}
                                   >
                                     Подтвердить
