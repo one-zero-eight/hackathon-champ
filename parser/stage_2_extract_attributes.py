@@ -57,7 +57,7 @@ if __name__ == "__main__":
                 "gender": _attributes_mapping["gender"],
                 "age_min": _attributes_mapping["age_min"],
                 "age_max": _attributes_mapping["age_max"],
-                "sport": _attributes_mapping["sport"],
+                # "sport": _attributes_mapping["sport"],
                 "discipline": _attributes_mapping["disciplines"],
                 "start_date": row["Начало"].strftime("%Y-%m-%d"),
                 "end_date": row["Конец"].strftime("%Y-%m-%d"),
