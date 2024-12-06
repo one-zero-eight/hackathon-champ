@@ -107,12 +107,10 @@ if __name__ == "__main__":
                         )
                         result.append(
                             {
-                                "region": region.find(
+                                "district": region.find(
                                     "div", {"class": "accordion-header"}
                                 ).text.strip(),
-                                "district": sub.find(
-                                    "p", {"class": "white_region"}
-                                ).text
+                                "region": sub.find("p", {"class": "white_region"}).text
                                 if sub.text != ""
                                 else None,
                                 "head": ruk if ruk != "" else None,

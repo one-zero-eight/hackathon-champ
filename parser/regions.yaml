@@ -1,0 +1,453 @@
+- district: г. Москва
+  region: null
+  head: Анашкин Евгений Юрьевич
+  email: fspmsk@mail.ru
+  logo: https://fsp-russia.com/upload/iblock/7b0/5n5imvtfzfn32tcqsdr2ce5adv7z73qv.jpg
+  phone: '+79268454512'
+  site: https://fsp.moscow
+  address: г. Москва, ул. Сходненская, д.56
+- district: Центральный федеральный округ
+  region: Белгородская область
+  head: null
+  email: belgorod@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/90a/zdd6rs7puopkzzq3tng1o2mu8vzxir4y.jpg
+- district: Центральный федеральный округ
+  region: Брянская область
+  head: Казаков Олег Дмитриевич
+  email: bryansk@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/818/8e7wp6rwysn3cix42blhcypyul1r78kd.jpg
+- district: Центральный федеральный округ
+  region: Владимирская область
+  head: Лисова Анастасия Андреевна
+  email: vladimir@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/a99/1c7rnluv1hd0l8vt5zxkccrs4kt33wyj.jpg
+- district: Центральный федеральный округ
+  region: Воронежская область
+  head: Ульянов Владимир
+  email: voronezh@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/010/77pl2zd2p1268s9k9quh1i66140ojdyl.jpg
+- district: Центральный федеральный округ
+  region: Ивановская область
+  head: Уралов Сергей Дмитриевич
+  email: lvanovo@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/3ab/izz9pc2hucrsl11sf4ach6d0p9zahqj1.jpg
+- district: Центральный федеральный округ
+  region: Калужская область
+  head: Колесников Алексей
+  email: kaluga@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/72d/xbtciyatn40joev77bpjk0a22k5ifs67.jpg
+- district: Центральный федеральный округ
+  region: Костромская область
+  head: Диденко Дмитрий Николаевич
+  email: kostroma@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/117/wvcm4npgo9nx3op6ywxo943abgwar8ze.jpg
+- district: Центральный федеральный округ
+  region: Курская область
+  head: Журавлев Владимир Борисович
+  email: kursk@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/813/dt1qtj0mhez75bkd37cgda5a9tb9b5m8.jpg
+- district: Центральный федеральный округ
+  region: Липецкая область
+  head: Даниил Сапронов
+  email: lipetsk@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/7a1/f75k17emdbojn6n94lrpadyak9pso032.jpg
+- district: Центральный федеральный округ
+  region: Московская область
+  head: Анашкин Евгений Юрьевич
+  email: moscow-obl@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/ed1/g6n33a11szyzcp9slgpqewrgbafl8ds3.jpg
+- district: Центральный федеральный округ
+  region: Орловская область
+  head: Семкин Александр Николаевич
+  email: oryol@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/b59/07j0o8wrfg4nh8i5wiyncz5p8qw98q0m.jpg
+- district: Центральный федеральный округ
+  region: Рязанская область
+  head: Халамцева Евгения Милмировна
+  email: ryazan@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/ce3/6przwt0ypcar93ma7rtv9hy8xov56out.jpg
+- district: Центральный федеральный округ
+  region: Смоленская область
+  head: Образцов Сергей Александрович
+  email: smolensk@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/b1d/6zvtdehidc4gww1i0kd4gmuiysuow7n6.jpg
+- district: Центральный федеральный округ
+  region: Тамбовская область
+  head: null
+  email: tambov@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/a0d/r028mo90uqrcipec1tkr922yx513reue.jpg
+- district: Центральный федеральный округ
+  region: Тверская область
+  head: Пожидаев Петр Вячеславович
+  email: tver@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/176/6ddp6ck2yzara0ytqwrub1k5wh17poy8.jpg
+- district: Центральный федеральный округ
+  region: Тульская область
+  head: Сычугов Алексей Алексеевич
+  email: tula@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/8a2/gvyqx5ib4z474ykva3klyse3idjqlzys.jpg
+- district: Центральный федеральный округ
+  region: Ярославская область
+  head: Чалый Дмитрий Юрьевич
+  email: yaroslavl@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/454/ivnf4abzdjz2mqg22y118ianrhu0dlo3.jpg
+- district: Южный федеральный округ
+  region: Республика Адыгея
+  head: Алиев Марат Вячеславович
+  email: adygea@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/18f/0jgklfvu5hyukggqrinirihnyat97rwb.jpg
+- district: Южный федеральный округ
+  region: Республика Калмыкия
+  head: Муниев Аркадий Михайлович
+  email: kalmykia@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/0da/yocsbyxohcgsvwz3qbctpr69ibkemvoa.jpg
+- district: Южный федеральный округ
+  region: Краснодарский край
+  head: Алферов Сергей Сергеевич
+  email: krasnodar@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/820/mcqxi2s5h1dbb1e96r701mbjluzpifs8.jpg
+- district: Южный федеральный округ
+  region: Астраханская область
+  head: Асадуллина Юлия Альбертовна
+  email: astrakhan@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/71b/7720gkmxx1k3o36non3b2tck83o3didi.jpg
+- district: Южный федеральный округ
+  region: Волгоградская область
+  head: Попова Елена Владимировна
+  email: volgograd@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/ef0/a4j4cwsj1xerjf3z6938plgpo44115cb.jpg
+- district: Южный федеральный округ
+  region: Ростовская область
+  head: Савва Станислав Анатольевич
+  email: rostov@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/759/61glsmminfhyerkpfrxtfyzk07yrh51r.jpg
+- district: Южный федеральный округ
+  region: город Севастополь
+  head: Царенко Михаил Геннадьевич
+  email: sevastopol@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/892/dijsncgdz5se0xxhu0ozme0x4ghlwomq.jpg
+- district: Южный федеральный округ
+  region: Республика Крым
+  head: "Зырянов Сергей Геннадиевич\t"
+  email: crimea@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/d8f/5a4i80y0t86pa8rwt3c8pfddk7seskgi.jpg
+- district: Северо-западный федеральный округ
+  region: Республика Карелия
+  head: Каширин Александр Алексеевич
+  email: karelia@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/4e2/23qgas5621kvuw3li7n9kihqlk8bxpqc.jpg
+- district: Северо-западный федеральный округ
+  region: Республика Коми
+  head: Некрасов Александр Николаевич
+  email: komi@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/b73/02dee6q1u6vg604a1njjovyom7zhh4o4.jpg
+- district: Северо-западный федеральный округ
+  region: Архангельская область
+  head: Алексей Алескандрович Лисьев
+  email: arkhangelsk@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/23c/j8pq20g2g6g0da73djdy7f52vf8nqw69.jpg
+- district: Северо-западный федеральный округ
+  region: Калининградская область
+  head: Дубинин Иван Витальевич
+  email: info@fsp-kaliningrad.ru
+  logo: https://fsp-russia.com/upload/iblock/787/9xxtt1brhrcrznjdvva1yiedgvwxxyyo.jpg
+- district: Северо-западный федеральный округ
+  region: Ленинградская область
+  head: Корф Виктор Сергеевич
+  email: leningrad@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/bec/xcapgnwi1w2l9uf9nwfji1o7f9wr8blu.jpg
+- district: Северо-западный федеральный округ
+  region: Мурманская область
+  head: Шляпников Денис Игоревич
+  email: murmansk@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/71a/ntlibcnwm53vxreyadwbyg5h0z0cakgo.jpg
+- district: Северо-западный федеральный округ
+  region: Новгородская область
+  head: Богданов Михаил Михайлович
+  email: novgorod@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/30a/6uhkt0rwlcoo3dzlh3xtgimy3c1cxvo6.jpg
+- district: Северо-западный федеральный округ
+  region: Псковская область
+  head: Степаненков Марк Валерьевич
+  email: pskov@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/c66/215ud67l0q5f5ipdwhgrunobi3u16zgk.jpg
+- district: Северо-западный федеральный округ
+  region: Ненецкий автономный округ
+  head: Демчик Ирина Игоревна
+  email: nenets@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/4f8/ft0vr54jb2dtr4oh5ury6o4il5hmmzlo.jpg
+- district: Северо-западный федеральный округ
+  region: Вологодская область
+  head: Мельников Олег Николаевич
+  email: vologda@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/57a/jndiv9yx8odi8hp93qbi88gzngqvf5vx.jpg
+- district: Северо-западный федеральный округ
+  region: г. Санкт Петербург
+  head: Кувиков Денис
+  email: saint-petersburg@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/635/fgefa46p3zl1hztcx5i14t9f02oq50tt.jpg
+- district: Дальневосточный федеральный округ
+  region: Республика Саха-Якутия
+  head: Николаев Николай Борисович
+  email: sakha@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/ef1/z2dxw8rl2z4wb7iufro5n4uviokrbx1a.jpg
+- district: Дальневосточный федеральный округ
+  region: Камчатский край
+  head: Дресвянский Владимир Сергеевич
+  email: kamchatka@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/a14/qcmt7xapkn6o9cvkp30725bzwr455mvx.jpg
+- district: Дальневосточный федеральный округ
+  region: Приморский край
+  head: Снитко Владимир Алексеевич
+  email: primorsky@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/4d9/f808pi0klhm1bxkxvmwktlxcagkpi3nz.jpg
+- district: Дальневосточный федеральный округ
+  region: Хабаровский край
+  head: Бородинов Николай Александрович
+  email: khabarovsk@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/ed2/s4ee1n5jroyiu6kbotw1aw3d37lg62nq.jpg
+- district: Дальневосточный федеральный округ
+  region: Амурская область
+  head: Попов Руслан Игоревич
+  email: amur@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/b70/6gv2x61g21ldww192x8y3xn9qyuhsgs7.jpg
+- district: Дальневосточный федеральный округ
+  region: Магаданская область
+  head: Бережной Антон Константинович
+  email: magadan@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/11e/3513yn2otclb02fn8ap77wx8sledoh8k.jpg
+- district: Дальневосточный федеральный округ
+  region: Республика Бурятия
+  head: Пьянников Владимир Сергеевич
+  email: buryatia@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/c54/29svg226207h8yar0e3nn0zcq4i973r3.jpg
+- district: Дальневосточный федеральный округ
+  region: Забайкальский край
+  head: Метельский Тарас Леонидович
+  email: zabaykalsky@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/db5/kw3k1hjlcwk9jt32swi6fwelr7ka2lhu.jpg
+- district: Дальневосточный федеральный округ
+  region: Сахалинская область
+  head: Соболев Евгений Игоревич
+  email: sakhalin@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/01a/cfnrjosbelh201wnkpd9r17tp0ycrcma.jpg
+- district: Дальневосточный федеральный округ
+  region: Еврейский АО
+  head: Пешков Григорий Сергеевич
+  email: jewish@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/db6/vsty7gls7vdhdfrtiifsc5m4blhvelyh.jpg
+- district: Дальневосточный федеральный округ
+  region: Чукотский АО
+  head: Косов Георгий Александрович
+  email: chukotka@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/6c3/31aj96q7csh4vgz6wg1el5q4cvqknmxp.jpg
+- district: Сибирский федеральный округ
+  region: Республика Алтай
+  head: Шило Светлана Анатольевна
+  email: altai@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/be3/d5ebrd2f329rzjftihgf2z3et70hlbvm.jpg
+- district: Сибирский федеральный округ
+  region: Республика Тыва
+  head: Оюн Субудай Викторович
+  email: tuva@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/e21/bje5xj1bkj84mj1n18kr5voxzmwr1zhb.jpg
+- district: Сибирский федеральный округ
+  region: Республика Хакасия
+  head: "Шпигальский Денис Олегович\t"
+  email: khakassia@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/879/htyeaem5o3qs4u93jh1o6qg1iz3af54o.jpg
+- district: Сибирский федеральный округ
+  region: Алтайский край
+  head: Егораев Алексей Анатольевич
+  email: altai-k@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/822/pm0b2uz13r5nfjantzana1r3j0e36n8i.jpg
+- district: Сибирский федеральный округ
+  region: Красноярский край
+  head: Капулин Денис Владимирович
+  email: krasnoyarsk@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/98c/8vgrq2qqftck3uqgryscx1x0uib9a8fc.jpg
+- district: Сибирский федеральный округ
+  region: Иркутская область
+  head: Ищенко Роман
+  email: irkutsk@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/a85/wu1uqone2s27759afdp2j3agd0kexwb1.jpg
+- district: Сибирский федеральный округ
+  region: Кемеровская область - Кузбасс
+  head: Попов Александр Сергеевич
+  email: kuzbass@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/27e/j53vmqf2wajy1vg71doajogw4zjalr6x.jpg
+- district: Сибирский федеральный округ
+  region: Новосибирская область
+  head: Данилов Максим Олегович
+  email: novosiblrsk@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/c7c/5wv1fvut6fpyfwe8gocsrmvonb4i7u7l.jpg
+- district: Сибирский федеральный округ
+  region: Омская область
+  head: Иванищев Юрий Ильич
+  email: omsk@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/ffd/bkwcs7df10mjam1qm0g5aucrekjpmdfx.jpg
+- district: Сибирский федеральный округ
+  region: Томская область
+  head: Буинцев Дмитрий Николаевич
+  email: tomsk@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/3bb/kee5mhggd0p3ssmr6e25mf4ltjyub2f0.jpg
+- district: Уральский федеральный округ
+  region: Курганская область
+  head: Белоусов Михаил Александрович
+  email: kurgan@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/53a/4846rggi947ybs85yli64oyvmd1105qp.jpg
+- district: Уральский федеральный округ
+  region: Свердловская область
+  head: Обабков Илья Николаевич
+  email: sverdlovsk@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/24d/fz65lydsdlmifn2aa7von0aiwjnsqzu1.jpg
+- district: Уральский федеральный округ
+  region: Тюменская область
+  head: Сенкевич Людмила Борисовна
+  email: tyumen@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/b74/c5vh3pnyt8t579kl9apx33zv03a7dmjj.jpg
+- district: Уральский федеральный округ
+  region: Челябинская область
+  head: Нечет Сергей Геннадьевич
+  email: chelyablnsk@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/7de/p9sy48aw41v26i1v8twrjxwzmw6863jx.jpg
+- district: Уральский федеральный округ
+  region: Ханты-Мансийский автономный округ – Югра
+  head: Давлетшин Родион Айратович
+  email: hmao@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/f54/asnvytrv8f5r6v3jbydw17etbujt4ewb.jpg
+- district: Уральский федеральный округ
+  region: Ямало-Ненецкий АО
+  head: Гашимова Лариса Павловна
+  email: yamalo-nenets@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/1df/zyw6zhf7hw2p985n6jqsgx3kuahnfztu.jpg
+- district: Приволжский федеральный округ
+  region: Республика Башкортостан
+  head: Юлия Валиахметова
+  email: bashkortostan@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/1f9/b8iftevmxqil4dlcm62497jf6usz3mr1.jpg
+- district: Приволжский федеральный округ
+  region: Республика Марий Эл
+  head: Куликова Екатерина Ивановна
+  email: mari-ei@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/6c7/7d7t0c5g477xds7nen0vvgl8v0p5wipn.jpg
+- district: Приволжский федеральный округ
+  region: Республика Мордовия
+  head: Бекшаев Дмитрий Александрович
+  email: mordovia@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/9b0/mu6qd5jkr44lvhj9gchl2valy5bp38br.jpg
+- district: Приволжский федеральный округ
+  region: Республика Татарстан
+  head: Серочудинов Евгений Сергеевич
+  email: fsprt@inbox.ru
+  logo: https://fsp-russia.com/upload/iblock/723/oyrasmt0ad973vrlux489t8yiqyg1djz.jpg
+  address: Республика Татарстан, Верхнеуслонский район, г. Иннополис, ул. Университетская,
+    д.1
+  phone: +78432039253 (доб. 7788)
+  telegram: https://t.me/s/fsp_RT
+- district: Приволжский федеральный округ
+  region: Удмуртская Республика
+  head: Пигалев Сергей Александрович
+  email: udmurtia@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/bad/ysn9b59bwp8njnww9tjen7r2nzpytbgo.jpg
+- district: Приволжский федеральный округ
+  region: Чувашская Республика
+  head: Набиев Александр Эльдарович
+  email: fspchuv@mail.ru
+  logo: https://fsp-russia.com/upload/iblock/b2c/i2xdpi4m2drccjnu9v24vmqf80rnty88.jpg
+- district: Приволжский федеральный округ
+  region: Кировская область
+  head: Кокарев Дмитрий Михайлович
+  email: kirov@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/174/fvnx0cq47qrlsw0ez3tubeakl466tw7x.jpg
+- district: Приволжский федеральный округ
+  region: Нижегородская область
+  head: Небольсин Михаил Юрьевич
+  email: nizhny-novgorod@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/a95/u2xh21nx8xjcnaukcjzy6lab0s58e7t2.jpg
+- district: Приволжский федеральный округ
+  region: Оренбургская область
+  head: Вечеренко Дмитрий Сергеевич
+  email: orenburg@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/109/bnini3enbob0k84wiibqgtsnw1yyfx8n.jpg
+- district: Приволжский федеральный округ
+  region: Пензенская область
+  head: Строителева Алина Андреевна
+  email: penza@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/c31/oepriibdn4mwosj8w09zssziopov09ca.jpg
+- district: Приволжский федеральный округ
+  region: Пермский край
+  head: Ягофаров Оскар Фаитович
+  email: perm@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/cb9/7qx2ijea0e8sc5g8d6wepl9aytk3c4qt.jpg
+- district: Приволжский федеральный округ
+  region: Самарская область
+  head: Бабенко Михаил Владимирович
+  email: samara@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/8f2/emw9yyesaqvoiijt8z8702ye6tjfvkig.jpg
+- district: Приволжский федеральный округ
+  region: Саратовская область
+  head: Федорова Антонина Гавриловна
+  email: saratov@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/c49/2myab7t585flzrt9mpnwmfpawu57gx74.jpg
+- district: Приволжский федеральный округ
+  region: Ульяновская область
+  head: Павлов Вадим Вячеславович
+  email: ulyanovsk@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/1de/m3etwidocqnhhiz3cl17i68o578763eh.jpg
+- district: Северо-Кавказский федеральный округ
+  region: Республика Дагестан
+  head: Абдулаев Магомед Магомедгаджиевич
+  email: Fsprd@mail.ru
+  logo: https://fsp-russia.com/upload/iblock/d52/tzl13k7kd06kmv318xx60ju533v0rdz5.jpg
+- district: Северо-Кавказский федеральный округ
+  region: Республика Ингушетия
+  head: Найденко Роман Анатольевич
+  email: lngushetia@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/deb/2san37ozd2fvt77msovho39ceep399b2.jpg
+- district: Северо-Кавказский федеральный округ
+  region: Кабардино-Балкарская Республика
+  head: Тюбеев Мурат Абдуллахович
+  email: kabardino-balkaria@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/8dc/sc4x0hjgyeddcdphm8p7epwmdu41ug88.jpg
+- district: Северо-Кавказский федеральный округ
+  region: Карачаево-Черкесская Республика
+  head: Андропов Константин Сергеевич
+  email: karachay-cherkessia@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/29f/24cy7il3hdkv6jxwiw6opovqb7lsa9xm.jpg
+- district: Северо-Кавказский федеральный округ
+  region: Республика Северная Осетия - Алания
+  head: Нартиков Александр Георгиевич
+  email: ossetia-alania@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/d4a/iwxdq9zsybtbl25qmq0o8pp4xgyjwtp1.jpg
+- district: Северо-Кавказский федеральный округ
+  region: Ставропольский край
+  head: Пижевский Дмитрий Евгеньевич
+  email: stavropol@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/de6/hsaz5w09zoycm2wt27p1p35ex315c8cf.jpg
+- district: Северо-Кавказский федеральный округ
+  region: Чеченская Республика
+  head: Саидов Зубайр Ахмедович
+  email: chechnya@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/bd2/fl839rfcspmfktt7zi5k246862xta7an.jpg
+- district: Новые регионы
+  region: Донецкая Народная Республика
+  head: Станков Игорь Валентинович
+  email: fsp-dnr@mail.ru
+  logo: https://fsp-russia.com/upload/iblock/7bd/h5wievsauq2wywbz428cw4hjn9zf84bj.jpg
+- district: Новые регионы
+  region: Луганская Народная Республика
+  head: Мальцева-Светличная Ольга Валерьевна
+  email: fsp_lnr@mail.ru
+  site: www.fsp-lnr.ru
+  logo: https://fsp-russia.com/upload/iblock/584/yawii7yzdof959n9lef7oe99ud5g6qow.jpg
+- district: Новые регионы
+  region: Запорожская область
+  head: Букреев Дмитрий
+  email: directum@fsp-zo.ru
+  logo: https://fsp-russia.com/upload/iblock/043/56ww5rnxbpczl4fgsr51vl31oqw9r8of.jpg
+- district: Новые регионы
+  region: Херсонская область
+  head: null
+  email: kherson@fsp-russia.com
+  logo: https://fsp-russia.com/upload/iblock/9d4/amc3vbsl5i82sx7labf4j6healv3f9ku.jpg
