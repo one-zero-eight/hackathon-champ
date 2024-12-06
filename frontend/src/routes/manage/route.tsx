@@ -3,6 +3,7 @@ import { NavLink } from '@/components/NavLink'
 import { Separator } from '@/components/ui/separator.tsx'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import Award from '~icons/lucide/award'
+import BarChart from '~icons/lucide/bar-chart-2'
 import Home from '~icons/lucide/home'
 import MessageSquare from '~icons/lucide/message-square'
 import User from '~icons/lucide/user'
@@ -53,6 +54,9 @@ function AdminNav() {
         </NavLink>
         <NavLink to="/manage/events/all" icon={Award}>
           Мероприятия
+        </NavLink>
+        <NavLink to="/manage/analytics" icon={BarChart}>
+          Аналитика
         </NavLink>
       </nav>
     </>
