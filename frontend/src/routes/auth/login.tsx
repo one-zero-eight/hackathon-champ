@@ -45,6 +45,8 @@ function RouteComponent() {
     onSuccess: () => window.location.assign(redirectTo || '/'),
   })
 
+  console.log(errorLogin)
+
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
 
@@ -72,8 +74,8 @@ function RouteComponent() {
           placeholder="Пароль"
           type="password"
         />
-        {errorLogin && <div>{errorLogin.toString()}</div>}
-        {errorRegister && <div>{errorRegister.toString()}</div>}
+        {errorLogin && <div>{(errorLogin.detail || errorLogin).toString()}</div>}
+        {errorRegister && <div>{(errorRegister.detail || errorRegister).toString()}</div>}
         <Button type="submit">
           {register ? 'Зарегистрироваться' : 'Войти'}
           {(isPendingLogin || isPendingRegister) && (
