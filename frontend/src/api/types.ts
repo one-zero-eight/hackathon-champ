@@ -44,6 +44,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/users/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Login By Credentials
+         * @description Login using credentials
+         */
+        post: operations["users_login_by_credentials"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Logout
+         * @description Logout (clear session)
+         */
+        post: operations["users_logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/users/create": {
         parameters: {
             query?: never;
@@ -102,46 +142,6 @@ export interface paths {
          * @description Update user info
          */
         post: operations["users_update_user"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/login": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Login By Credentials
-         * @description Login using credentials
-         */
-        post: operations["users_login_by_credentials"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/logout": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Logout
-         * @description Logout (clear session)
-         */
-        post: operations["users_logout"];
         delete?: never;
         options?: never;
         head?: never;
@@ -412,6 +412,50 @@ export interface paths {
          * @description Accredit federation.
          */
         post: operations["federations_accredite_federation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/feedback/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get All Feedback
+         * @description Get info about all feedback.
+         */
+        get: operations["feedback_get_all_feedback"];
+        put?: never;
+        /**
+         * Create Feedback
+         * @description Create one feedback.
+         */
+        post: operations["feedback_create_feedback"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/feedback/federations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get All Feedback For Federation
+         * @description Get info about all feedback for federation.
+         */
+        get: operations["feedback_get_all_feedback_for_federation"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -766,6 +810,60 @@ export interface components {
              */
             logo?: string | null;
         };
+        /** Feedback */
+        Feedback: {
+            /**
+             * Id
+             * Format: objectid
+             * @description MongoDB document ObjectID
+             * @default None
+             * @example 5eb7cf5a86d9755df3a6c593
+             */
+            id: string;
+            /**
+             * Subject
+             * @description Тема сообщения
+             */
+            subject: string;
+            /**
+             * Text
+             * @description Текст сообщения
+             */
+            text: string;
+            /**
+             * Email
+             * @description Email пользователя, если он хочет получить ответ на свой вопрос
+             */
+            email: string | null;
+            /**
+             * Federation
+             * @description ID федерации, если сообщение направлено к федерации
+             */
+            federation: string | null;
+        };
+        /** FeedbackSchema */
+        FeedbackSchema: {
+            /**
+             * Subject
+             * @description Тема сообщения
+             */
+            subject: string;
+            /**
+             * Text
+             * @description Текст сообщения
+             */
+            text: string;
+            /**
+             * Email
+             * @description Email пользователя, если он хочет получить ответ на свой вопрос
+             */
+            email?: string | null;
+            /**
+             * Federation
+             * @description ID федерации, если сообщение направлено к федерации
+             */
+            federation?: string | null;
+        };
         /**
          * Filters
          * @description Список фильтров, которые применяются через И
@@ -930,6 +1028,8 @@ export type SchemaEventOutput = components['schemas']['Event-Output'];
 export type SchemaEventLocation = components['schemas']['EventLocation'];
 export type SchemaFederation = components['schemas']['Federation'];
 export type SchemaFederationSchema = components['schemas']['FederationSchema'];
+export type SchemaFeedback = components['schemas']['Feedback'];
+export type SchemaFeedbackSchema = components['schemas']['FeedbackSchema'];
 export type SchemaFilters = components['schemas']['Filters'];
 export type SchemaGender = components['schemas']['Gender'];
 export type SchemaHttpValidationError = components['schemas']['HTTPValidationError'];
@@ -997,12 +1097,37 @@ export interface operations {
                     "application/json": unknown;
                 };
             };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
+            /** @description Validation Error */
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    users_login_by_credentials: {
+        parameters: {
+            query: {
+                login: string;
+                password: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successfully logged in (session updated) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
             };
             /** @description Validation Error */
             422: {
@@ -1011,6 +1136,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    users_logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successfully logged out (session cleared) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
         };
@@ -1036,13 +1181,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ViewUser"];
                 };
-            };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
             /** @description Only admin can create users */
             403: {
@@ -1080,13 +1218,6 @@ export interface operations {
                     "application/json": components["schemas"]["ViewUser"][];
                 };
             };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
             /** @description Only admin can get users */
             403: {
                 headers: {
@@ -1115,13 +1246,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ViewUser"];
                 };
-            };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
             /** @description Only admin can get users */
             403: {
@@ -1165,13 +1289,6 @@ export interface operations {
                     "application/json": components["schemas"]["ViewUser"];
                 };
             };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
             /** @description Only admin can update users */
             403: {
                 headers: {
@@ -1197,72 +1314,6 @@ export interface operations {
             };
         };
     };
-    users_login_by_credentials: {
-        parameters: {
-            query: {
-                login: string;
-                password: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successfully logged in (session updated) */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    users_logout: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successfully logged out (session cleared) */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     events_get_random_event: {
         parameters: {
             query?: never;
@@ -1280,13 +1331,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Event-Output"];
                 };
-            };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };
@@ -1307,13 +1351,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Event-Output"][];
                 };
-            };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };
@@ -1339,8 +1376,8 @@ export interface operations {
                     "application/json": boolean;
                 };
             };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
+            /** @description Only admin can create events */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1376,13 +1413,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Event-Output"];
                 };
-            };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
             /** @description Event not found */
             404: {
@@ -1424,13 +1454,6 @@ export interface operations {
                     "application/json": components["schemas"]["SearchEventsResponse"];
                 };
             };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
             /** @description Validation Error */
             422: {
                 headers: {
@@ -1463,13 +1486,6 @@ export interface operations {
                 content: {
                     "application/json": number;
                 };
-            };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
             /** @description Validation Error */
             422: {
@@ -1506,13 +1522,6 @@ export interface operations {
                     };
                 };
             };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
             /** @description Validation Error */
             422: {
                 headers: {
@@ -1542,13 +1551,6 @@ export interface operations {
                     "application/json": components["schemas"]["LocationsFilterVariants"][];
                 };
             };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
         };
     };
     events_get_all_filters_disciplines: {
@@ -1566,15 +1568,8 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["DisciplinesFilterVariants"][];
+                    "application/json": components["schemas"]["DisciplinesFilterVariants"];
                 };
-            };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };
@@ -1599,13 +1594,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Selection"];
                 };
-            };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
             /** @description Validation Error */
             422: {
@@ -1638,13 +1626,6 @@ export interface operations {
                     "application/json": components["schemas"]["Selection"];
                 };
             };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
             /** @description Selection not found */
             404: {
                 headers: {
@@ -1676,13 +1657,6 @@ export interface operations {
         responses: {
             /** @description Get selection in .ics format */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1724,13 +1698,6 @@ export interface operations {
                     "application/json": components["schemas"]["Federation"][];
                 };
             };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
         };
     };
     federations_create_federation: {
@@ -1754,13 +1721,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Federation"];
                 };
-            };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
             /** @description Validation Error */
             422: {
@@ -1792,13 +1752,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Federation"];
                 };
-            };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
             /** @description Federation not found */
             404: {
@@ -1842,13 +1795,6 @@ export interface operations {
                     "application/json": components["schemas"]["Federation"];
                 };
             };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
             /** @description Only admin or federation owner can update federation */
             403: {
                 headers: {
@@ -1890,13 +1836,6 @@ export interface operations {
                     "application/json": components["schemas"]["Federation"];
                 };
             };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
             /** @description Only admin can accredit federation */
             403: {
                 headers: {
@@ -1906,6 +1845,104 @@ export interface operations {
             };
             /** @description Federation not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    feedback_get_all_feedback: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Info about all feedback */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Feedback"][];
+                };
+            };
+            /** @description Only admin can get feedback */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    feedback_create_feedback: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FeedbackSchema"];
+            };
+        };
+        responses: {
+            /** @description Feedback created */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Feedback"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    feedback_get_all_feedback_for_federation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Info about all feedback for federation */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Feedback"][];
+                };
+            };
+            /** @description Only admin and related federation can get feedback */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

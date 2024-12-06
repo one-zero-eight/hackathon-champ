@@ -1,5 +1,6 @@
 import type { Filters } from '@/lib/types'
 import type { FilterBaseProps } from './common'
+import { $api } from '@/api'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -26,15 +27,12 @@ export function DisciplineFilter(props: FilterBaseProps<Filters['discipline']>) 
 
   const value = useMemo(() => valueRaw ?? [], [valueRaw])
 
-  // TODO: Query disciplines from backend.
-  // const { data: _data } = $api.useQuery('get', '/events/search/filters/disciplines')
-  const _data = [
-    'Продуктовое программирование',
-    'Алгоритмическое программирование',
-    'Программирование систем информационной безопасности',
-    'Робототехника',
-  ]
-  const data = _data as undefined | string[]
+  const { data } = $api.useQuery('get', '/events/search/filters/disciplines')
+  const all = useMemo(() => {
+    if (!data)
+      return []
+    return data.disciplines
+  }, [data])
 
   const [open, setOpen] = useState(false)
   const [q, setQ] = useState('')
@@ -43,7 +41,7 @@ export function DisciplineFilter(props: FilterBaseProps<Filters['discipline']>) 
     () => {
       setQDeb(q)
     },
-    500,
+    150,
     [q, setQDeb],
   )
 
@@ -53,8 +51,6 @@ export function DisciplineFilter(props: FilterBaseProps<Filters['discipline']>) 
       setQDeb('')
     }
   }, [open])
-
-  const all = useMemo(() => data ?? [], [data])
 
   const filtered = all.filter(x => x.toLowerCase().includes(qDeb.trim().toLowerCase()))
 
