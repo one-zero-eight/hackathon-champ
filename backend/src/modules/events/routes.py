@@ -68,7 +68,7 @@ async def create_many_events(events: list[EventSchema], auth: USER_AUTH) -> bool
     Create multiple events.
     """
     user = await user_repository.read(auth.user_id)
-
+    print(user)
     if user.role != UserRole.ADMIN:
         return await events_repository.create_many(events)
     else:
