@@ -72,7 +72,7 @@ export function TopBar() {
           )}
           {me?.federation && (
             <>
-              <div className="text-lg">{myFederation?.region}</div>
+              <div className="text-sm">{myFederation?.region}</div>
               <Button asChild variant="link">
                 <Link
                   to="/manage/regional"
