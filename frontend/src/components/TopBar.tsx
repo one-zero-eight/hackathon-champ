@@ -52,12 +52,22 @@ export function TopBar() {
               to="/search"
               activeProps={{ className: 'underline' }}
             >
-              Поиск
+              Мероприятия
             </Link>
           </Button>
         </div>
 
         <div className="flex items-center gap-2">
+          {(me?.role === 'admin' || me?.federation) && (
+            <Button asChild variant="link">
+              <Link
+                to="/manage"
+                activeProps={{ className: 'underline' }}
+              >
+                Панель управления
+              </Link>
+            </Button>
+          )}
           {!me && (
             <Button asChild variant="link">
               <Link
@@ -65,29 +75,6 @@ export function TopBar() {
                 activeProps={{ className: 'underline' }}
               >
                 Войти
-              </Link>
-            </Button>
-          )}
-          {me?.federation && (
-            <>
-              <div className="text-sm">{myFederation?.region}</div>
-              <Button asChild variant="link">
-                <Link
-                  to="/manage/regional"
-                  activeProps={{ className: 'underline' }}
-                >
-                  Управление федерацией
-                </Link>
-              </Button>
-            </>
-          )}
-          {me?.role === 'admin' && (
-            <Button asChild variant="link">
-              <Link
-                to="/manage/admin"
-                activeProps={{ className: 'underline' }}
-              >
-                Панель администратора
               </Link>
             </Button>
           )}

@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/manage/admin')({
+export const Route = createFileRoute('/manage/region/events')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  return <div>Hello "/manage/admin"!</div>
+  return <div>Hello!</div>
 }

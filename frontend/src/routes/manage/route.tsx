@@ -44,7 +44,7 @@ function AdminNav() {
       <nav className="flex flex-col p-2">
         <Button asChild variant="link" className="mb-1 justify-start">
           <Link
-            to="/manage/admin"
+            to="/manage/admin/home"
             className="relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-[15px] font-medium underline-offset-4"
             activeProps={{
               className: 'underline',
@@ -74,7 +74,7 @@ function FederationNav() {
       <nav className="flex flex-col p-2">
         <Button asChild variant="link" className="mb-1 justify-start">
           <Link
-            to="/manage/regional"
+            to="/manage/region/home"
             className="relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-[15px] font-medium underline-offset-4"
             activeProps={{
               className: 'underline',
@@ -87,7 +87,7 @@ function FederationNav() {
 
         <Button asChild variant="link" className="mb-1 justify-start">
           <Link
-            to="/manage/events"
+            to="/manage/region/events"
             className="relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-[15px] font-medium underline-offset-4"
             activeProps={{
               className: 'underline',
@@ -100,7 +100,7 @@ function FederationNav() {
 
         <Button asChild variant="link" className="mb-1 justify-start">
           <Link
-            to="/manage/requests"
+            to="/manage/region/requests"
             className="relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-[15px] font-medium underline-offset-4"
             activeProps={{
               className: 'underline',
@@ -113,7 +113,7 @@ function FederationNav() {
 
         <Button asChild variant="link" className="mb-1 justify-start">
           <Link
-            to="/manage/feedback"
+            to="/manage/region/feedback"
             className="relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-[15px] font-medium underline-offset-4"
             activeProps={{
               className: 'underline',
@@ -126,7 +126,7 @@ function FederationNav() {
 
         <Button asChild variant="link" className="mb-1 justify-start">
           <Link
-            to="/manage/profile"
+            to="/manage/region/profile"
             className="relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-[15px] font-medium underline-offset-4"
             activeProps={{
               className: 'underline',
