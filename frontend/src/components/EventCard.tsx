@@ -1,11 +1,7 @@
 import type { Event } from '@/lib/types'
 import type { Temporal } from 'temporal-polyfill'
-import { $api } from '@/api'
-import { EventExportToCalendarButton } from '@/components/EventExportToCalendarButton.tsx'
-import { EventSubscribeButton } from '@/components/EventSubscribeButton.tsx'
 import { Button } from '@/components/ui/button.tsx'
 import { cn, infoForDateRange, locationText } from '@/lib/utils.ts'
-import { Link } from '@tanstack/react-router'
 import { Link as LinkIcon, MapPin, Users } from 'lucide-react'
 import { ImMan, ImWoman } from 'react-icons/im'
 import { Badge } from './ui/badge'
@@ -50,10 +46,6 @@ export function EventCard({
   event: Event
   className?: string
 }) {
-  const { data: sports } = $api.useQuery('get', '/sports/')
-
-  const sportId = sports?.find(s => s.sport === event.sport)?.id
-
   const {
     start,
     end,
@@ -99,13 +91,6 @@ export function EventCard({
 
       <div className="flex grow flex-col gap-2 p-4">
         <div className="flex items-center justify-between">
-          <Link
-            to="/sports/$sportId"
-            params={{ sportId: sportId ?? '' }}
-            className="text-sm underline"
-          >
-            {event.sport}
-          </Link>
           <Button
             asChild
             className="h-7 w-fit rounded-md px-2 text-xs"
@@ -193,10 +178,6 @@ export function EventCard({
             </div>
           </>
         )}
-        <div className="flex flex-wrap gap-2">
-          <EventSubscribeButton event={event} />
-          <EventExportToCalendarButton event={event} />
-        </div>
       </div>
     </div>
   )
