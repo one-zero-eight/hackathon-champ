@@ -1,6 +1,7 @@
 from beanie import PydanticObjectId
 
 from src.pydantic_base import BaseSchema
+from src.storages.mongo.users import UserRole
 
 
 class CreateUser(BaseSchema):
@@ -18,6 +19,7 @@ class UpdateUser(BaseSchema):
 class ViewUser(BaseSchema):
     id: PydanticObjectId
     login: str
+    role: UserRole
     federation: PydanticObjectId | None = None
 
 

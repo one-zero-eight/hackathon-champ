@@ -16,6 +16,12 @@ class FederationRepository:
     async def create(self, federation: FederationSchema) -> Federation:
         return await Federation.model_validate(federation, from_attributes=True).insert()
 
+    async def update(self, id: PydanticObjectId, data: FederationSchema) -> Federation | None:
+        await Federation.find_one(Federation.id == id).update(
+            {"$set": data.model_dump(exclude={"id", "status", "status_comment"})}
+        )
+        return await Federation.get(id)
+
     async def accredite(self, id: PydanticObjectId, status: str, status_comment: str | None) -> Federation | None:
         f = await Federation.get(id)
         if f is None:

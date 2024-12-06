@@ -1,7 +1,6 @@
 from enum import StrEnum
 
 from pydantic import Field
-from pymongo import IndexModel
 
 from src.pydantic_base import BaseSchema
 from src.storages.mongo.__base__ import CustomDocument
@@ -41,5 +40,4 @@ class FederationSchema(BaseSchema):
 
 
 class Federation(FederationSchema, CustomDocument):
-    class Settings:
-        indexes = [IndexModel("title", unique=True)]
+    pass
