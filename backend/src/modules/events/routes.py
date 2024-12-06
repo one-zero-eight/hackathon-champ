@@ -10,7 +10,6 @@ from src.api.exceptions import IncorrectCredentialsException
 from src.modules.events.repository import events_repository
 from src.modules.events.schemas import DateFilter, Filters, Pagination, Sort
 from src.modules.ics_utils import get_base_calendar
-from src.modules.sports.repository import sports_repository
 from src.storages.mongo.events import Event
 from src.storages.mongo.selection import Selection
 
@@ -201,15 +200,17 @@ async def get_all_filters_disciplines() -> list[DisciplinesFilterVariants]:
     """
     Get all disciplines.
     """
-    # From all 'sport' and 'disciplines' fields of events, get unique values
-    sports = await sports_repository.read_all()
-    return [
-        DisciplinesFilterVariants(
-            sport=sport.sport,
-            disciplines=sport.disciplines,
-        )
-        for sport in sports
-    ]
+
+    return DisciplinesFilterVariants(
+        sport="Спортивное программирование",
+        disciplines=[
+            "программирование алгоритмическое",
+            "программирование продуктовое",
+            "программирование беспилотных авиационных систем",
+            "программирование робототехники",
+            "программирование систем информационной безопасности",
+        ],
+    )
 
 
 @router.post("/search/share", responses={200: {"description": "Share selection"}})
