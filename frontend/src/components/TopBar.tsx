@@ -16,7 +16,9 @@ export function TopBar() {
     <header className="fixed top-0 z-10 flex h-[--header-height] w-full items-center border-b bg-white bg-opacity-90 backdrop-blur">
       <div className="container mx-auto flex w-full justify-between px-4">
         <div className="flex items-center gap-2">
-          <img src="/favicon.png" className="size-8" />
+          <Link to="/">
+            <img src="/favicon.png" className="size-8" />
+          </Link>
           <Button asChild variant="link">
             <Link to="/" activeProps={{ className: 'underline' }}>
               Главная
