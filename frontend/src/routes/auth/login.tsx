@@ -64,7 +64,7 @@ function RouteComponent() {
 
   return (
     <div className="flex h-full flex-col items-center justify-center px-4 py-8">
-      <form className="flex flex-col gap-2" onSubmit={onSubmit}>
+      <form className="flex w-full max-w-[400px] flex-col gap-2" onSubmit={onSubmit}>
         <h1 className="text-center text-2xl">Вход в систему</h1>
         <Input
           value={login}
@@ -78,8 +78,8 @@ function RouteComponent() {
           placeholder="Пароль"
           type="password"
         />
-        {errorLogin && <div>{(errorLogin.detail || errorLogin).toString()}</div>}
-        {errorRegister && <div>{(errorRegister.detail || errorRegister).toString()}</div>}
+        {errorLogin && <p className="text-red-500">{(errorLogin.detail || errorLogin).toString()}</p>}
+        {errorRegister && <p className="text-red-500">{(errorRegister.detail || errorRegister).toString()}</p>}
         <Button type="submit">
           {register ? 'Зарегистрироваться' : 'Войти'}
           {(isPendingLogin || isPendingRegister) && (
