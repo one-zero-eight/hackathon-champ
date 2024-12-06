@@ -1,17 +1,15 @@
 import type { Filters, Sort } from '@/lib/types'
 import { $api } from '@/api'
 import { EventCard } from '@/components/EventCard'
-import { SportBadge } from '@/components/SportBadge'
 import { Button } from '@/components/ui/button.tsx'
 import { Input } from '@/components/ui/input.tsx'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
 import { plainDatesForFilter } from '@/lib/utils'
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { ArrowDown, ChevronRight } from 'lucide-react'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { ArrowDown } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import CountUp from 'react-countup'
-import Marquee from 'react-fast-marquee'
 import { Temporal } from 'temporal-polyfill'
 
 export const Route = createFileRoute('/')({
@@ -41,7 +39,6 @@ const QUICKLINKS = {
 
 function RouteComponent() {
   const navigate = useNavigate()
-  const { data: sports } = $api.useQuery('get', '/sports/')
   const { data: eventsTotal } = $api.useQuery('post', '/events/search/count', {
     body: {},
   })
@@ -56,19 +53,6 @@ function RouteComponent() {
       },
     })
   }
-
-  const [sports1, sports2, sports3] = useMemo(() => {
-    if (!sports)
-      return [[], [], []]
-
-    const shuffled = sports.slice().sort(() => Math.random() - 0.5)
-    const partSize = Math.ceil(sports.length / 3)
-    return [
-      shuffled.slice(0, partSize),
-      shuffled.slice(partSize, partSize * 2),
-      shuffled.slice(partSize * 2),
-    ]
-  }, [sports])
 
   return (
     <main className="flex w-full flex-col">
@@ -152,52 +136,6 @@ function RouteComponent() {
       >
         <ArrowDown />
       </Button>
-
-      <section className="my-[64px]">
-        <h2 className="text-center text-2xl font-medium">
-          Выбери свой вид спорта
-        </h2>
-        <div className="my-6 flex flex-col gap-2">
-          <Marquee direction="left" speed={20} pauseOnHover>
-            {sports1.map(sport => (
-              <SportBadge
-                key={sport.id}
-                name={sport.sport}
-                id={sport.id}
-                className="mx-2"
-              />
-            ))}
-          </Marquee>
-          <Marquee direction="right" speed={20} pauseOnHover>
-            {sports2.map(sport => (
-              <SportBadge
-                key={sport.id}
-                name={sport.sport}
-                id={sport.id}
-                className="mx-2"
-              />
-            ))}
-          </Marquee>
-          <Marquee direction="left" speed={20} pauseOnHover>
-            {sports3.map(sport => (
-              <SportBadge
-                key={sport.id}
-                name={sport.sport}
-                id={sport.id}
-                className="mx-2"
-              />
-            ))}
-          </Marquee>
-        </div>
-        <div className="flex justify-center">
-          <Button asChild>
-            <Link to="/sports">
-              <span>Все виды спорта</span>
-              <ChevronRight />
-            </Link>
-          </Button>
-        </div>
-      </section>
 
       <EventSelection
         title="Текущие события"

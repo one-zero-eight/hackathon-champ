@@ -84,23 +84,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/users/favorites": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Update Favorites */
-        put: operations["users_update_favorites"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/events/random-event": {
         parameters: {
             query?: never;
@@ -319,138 +302,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/sports/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get All Sports
-         * @description Get info about all sports.
-         */
-        get: operations["sports_get_all_sports"];
-        put?: never;
-        /**
-         * Create Many Sports
-         * @description Create multiple sports.
-         */
-        post: operations["sports_create_many_sports"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/sports/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Sport
-         * @description Get info about one sport.
-         */
-        get: operations["sports_get_sport"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/sports/update_descriptions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Update Descriptions
-         * @description Update descriptions of sports.
-         */
-        post: operations["sports_update_descriptions"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/sports/{id}/.ics": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Sport Ics */
-        get: operations["sports_get_sport_ics"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notify/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Create Notification */
-        post: operations["notifies_create_notification"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notify/{notification_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Notification */
-        get: operations["notifies_get_notification"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notify/my-subscriptions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Get User Subscriptions */
-        post: operations["notifies_get_user_subscriptions"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -473,13 +324,6 @@ export interface components {
             /** End Date */
             end_date?: string | null;
         };
-        /** DisciplineFilter */
-        DisciplineFilter: {
-            /** Sport */
-            sport: string;
-            /** Discipline */
-            discipline?: string | null;
-        };
         /** DisciplinesFilterVariants */
         DisciplinesFilterVariants: {
             /** Sport */
@@ -496,10 +340,10 @@ export interface components {
              */
             _id?: string;
             /**
-             * Ekp Id
-             * @description № СМ в ЕКП
+             * Host Federation
+             * @description Федерация, организующая мероприятие (None - для парсинга со стороны разработчиков)
              */
-            ekp_id: number;
+            host_federation?: string | null;
             /**
              * Title
              * @description Наименование спортивного мероприятия
@@ -555,8 +399,13 @@ export interface components {
              */
             participant_count?: number | null;
             /**
+             * Ekp Id
+             * @description № СМ в ЕКП
+             */
+            ekp_id?: number | null;
+            /**
              * Page
-             * @description Страница в календаре МинСпорта
+             * @description Страница в ЕКП
              */
             page?: number | null;
         };
@@ -571,10 +420,10 @@ export interface components {
              */
             id: string;
             /**
-             * Ekp Id
-             * @description № СМ в ЕКП
+             * Host Federation
+             * @description Федерация, организующая мероприятие (None - для парсинга со стороны разработчиков)
              */
-            ekp_id: number;
+            host_federation: string | null;
             /**
              * Title
              * @description Наименование спортивного мероприятия
@@ -630,8 +479,13 @@ export interface components {
              */
             participant_count: number | null;
             /**
+             * Ekp Id
+             * @description № СМ в ЕКП
+             */
+            ekp_id: number | null;
+            /**
              * Page
-             * @description Страница в календаре МинСпорта
+             * @description Страница в ЕКП
              */
             page: number | null;
         };
@@ -653,19 +507,6 @@ export interface components {
              */
             city?: string | null;
         };
-        /** EventNotification */
-        EventNotification: {
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "event";
-            /**
-             * Id
-             * @example 5eb7cf5a86d9755df3a6c593
-             */
-            id: string;
-        };
         /**
          * Filters
          * @description Список фильтров, которые применяются через И
@@ -675,7 +516,7 @@ export interface components {
             query?: string | null;
             date?: components["schemas"]["DateFilter"] | null;
             /** Discipline */
-            discipline?: components["schemas"]["DisciplineFilter"][] | null;
+            discipline?: string[] | null;
             /** Location */
             location?: components["schemas"]["LocationFilter"][] | null;
             gender?: components["schemas"]["Gender"] | null;
@@ -716,46 +557,6 @@ export interface components {
             min?: number | null;
             /** Max */
             max?: number | null;
-        };
-        /** Notification */
-        Notification: {
-            /**
-             * Id
-             * Format: objectid
-             * @description MongoDB document ObjectID
-             * @default None
-             * @example 5eb7cf5a86d9755df3a6c593
-             */
-            id: string;
-            /** Event Title */
-            event_title: string | null;
-            /** Event Id */
-            event_id: string | null;
-            /** Sport Title */
-            sport_title: string | null;
-            /** Sport Id */
-            sport_id: string | null;
-            /** Subscription Info */
-            subscription_info: Record<string, never>;
-            /** Event Dates */
-            event_dates: string[];
-            /**
-             * User Id
-             * @example 5eb7cf5a86d9755df3a6c593
-             */
-            user_id: string;
-            /**
-             * Sent
-             * @default false
-             */
-            sent: boolean;
-        };
-        /** NotificationCreateReq */
-        NotificationCreateReq: {
-            /** Notification Type */
-            notification_type: components["schemas"]["EventNotification"] | components["schemas"]["SportNotification"];
-            /** Notification Options */
-            notification_options: Record<string, never>;
         };
         /**
          * Order
@@ -812,84 +613,6 @@ export interface components {
             age?: components["schemas"]["Order"] | null;
             participant_count?: components["schemas"]["Order"] | null;
         };
-        /** Sport */
-        "Sport-Input": {
-            /**
-             * Id
-             * @description MongoDB document ObjectID
-             * @example 5eb7cf5a86d9755df3a6c593
-             */
-            _id?: string;
-            /**
-             * Sport
-             * @description Название вида спорта
-             */
-            sport: string;
-            /**
-             * Description
-             * @description Описание спорта
-             */
-            description?: string | null;
-            /**
-             * Disciplines
-             * @description Названия дисциплин
-             */
-            disciplines: string[];
-            /**
-             * Page
-             * @description Страница в календаре МинСпорта
-             */
-            page?: number | null;
-        };
-        /** Sport */
-        "Sport-Output": {
-            /**
-             * Id
-             * Format: objectid
-             * @description MongoDB document ObjectID
-             * @default None
-             * @example 5eb7cf5a86d9755df3a6c593
-             */
-            id: string;
-            /**
-             * Sport
-             * @description Название вида спорта
-             */
-            sport: string;
-            /**
-             * Description
-             * @description Описание спорта
-             */
-            description: string | null;
-            /**
-             * Disciplines
-             * @description Названия дисциплин
-             */
-            disciplines: string[];
-            /**
-             * Page
-             * @description Страница в календаре МинСпорта
-             */
-            page: number | null;
-        };
-        /** SportNotification */
-        SportNotification: {
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "sport";
-            /**
-             * Id
-             * @example 5eb7cf5a86d9755df3a6c593
-             */
-            id: string;
-        };
-        /** UpdateFavoriteReq */
-        UpdateFavoriteReq: {
-            /** Favorite Ids */
-            favorite_ids: string[];
-        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -908,8 +631,6 @@ export interface components {
             id: string;
             /** Login */
             login: string;
-            /** Favorites */
-            favorites: string[];
         };
     };
     responses: never;
@@ -921,30 +642,22 @@ export interface components {
 export type SchemaBodyEventsSearchEvents = components['schemas']['Body_events_search_events'];
 export type SchemaBodyEventsShareSelection = components['schemas']['Body_events_share_selection'];
 export type SchemaDateFilter = components['schemas']['DateFilter'];
-export type SchemaDisciplineFilter = components['schemas']['DisciplineFilter'];
 export type SchemaDisciplinesFilterVariants = components['schemas']['DisciplinesFilterVariants'];
 export type SchemaEventInput = components['schemas']['Event-Input'];
 export type SchemaEventOutput = components['schemas']['Event-Output'];
 export type SchemaEventLocation = components['schemas']['EventLocation'];
-export type SchemaEventNotification = components['schemas']['EventNotification'];
 export type SchemaFilters = components['schemas']['Filters'];
 export type SchemaGender = components['schemas']['Gender'];
 export type SchemaHttpValidationError = components['schemas']['HTTPValidationError'];
 export type SchemaLocationFilter = components['schemas']['LocationFilter'];
 export type SchemaLocationsFilterVariants = components['schemas']['LocationsFilterVariants'];
 export type SchemaMinMaxFilter = components['schemas']['MinMaxFilter'];
-export type SchemaNotification = components['schemas']['Notification'];
-export type SchemaNotificationCreateReq = components['schemas']['NotificationCreateReq'];
 export type SchemaOrder = components['schemas']['Order'];
 export type SchemaPagination = components['schemas']['Pagination'];
 export type SchemaRegionsFilterVariants = components['schemas']['RegionsFilterVariants'];
 export type SchemaSearchEventsResponse = components['schemas']['SearchEventsResponse'];
 export type SchemaSelection = components['schemas']['Selection'];
 export type SchemaSort = components['schemas']['Sort'];
-export type SchemaSportInput = components['schemas']['Sport-Input'];
-export type SchemaSportOutput = components['schemas']['Sport-Output'];
-export type SchemaSportNotification = components['schemas']['SportNotification'];
-export type SchemaUpdateFavoriteReq = components['schemas']['UpdateFavoriteReq'];
 export type SchemaValidationError = components['schemas']['ValidationError'];
 export type SchemaViewUser = components['schemas']['ViewUser'];
 export type $defs = Record<string, never>;
@@ -1078,46 +791,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
-            };
-        };
-    };
-    users_update_favorites: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateFavoriteReq"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string[];
-                };
-            };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
             };
         };
     };
@@ -1561,301 +1234,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
                 };
-            };
-        };
-    };
-    sports_get_all_sports: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Info about all sports */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Sport-Output"][];
-                };
-            };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    sports_create_many_sports: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["Sport-Input"][];
-            };
-        };
-        responses: {
-            /** @description Create many sports */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": boolean;
-                };
-            };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    sports_get_sport: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Info about sport */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Sport-Output"];
-                };
-            };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    sports_update_descriptions: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    [key: string]: string;
-                };
-            };
-        };
-        responses: {
-            /** @description Update descriptions */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    sports_get_sport_ics: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Get sport's events in .ics format */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Sport not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    notifies_create_notification: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["NotificationCreateReq"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    notifies_get_notification: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                notification_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    notifies_get_user_subscriptions: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Notification"][];
-                };
-            };
-            /** @description Unable to verify credentials OR Credentials not provided */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };
