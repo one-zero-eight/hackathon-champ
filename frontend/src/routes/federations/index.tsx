@@ -1,5 +1,6 @@
 import type { Federation } from '@/lib/types'
 import { $api } from '@/api'
+import { FederationLogo } from '@/components/FederationLogo'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import {
@@ -14,10 +15,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Skeleton } from '@/components/ui/skeleton'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useMemo } from 'react'
-import Building from '~icons/lucide/building'
 import Mail from '~icons/lucide/mail'
 import Phone from '~icons/lucide/phone'
 import Search from '~icons/lucide/search'
+import User from '~icons/lucide/user-round'
 
 // TODO: make sure Tailwind scans there values and generates classes
 const STATUS_COLORS = {
@@ -103,13 +104,16 @@ function RouteComponent() {
         : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {federations.map(federation => (
-                <Link key={federation.id} to="/federations/$federationId" params={{ federationId: federation.id }}>
-                  <Card className="flex flex-col transition-colors hover:bg-muted/50">
+                <Link
+                  key={federation.id}
+                  to="/federations/$federationId"
+                  params={{ federationId: federation.id }}
+                  className="group"
+                >
+                  <Card className="flex h-full flex-col shadow-sm transition-colors group-hover:bg-muted/50 group-hover:shadow-none">
                     <CardHeader>
-                      <div className="flex items-start gap-4">
-                        <div className="flex size-12 items-center justify-center rounded-lg bg-muted">
-                          <Building className="size-6" />
-                        </div>
+                      <div className="flex items-center gap-4">
+                        <FederationLogo logoUrl={federation.logo} alt={federation.region} size="card" />
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
                             <h3 className="font-semibold">{federation.region}</h3>
@@ -123,10 +127,10 @@ function RouteComponent() {
                     </CardHeader>
                     <CardContent className="flex-1">
                       {federation.head && (
-                        <p className="text-sm">
-                          Руководитель:
-                          {federation.head}
-                        </p>
+                        <div className="flex items-center gap-2 text-sm">
+                          <User className="size-4" />
+                          <span>{federation.head}</span>
+                        </div>
                       )}
                       <div className="mt-2 space-y-1">
                         {federation.email && (

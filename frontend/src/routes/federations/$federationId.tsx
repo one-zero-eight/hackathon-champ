@@ -1,9 +1,9 @@
 import { $api } from '@/api'
+import { FederationLogo } from '@/components/FederationLogo'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { urlToMaps } from '@/lib/utils'
 import { createFileRoute } from '@tanstack/react-router'
-import Building from '~icons/lucide/building'
 import Globe from '~icons/lucide/globe'
 import Mail from '~icons/lucide/mail'
 import MapPin from '~icons/lucide/map-pin'
@@ -60,10 +60,8 @@ function RouteComponent() {
 
   return (
     <div className="container mx-auto space-y-6 py-8">
-      <div className="flex items-start gap-6">
-        <div className="flex size-24 items-center justify-center rounded-xl bg-muted">
-          <Building className="size-12" />
-        </div>
+      <div className="flex items-center gap-6">
+        <FederationLogo logoUrl={federation.logo} alt={federation.region} size="federation" />
         <div className="flex-1">
           <div className="flex items-center gap-4">
             <h1 className="text-3xl font-bold">{federation.region}</h1>
