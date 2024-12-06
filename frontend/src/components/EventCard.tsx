@@ -1,5 +1,6 @@
 import type { Event } from '@/lib/types'
 import type { Temporal } from 'temporal-polyfill'
+import { EventExportToCalButton } from '@/components/EventExportToCalButton'
 import { Button } from '@/components/ui/button.tsx'
 import { cn, infoForDateRange, locationText } from '@/lib/utils.ts'
 import LinkIcon from '~icons/lucide/link'
@@ -151,6 +152,12 @@ export function EventCard({
             </div>
           </>
         )}
+
+        <Separator className="mt-auto" />
+
+        <div className="flex items-center gap-2">
+          <EventExportToCalButton event={event} />
+        </div>
       </div>
 
       <EventStatusBadge className="absolute right-4 top-4" status={event.status} />

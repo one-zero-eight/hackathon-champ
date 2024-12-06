@@ -1,6 +1,7 @@
 import type { Filters } from '@/lib/types'
 import { $api } from '@/api'
 import { EventCard } from '@/components/EventCard.tsx'
+import { ExportFiltersToCalButton } from '@/components/ExportFiltersToCalButton'
 import { AllFilters } from '@/components/filters/AllFilters'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -147,6 +148,8 @@ function RouteComponent() {
             onChange={handleFiltersChange}
             className="w-full"
           />
+          <Separator />
+          <ExportFiltersToCalButton filters={debouncedFilters} />
         </div>
       </aside>
 
