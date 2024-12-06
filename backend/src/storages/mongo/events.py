@@ -31,6 +31,8 @@ class EventLocation(BaseSchema):
 
 
 class EventStatusEnum(StrEnum):
+    DRAFT = "draft"
+    "Черновик"
     ON_CONSIDERATION = "on_consideration"
     "На рассмотрении"
     ACCREDITED = "accredited"
