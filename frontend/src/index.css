@@ -70,7 +70,9 @@
 :root {
   --header-height: 50px;
   --search-sidebar-width: 350px;
-  overflow-y: scroll;
+  --manage-sidebar-width: 300px;
+
+  overflow-y: auto;
 }
 
 html,

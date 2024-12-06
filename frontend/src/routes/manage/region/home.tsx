@@ -50,7 +50,7 @@ function RouteComponent() {
   )
 
   return (
-    <>
+    <div className="p-6">
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Панель управления</h1>
@@ -275,6 +275,6 @@ function RouteComponent() {
           </Card>
         </div>
       </div>
-    </>
+    </div>
   )
 }

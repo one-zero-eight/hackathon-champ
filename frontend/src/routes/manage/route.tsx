@@ -16,16 +16,18 @@ function RouteComponent() {
   const { data: me } = useMe()
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50">
+    <div className="mt-[calc(var(--header-height)*-1)] flex-grow bg-gray-50">
       <aside
-        className="static left-0 top-[var(--header-height)] h-[calc(100vh-var(--header-height))] w-full border-b bg-white sm:fixed sm:w-64 sm:border-r"
+        className="fixed bottom-0 left-0 top-[var(--header-height)] w-[var(--manage-sidebar-width)] overflow-y-auto border-r bg-white"
       >
-        {me?.role === 'admin' && <AdminNav />}
-        {me?.role === 'admin' && me?.federation && <Separator />}
-        {me?.federation && <FederationNav />}
+        <div>
+          {me?.role === 'admin' && <AdminNav />}
+          {me?.role === 'admin' && me?.federation && <Separator />}
+          {me?.federation && <FederationNav />}
+        </div>
       </aside>
 
-      <main className="flex-1 p-6 sm:ml-64">
+      <main className="pl-[var(--manage-sidebar-width)] pt-[var(--header-height)]">
         <Outlet />
       </main>
     </div>
