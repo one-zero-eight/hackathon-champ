@@ -46,6 +46,18 @@ async def create_federation(federation: FederationSchema, auth: USER_AUTH) -> Fe
         return await federation_repository.create(federation)
 
 
+@router.post("/create-many", responses={200: {"description": "Create federations"}})
+async def create_federations(federations: list[FederationSchema], auth: USER_AUTH) -> list[Federation]:
+    """
+    Create many federations.
+    """
+    user = await user_repository.read(auth.user_id)
+    if user.role == UserRole.ADMIN:
+        return [await federation_repository.create(federation) for federation in federations]
+    else:
+        raise HTTPException(status_code=403, detail="Only admin can create federations")
+
+
 @router.post(
     "/{id}/accredite",
     responses={
