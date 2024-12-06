@@ -1,4 +1,5 @@
 import { $api } from '@/api'
+import { useMe } from '@/api/me.ts'
 import { DatePicker } from '@/components/filters/DatesFilter.tsx'
 import { Button } from '@/components/ui/button.tsx'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.tsx'
@@ -13,20 +14,21 @@ import { toast } from 'sonner'
 import { Temporal } from 'temporal-polyfill'
 import { z } from 'zod'
 
-const eventForm = z.object({
+const createEventForm = z.object({
   title: z.string().min(3, 'Название должно содержать минимум 3 символа'),
   description: z.string().min(10, 'Описание должно содержать минимум 10 символов'),
   start_date: z.string().min(1, 'Выберите дату проведения'),
   end_date: z.string().min(1, 'Выберите дату проведения'),
 })
-type EventForm = z.infer<typeof eventForm>
+type CreateEventFormTypes = z.infer<typeof createEventForm>
 
-export function CreateForm() {
+export function CreateEventForm() {
+  const { data: me } = useMe()
   const { mutate } = $api.useMutation('post', '/events/suggest')
 
   const navigate = useNavigate()
-  const form = useForm<EventForm>({
-    resolver: zodResolver(eventForm),
+  const form = useForm<CreateEventFormTypes>({
+    resolver: zodResolver(createEventForm),
     defaultValues: {
       title: '',
       description: '',
@@ -35,10 +37,11 @@ export function CreateForm() {
     },
   })
 
-  const onSubmit = async (data: EventForm) => {
+  const onSubmit = async (data: CreateEventFormTypes) => {
     try {
       mutate({
         body: {
+          host_federation: me.federation,
           title: data.title,
           description: data.description,
           start_date: data.start_date,
@@ -95,7 +98,7 @@ export function CreateForm() {
                   <FormField
                     control={form.control}
                     name="start_date"
-                    render={({ field }) => (
+                    render={({ field: { ref, ...field } }) => (
                       <FormItem>
                         <FormControl>
                           <DatePicker
@@ -114,7 +117,7 @@ export function CreateForm() {
                   <FormField
                     control={form.control}
                     name="end_date"
-                    render={({ field }) => (
+                    render={({ field: { ref, ...field } }) => (
                       <FormItem>
                         <FormControl>
                           <DatePicker

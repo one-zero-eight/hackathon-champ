@@ -1,3 +1,4 @@
+import { EditEventForm } from '@/components/event/EditEventForm.tsx'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/manage/region/events/$id')({
@@ -5,5 +6,9 @@ export const Route = createFileRoute('/manage/region/events/$id')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/manage/region/events/$id"!</div>
+  const { id } = Route.useParams()
+
+  return (
+    <EditEventForm eventId={id} />
+  )
 }
