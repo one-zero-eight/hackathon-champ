@@ -72,7 +72,7 @@ function RouteComponent() {
           <Command>
             <CommandInput placeholder="Введите название федерации или регион..." />
             <CommandList>
-              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandEmpty>По вашему запросу ничего не найдено.</CommandEmpty>
               {Array.from(byDistrict.entries()).map(([district, federations]) => (
                 <CommandGroup key={district} heading={district}>
                   {federations.map(federation => (
