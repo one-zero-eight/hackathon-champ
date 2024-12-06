@@ -6,11 +6,14 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from starlette.responses import Response
 
+from src.api.dependencies import USER_AUTH
 from src.modules.events.repository import events_repository
 from src.modules.events.schemas import DateFilter, Filters, Pagination, Sort
 from src.modules.ics_utils import get_base_calendar
+from src.modules.users.repository import user_repository
 from src.storages.mongo.events import Event
 from src.storages.mongo.selection import Selection
+from src.storages.mongo.users import UserRole
 
 router = APIRouter(prefix="/events", tags=["Events"])
 
@@ -39,12 +42,19 @@ async def get_event(id: PydanticObjectId) -> Event:
     return e
 
 
-@router.post("/", responses={200: {"description": "Create many events"}})
-async def create_many_events(events: list[Event]) -> bool:
+@router.post(
+    "/", responses={200: {"description": "Create many events"}, 403: {"description": "Only admin can create events"}}
+)
+async def create_many_events(events: list[Event], auth: USER_AUTH) -> bool:
     """
     Create multiple events.
     """
-    return await events_repository.create_many(events)
+    user = await user_repository.read(auth.user_id)
+
+    if user.role != UserRole.ADMIN:
+        return await events_repository.create_many(events)
+    else:
+        raise HTTPException(status_code=403, detail="Only admin can create events")
 
 
 class SearchEventsResponse(BaseModel):
@@ -189,7 +199,7 @@ class DisciplinesFilterVariants(BaseModel):
 
 
 @router.get("/search/filters/disciplines", responses={200: {"description": "All disciplines"}})
-async def get_all_filters_disciplines() -> list[DisciplinesFilterVariants]:
+async def get_all_filters_disciplines() -> DisciplinesFilterVariants:
     """
     Get all disciplines.
     """
