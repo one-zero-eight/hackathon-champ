@@ -72,7 +72,7 @@ export function DisciplineFilter(props: FilterBaseProps<Filters['discipline']>) 
     [all, value],
   )
 
-  const label = value.length === 0 ? 'Любой' : value.join(', ')
+  const label = value.length === 0 ? 'Все дисциплины' : value.join(', ')
 
   return (
     <BaseFilter {...rest}>
