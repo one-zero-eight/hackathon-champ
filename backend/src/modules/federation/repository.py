@@ -14,7 +14,16 @@ class FederationRepository:
         return await Federation.all().to_list()
 
     async def create(self, federation: FederationSchema) -> Federation:
-        return await Federation.insert_one(federation)
+        return await Federation.model_validate(federation, from_attributes=True).insert()
+
+    async def accredite(self, id: PydanticObjectId, status: str, status_comment: str | None) -> Federation | None:
+        f = await Federation.get(id)
+        if f is None:
+            return None
+        f.status = status
+        f.status_comment = status_comment
+        await f.save()
+        return f
 
 
 federation_repository: FederationRepository = FederationRepository()

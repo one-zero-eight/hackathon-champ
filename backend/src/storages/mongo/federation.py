@@ -14,17 +14,15 @@ class StatusEnum(StrEnum):
 
 
 class FederationSchema(BaseSchema):
-    title: str
-    "Наименование федерации"
     region: str = Field(examples=["г. Москва"])
     "Название региона (области)"
-    district: str | None = None
+    district: str | None = Field(None, examples=[None])
     "Название федерального округа"
     status: StatusEnum = StatusEnum.ON_CONSIDERATION
     "Статус федерации (на рассмотрении, аккредитована, отклонена)"
-    status_comment: str | None = None
+    status_comment: str | None = Field(None, examples=[None])
     "Комментарий к статусу"
-    description: str | None = None
+    description: str | None = Field(None, examples=[None])
     "Описание"
     head: str | None = Field(None, examples=["Анашкин Евгений Юрьевич"])
     "ФИО руководителя"

@@ -49,4 +49,29 @@ async def create_federation(federation: FederationSchema, auth: USER_AUTH) -> Fe
         return await federation_repository.create(federation)
     else:
         federation.status = StatusEnum.ON_CONSIDERATION
+        federation.status_comment = None
         return await federation_repository.create(federation)
+
+
+@router.post(
+    "/{id}",
+    responses={
+        200: {"description": "Federation info updated"},
+        403: {"description": "Only admin can accredit federation"},
+        404: {"description": "Federation not found"},
+    },
+)
+async def accredite_federation(
+    id: PydanticObjectId, status: StatusEnum, auth: USER_AUTH, status_comment: str | None = None
+) -> Federation:
+    """
+    Accredit federation.
+    """
+    user = await user_repository.read(auth.user_id)
+    if user.role == UserRole.ADMIN:
+        federation = await federation_repository.accredite(id, status, status_comment)
+        if federation is None:
+            raise HTTPException(status_code=404, detail="Federation not found")
+        return federation
+    else:
+        raise HTTPException(status_code=403, detail="Only admin can accredit federation")
