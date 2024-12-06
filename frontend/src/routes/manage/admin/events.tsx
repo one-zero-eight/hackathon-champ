@@ -146,7 +146,8 @@ function RouteComponent() {
                   </TableHeader>
                   <TableBody>
                     {Array.from({ length: 5 }).map((_, index) => (
-                      <TableRow key={`loading-row-${index}`}>
+                      // eslint-disable-next-line react/no-array-index-key
+                      <TableRow key={index}>
                         <TableCell><div className="h-4 w-32 animate-pulse rounded bg-muted" /></TableCell>
                         <TableCell><div className="h-4 w-24 animate-pulse rounded bg-muted" /></TableCell>
                         <TableCell><div className="h-6 w-28 animate-pulse rounded bg-muted" /></TableCell>
@@ -286,15 +287,15 @@ function RouteComponent() {
                       <TableCell>{event.status_comment || '-'}</TableCell>
                       <TableCell>{event.host_federation || '-'}</TableCell>
                       <TableCell>
-                        {event.location.map((loc, index) => (
-                          <span key={index}>
+                        {event.location.map(loc => (
+                          <span key={`${loc.country}-${loc.region}-${loc.city}`}>
                             {[
                               loc.city,
                               loc.region,
                               loc.country,
                             ].filter(Boolean).join(', ')}
                           </span>
-                        )).reduce((prev, curr) => [prev, ', ', curr] as any, [])}
+                        ))}
                       </TableCell>
                       <TableCell>
                         <div className="space-y-2">
