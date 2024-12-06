@@ -45,7 +45,7 @@ function AdminNav() {
         </p>
       </div>
 
-      <nav className="flex flex-col p-2">
+      <nav className="flex flex-col gap-1 p-2">
         <NavLink to="/manage/admin/home" icon={Home}>
           Самое важное
         </NavLink>
