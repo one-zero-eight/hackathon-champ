@@ -30,7 +30,7 @@ const FEATURES: Feature[] = [
   {
     icon: <FileText className="size-5" />,
     title: 'Подача заявок',
-    description: 'Удобная сис��ема подачи и обработки заявок на соревнования',
+    description: 'Удобная система подачи и обработки заявок на соревнования',
   },
   {
     icon: <Users className="size-5" />,
@@ -262,7 +262,7 @@ function RouteComponent() {
               {
                 value: 10000,
                 suffix: '+',
-                label: 'Учас��ников соревнований',
+                label: 'Участников соревнований',
               },
             ].map((stat, index) => (
               <motion.div
