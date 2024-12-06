@@ -29,26 +29,29 @@ export function DatesFilter(props: FilterBaseProps<Filters['date']>) {
           value={valueStartPlain}
           onChange={v => onChange(plainDatesForFilter(v, valueEndPlain))}
           placeholder="Не раньше"
+          className="max-w-[150px] flex-1 basis-0"
         />
         <span>—</span>
         <DatePicker
           value={valueEndPlain}
           onChange={v => onChange(plainDatesForFilter(valueStartPlain, v))}
           placeholder="Не позже"
+          className="max-w-[150px] flex-1 basis-0"
         />
       </div>
     </BaseFilter>
   )
 }
-
 function DatePicker({
   value,
   onChange,
   placeholder,
+  className,
 }: {
   value: Temporal.PlainDate | null
   onChange: (v: Temporal.PlainDate | null) => void
   placeholder: string
+  className?: string
 }) {
   const selectedDate = value ? plainToDate(value) : undefined
   const [open, setOpen] = useState(false)
@@ -62,6 +65,7 @@ function DatePicker({
           className={cn(
             'justify-start text-left font-normal flex-auto',
             !value && 'text-muted-foreground',
+            className,
           )}
         >
           <CalendarIcon />

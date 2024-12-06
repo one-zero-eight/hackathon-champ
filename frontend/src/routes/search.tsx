@@ -132,15 +132,8 @@ function RouteComponent() {
   const loading = dataLoading || filtersChanging || sharedLoading
 
   return (
-    <div
-      className="flex gap-4 pl-[var(--sidebar-width)]"
-      style={
-        {
-          '--sidebar-width': '400px',
-        } as React.CSSProperties
-      }
-    >
-      <aside className="fixed left-0 h-[calc(100vh-var(--header-height))] w-[400px] shrink-0 grow-0 overflow-auto border-r p-4">
+    <div className="flex gap-4 pl-[var(--search-sidebar-width)]">
+      <aside className="fixed left-0 h-[calc(100vh-var(--header-height))] w-[var(--search-sidebar-width)] shrink-0 grow-0 overflow-auto border-r p-4">
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-medium">Фильтры</h3>
@@ -154,7 +147,6 @@ function RouteComponent() {
             onChange={handleFiltersChange}
             className="w-full"
           />
-          <Separator />
         </div>
       </aside>
 
