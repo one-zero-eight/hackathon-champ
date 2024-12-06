@@ -2,6 +2,7 @@ import requests
 import os
 import json
 import time 
+from fake_headers import Headers
 from bs4 import BeautifulSoup
 
 def load_existing_data(file_path):
@@ -16,14 +17,15 @@ if __name__ == "__main__":
     print("Parsing started")
     while True:
         try:
-            response = requests.get(url + '/region/regions/')
+            headers = Headers(headers=True).generate()
+            response = requests.get(url + '/region/regions/', headers=headers)
             if response.status_code == 200:
                 html_content = response.content
                 soup = BeautifulSoup(html_content, 'html.parser')
                 if len(result) == 0:
                     main_region = soup.find('div', {'class': 'contacts_info'})
                     sub = main_region.find('div', {'class': 'cont sub'})
-                    sub_resp = requests.get(url + sub.find('a')['href'])
+                    sub_resp = requests.get(url + sub.find('a')['href'], headers=headers)
                     logo: str 
                     if sub_resp.status_code == 200:
                         logo = url + BeautifulSoup(sub_resp.content, 'html.parser').find('div', {'class': 'detail'}).find('img')['src']
@@ -51,7 +53,7 @@ if __name__ == "__main__":
                         sub = district.find('div', {'class': 'cont sub'})
                         if (region.find('div', {'class': 'accordion-header'}).text.strip(), sub.find('p', {'class': 'white_region'}).text) in processed:
                             continue 
-                        sub_resp = requests.get(url + sub.find('a')['href'])
+                        sub_resp = requests.get(url + sub.find('a')['href'], headers=headers)
                         logo: str 
                         if sub_resp.status_code == 200:
                             logo = url + BeautifulSoup(sub_resp.content, 'html.parser').find('div', {'class': 'detail'}).find('img')['src']
@@ -78,7 +80,7 @@ if __name__ == "__main__":
             with open('backend/parser/regions.json', 'w') as fout:
                 json.dump(result , fout, ensure_ascii=False, indent=4)
             print(f"Произошла ошибка: {e}")
-        print("WAIT 1 MIN")
-        time.sleep(60)
-        print("RETRY...")
+            
+        print("Changing user agent...")
+        
     print("PARSING FINISHED!")
