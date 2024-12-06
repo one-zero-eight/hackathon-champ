@@ -1,0 +1,92 @@
+name: Build and deploy
+
+on:
+  # Allow manual trigger of the workflow
+  workflow_dispatch:
+  # Verify build on any push; deploy only on main branch
+  push:
+
+jobs:
+  build-frontend:
+    if: github.repository_owner == 'one-zero-eight'
+    name: Build frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: "9.14.4"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Build
+        working-directory: frontend
+        run: pnpm run build
+
+      - name: List files
+        working-directory: frontend
+        run: |
+          # Save the list of files as a GitHub Actions step summary
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          ls -lAhR ./dist 2>&1 | tee -a $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: static-files
+          path: frontend/dist/
+          if-no-files-found: error
+
+  deploy-frontend:
+    if: github.repository_owner == 'one-zero-eight'
+    name: Deploy frontend
+    needs: build-frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: static-files
+          path: dist
+
+      - name: Copy files via SSH
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          source: "./dist/*"
+          target: ${{ secrets.SSH_FRONTEND_DIRECTORY }}
+          strip_components: 1
+          overwrite: true
+          rm: true
+
+  deploy-backend:
+    if: github.repository_owner == 'one-zero-eight'
+    name: Deploy backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script_stop: true # Stop script on error
+          command_timeout: 30m
+          script: |
+            cd "${{ secrets.SSH_REPOSITORY }}"
+            git pull origin main
+            cd backend
+            docker compose up -d --build --pull always

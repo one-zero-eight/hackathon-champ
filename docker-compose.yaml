@@ -1,0 +1,37 @@
+services:
+  nginx:
+    image: nginx
+    restart: always
+    ports: [ "8000:8000" ]
+    volumes: [ "./nginx-server.conf:/etc/nginx/conf.d/default.conf:ro" ]
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: always
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - "./backend/settings.docker.yaml:/code/settings.yaml:ro" # Read-only settings file
+    depends_on:
+      db:
+        condition: service_started
+
+  db:
+    # See more: https://registry.hub.docker.com/_/mongo
+    image: "mongo:8.0"
+    restart: always
+    volumes:
+      - "mongodb:/data/db"
+      - "./backend/dump:/dump"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-mongoadmin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-secret}
+
+volumes:
+  mongodb:
