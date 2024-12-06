@@ -25,18 +25,18 @@ export function TopBar() {
           </Button>
           <Button asChild variant="link">
             <Link
-              to="/disciplines"
+              to="/federations"
               activeProps={{ className: 'underline' }}
             >
-              Дисциплины
+              Федерации
             </Link>
           </Button>
           <Button asChild variant="link">
             <Link
-              to="/federations"
+              to="/disciplines"
               activeProps={{ className: 'underline' }}
             >
-              Региональные федерации
+              Дисциплины
             </Link>
           </Button>
           <Button asChild variant="link">
