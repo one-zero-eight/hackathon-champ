@@ -1,6 +1,7 @@
 import type { Filters } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { DatesFilter } from './DatesFilter'
+import { DisciplineFilter } from './DisciplineFilter'
 import { GenderSelect } from './GenderSelect'
 import { LocationFilter } from './LocationFilter'
 import { MinMaxFilter } from './MinMaxFilter'
@@ -35,6 +36,12 @@ export function AllFilters({
         label="Место проведения"
         value={filters.location}
         onChange={getOnChange('location')}
+      />
+      <DisciplineFilter
+        disabled={disabled}
+        label="Дисциплина"
+        value={filters.discipline}
+        onChange={getOnChange('discipline')}
       />
       {!exclude.includes('date') && (
         <DatesFilter
