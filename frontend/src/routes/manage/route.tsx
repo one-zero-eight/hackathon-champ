@@ -7,6 +7,7 @@ import FileText from '~icons/lucide/file-text'
 import Home from '~icons/lucide/home'
 import MessageSquare from '~icons/lucide/message-square'
 import User from '~icons/lucide/user'
+import Users from '~icons/lucide/users'
 
 export const Route = createFileRoute('/manage')({
   component: RouteComponent,
@@ -47,6 +48,9 @@ function AdminNav() {
       <nav className="flex flex-col p-2">
         <NavLink to="/manage/admin/home" icon={Home}>
           Самое важное
+        </NavLink>
+        <NavLink to="/manage/admin/federations" icon={Users}>
+          Федерации
         </NavLink>
       </nav>
     </>

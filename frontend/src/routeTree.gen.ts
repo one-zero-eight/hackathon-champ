@@ -30,6 +30,7 @@ import { Route as ManageRegionProfileImport } from './routes/manage/region/profi
 import { Route as ManageRegionHomeImport } from './routes/manage/region/home'
 import { Route as ManageRegionFeedbackImport } from './routes/manage/region/feedback'
 import { Route as ManageAdminHomeImport } from './routes/manage/admin/home'
+import { Route as ManageAdminFederationsImport } from './routes/manage/admin/federations'
 import { Route as ManageRegionEventsIndexImport } from './routes/manage/region/events/index'
 import { Route as ManageRegionEventsSuggestImport } from './routes/manage/region/events/suggest'
 import { Route as ManageRegionEventsIdImport } from './routes/manage/region/events/$id'
@@ -147,6 +148,12 @@ const ManageRegionFeedbackRoute = ManageRegionFeedbackImport.update({
 const ManageAdminHomeRoute = ManageAdminHomeImport.update({
   id: '/admin/home',
   path: '/admin/home',
+  getParentRoute: () => ManageRouteRoute,
+} as any)
+
+const ManageAdminFederationsRoute = ManageAdminFederationsImport.update({
+  id: '/admin/federations',
+  path: '/admin/federations',
   getParentRoute: () => ManageRouteRoute,
 } as any)
 
@@ -270,6 +277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageIndexImport
       parentRoute: typeof ManageRouteImport
     }
+    '/manage/admin/federations': {
+      id: '/manage/admin/federations'
+      path: '/admin/federations'
+      fullPath: '/manage/admin/federations'
+      preLoaderRoute: typeof ManageAdminFederationsImport
+      parentRoute: typeof ManageRouteImport
+    }
     '/manage/admin/home': {
       id: '/manage/admin/home'
       path: '/admin/home'
@@ -333,6 +347,7 @@ declare module '@tanstack/react-router' {
 
 interface ManageRouteRouteChildren {
   ManageIndexRoute: typeof ManageIndexRoute
+  ManageAdminFederationsRoute: typeof ManageAdminFederationsRoute
   ManageAdminHomeRoute: typeof ManageAdminHomeRoute
   ManageRegionFeedbackRoute: typeof ManageRegionFeedbackRoute
   ManageRegionHomeRoute: typeof ManageRegionHomeRoute
@@ -345,6 +360,7 @@ interface ManageRouteRouteChildren {
 
 const ManageRouteRouteChildren: ManageRouteRouteChildren = {
   ManageIndexRoute: ManageIndexRoute,
+  ManageAdminFederationsRoute: ManageAdminFederationsRoute,
   ManageAdminHomeRoute: ManageAdminHomeRoute,
   ManageRegionFeedbackRoute: ManageRegionFeedbackRoute,
   ManageRegionHomeRoute: ManageRegionHomeRoute,
@@ -374,6 +390,7 @@ export interface FileRoutesByFullPath {
   '/federations/$federationId': typeof FederationsFederationIdRoute
   '/federations': typeof FederationsIndexRoute
   '/manage/': typeof ManageIndexRoute
+  '/manage/admin/federations': typeof ManageAdminFederationsRoute
   '/manage/admin/home': typeof ManageAdminHomeRoute
   '/manage/region/feedback': typeof ManageRegionFeedbackRoute
   '/manage/region/home': typeof ManageRegionHomeRoute
@@ -398,6 +415,7 @@ export interface FileRoutesByTo {
   '/federations/$federationId': typeof FederationsFederationIdRoute
   '/federations': typeof FederationsIndexRoute
   '/manage': typeof ManageIndexRoute
+  '/manage/admin/federations': typeof ManageAdminFederationsRoute
   '/manage/admin/home': typeof ManageAdminHomeRoute
   '/manage/region/feedback': typeof ManageRegionFeedbackRoute
   '/manage/region/home': typeof ManageRegionHomeRoute
@@ -424,6 +442,7 @@ export interface FileRoutesById {
   '/federations/$federationId': typeof FederationsFederationIdRoute
   '/federations/': typeof FederationsIndexRoute
   '/manage/': typeof ManageIndexRoute
+  '/manage/admin/federations': typeof ManageAdminFederationsRoute
   '/manage/admin/home': typeof ManageAdminHomeRoute
   '/manage/region/feedback': typeof ManageRegionFeedbackRoute
   '/manage/region/home': typeof ManageRegionHomeRoute
@@ -451,6 +470,7 @@ export interface FileRouteTypes {
     | '/federations/$federationId'
     | '/federations'
     | '/manage/'
+    | '/manage/admin/federations'
     | '/manage/admin/home'
     | '/manage/region/feedback'
     | '/manage/region/home'
@@ -474,6 +494,7 @@ export interface FileRouteTypes {
     | '/federations/$federationId'
     | '/federations'
     | '/manage'
+    | '/manage/admin/federations'
     | '/manage/admin/home'
     | '/manage/region/feedback'
     | '/manage/region/home'
@@ -498,6 +519,7 @@ export interface FileRouteTypes {
     | '/federations/$federationId'
     | '/federations/'
     | '/manage/'
+    | '/manage/admin/federations'
     | '/manage/admin/home'
     | '/manage/region/feedback'
     | '/manage/region/home'
@@ -573,6 +595,7 @@ export const routeTree = rootRoute
       "filePath": "manage/route.tsx",
       "children": [
         "/manage/",
+        "/manage/admin/federations",
         "/manage/admin/home",
         "/manage/region/feedback",
         "/manage/region/home",
@@ -618,6 +641,10 @@ export const routeTree = rootRoute
     },
     "/manage/": {
       "filePath": "manage/index.tsx",
+      "parent": "/manage"
+    },
+    "/manage/admin/federations": {
+      "filePath": "manage/admin/federations.tsx",
       "parent": "/manage"
     },
     "/manage/admin/home": {
