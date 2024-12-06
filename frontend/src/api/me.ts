@@ -11,3 +11,10 @@ export function useMe() {
     },
   )
 }
+
+export function useMyFederation() {
+  const { data: me } = useMe()
+  return $api.useQuery('get', '/federations/{id}', {
+    params: { path: { id: me?.federation ?? '' } },
+  }, { enabled: !!me?.federation })
+}

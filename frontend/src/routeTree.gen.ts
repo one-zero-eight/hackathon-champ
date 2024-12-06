@@ -16,9 +16,14 @@ import { Route as SearchImport } from './routes/search'
 import { Route as PrivacyImport } from './routes/privacy'
 import { Route as DisciplinesImport } from './routes/disciplines'
 import { Route as CalendarImport } from './routes/calendar'
+import { Route as ManageRouteImport } from './routes/manage/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as FederationsIndexImport } from './routes/federations/index'
+import { Route as ManageRequestsImport } from './routes/manage/requests'
 import { Route as ManageRegionalImport } from './routes/manage/regional'
+import { Route as ManageProfileImport } from './routes/manage/profile'
+import { Route as ManageFeedbackImport } from './routes/manage/feedback'
+import { Route as ManageEventsImport } from './routes/manage/events'
 import { Route as ManageAdminImport } from './routes/manage/admin'
 import { Route as FederationsFederationIdImport } from './routes/federations/$federationId'
 import { Route as EventsEventIdImport } from './routes/events/$eventId'
@@ -56,6 +61,12 @@ const CalendarRoute = CalendarImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const ManageRouteRoute = ManageRouteImport.update({
+  id: '/manage',
+  path: '/manage',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
@@ -68,16 +79,40 @@ const FederationsIndexRoute = FederationsIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const ManageRequestsRoute = ManageRequestsImport.update({
+  id: '/requests',
+  path: '/requests',
+  getParentRoute: () => ManageRouteRoute,
+} as any)
+
 const ManageRegionalRoute = ManageRegionalImport.update({
-  id: '/manage/regional',
-  path: '/manage/regional',
-  getParentRoute: () => rootRoute,
+  id: '/regional',
+  path: '/regional',
+  getParentRoute: () => ManageRouteRoute,
+} as any)
+
+const ManageProfileRoute = ManageProfileImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => ManageRouteRoute,
+} as any)
+
+const ManageFeedbackRoute = ManageFeedbackImport.update({
+  id: '/feedback',
+  path: '/feedback',
+  getParentRoute: () => ManageRouteRoute,
+} as any)
+
+const ManageEventsRoute = ManageEventsImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => ManageRouteRoute,
 } as any)
 
 const ManageAdminRoute = ManageAdminImport.update({
-  id: '/manage/admin',
-  path: '/manage/admin',
-  getParentRoute: () => rootRoute,
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => ManageRouteRoute,
 } as any)
 
 const FederationsFederationIdRoute = FederationsFederationIdImport.update({
@@ -107,6 +142,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/manage': {
+      id: '/manage'
+      path: '/manage'
+      fullPath: '/manage'
+      preLoaderRoute: typeof ManageRouteImport
       parentRoute: typeof rootRoute
     }
     '/calendar': {
@@ -167,17 +209,45 @@ declare module '@tanstack/react-router' {
     }
     '/manage/admin': {
       id: '/manage/admin'
-      path: '/manage/admin'
+      path: '/admin'
       fullPath: '/manage/admin'
       preLoaderRoute: typeof ManageAdminImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof ManageRouteImport
+    }
+    '/manage/events': {
+      id: '/manage/events'
+      path: '/events'
+      fullPath: '/manage/events'
+      preLoaderRoute: typeof ManageEventsImport
+      parentRoute: typeof ManageRouteImport
+    }
+    '/manage/feedback': {
+      id: '/manage/feedback'
+      path: '/feedback'
+      fullPath: '/manage/feedback'
+      preLoaderRoute: typeof ManageFeedbackImport
+      parentRoute: typeof ManageRouteImport
+    }
+    '/manage/profile': {
+      id: '/manage/profile'
+      path: '/profile'
+      fullPath: '/manage/profile'
+      preLoaderRoute: typeof ManageProfileImport
+      parentRoute: typeof ManageRouteImport
     }
     '/manage/regional': {
       id: '/manage/regional'
-      path: '/manage/regional'
+      path: '/regional'
       fullPath: '/manage/regional'
       preLoaderRoute: typeof ManageRegionalImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof ManageRouteImport
+    }
+    '/manage/requests': {
+      id: '/manage/requests'
+      path: '/requests'
+      fullPath: '/manage/requests'
+      preLoaderRoute: typeof ManageRequestsImport
+      parentRoute: typeof ManageRouteImport
     }
     '/federations/': {
       id: '/federations/'
@@ -191,8 +261,31 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
+interface ManageRouteRouteChildren {
+  ManageAdminRoute: typeof ManageAdminRoute
+  ManageEventsRoute: typeof ManageEventsRoute
+  ManageFeedbackRoute: typeof ManageFeedbackRoute
+  ManageProfileRoute: typeof ManageProfileRoute
+  ManageRegionalRoute: typeof ManageRegionalRoute
+  ManageRequestsRoute: typeof ManageRequestsRoute
+}
+
+const ManageRouteRouteChildren: ManageRouteRouteChildren = {
+  ManageAdminRoute: ManageAdminRoute,
+  ManageEventsRoute: ManageEventsRoute,
+  ManageFeedbackRoute: ManageFeedbackRoute,
+  ManageProfileRoute: ManageProfileRoute,
+  ManageRegionalRoute: ManageRegionalRoute,
+  ManageRequestsRoute: ManageRequestsRoute,
+}
+
+const ManageRouteRouteWithChildren = ManageRouteRoute._addFileChildren(
+  ManageRouteRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/manage': typeof ManageRouteRouteWithChildren
   '/calendar': typeof CalendarRoute
   '/disciplines': typeof DisciplinesRoute
   '/privacy': typeof PrivacyRoute
@@ -202,12 +295,17 @@ export interface FileRoutesByFullPath {
   '/events/$eventId': typeof EventsEventIdRoute
   '/federations/$federationId': typeof FederationsFederationIdRoute
   '/manage/admin': typeof ManageAdminRoute
+  '/manage/events': typeof ManageEventsRoute
+  '/manage/feedback': typeof ManageFeedbackRoute
+  '/manage/profile': typeof ManageProfileRoute
   '/manage/regional': typeof ManageRegionalRoute
+  '/manage/requests': typeof ManageRequestsRoute
   '/federations': typeof FederationsIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/manage': typeof ManageRouteRouteWithChildren
   '/calendar': typeof CalendarRoute
   '/disciplines': typeof DisciplinesRoute
   '/privacy': typeof PrivacyRoute
@@ -217,13 +315,18 @@ export interface FileRoutesByTo {
   '/events/$eventId': typeof EventsEventIdRoute
   '/federations/$federationId': typeof FederationsFederationIdRoute
   '/manage/admin': typeof ManageAdminRoute
+  '/manage/events': typeof ManageEventsRoute
+  '/manage/feedback': typeof ManageFeedbackRoute
+  '/manage/profile': typeof ManageProfileRoute
   '/manage/regional': typeof ManageRegionalRoute
+  '/manage/requests': typeof ManageRequestsRoute
   '/federations': typeof FederationsIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/manage': typeof ManageRouteRouteWithChildren
   '/calendar': typeof CalendarRoute
   '/disciplines': typeof DisciplinesRoute
   '/privacy': typeof PrivacyRoute
@@ -233,7 +336,11 @@ export interface FileRoutesById {
   '/events/$eventId': typeof EventsEventIdRoute
   '/federations/$federationId': typeof FederationsFederationIdRoute
   '/manage/admin': typeof ManageAdminRoute
+  '/manage/events': typeof ManageEventsRoute
+  '/manage/feedback': typeof ManageFeedbackRoute
+  '/manage/profile': typeof ManageProfileRoute
   '/manage/regional': typeof ManageRegionalRoute
+  '/manage/requests': typeof ManageRequestsRoute
   '/federations/': typeof FederationsIndexRoute
 }
 
@@ -241,6 +348,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/manage'
     | '/calendar'
     | '/disciplines'
     | '/privacy'
@@ -250,11 +358,16 @@ export interface FileRouteTypes {
     | '/events/$eventId'
     | '/federations/$federationId'
     | '/manage/admin'
+    | '/manage/events'
+    | '/manage/feedback'
+    | '/manage/profile'
     | '/manage/regional'
+    | '/manage/requests'
     | '/federations'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/manage'
     | '/calendar'
     | '/disciplines'
     | '/privacy'
@@ -264,11 +377,16 @@ export interface FileRouteTypes {
     | '/events/$eventId'
     | '/federations/$federationId'
     | '/manage/admin'
+    | '/manage/events'
+    | '/manage/feedback'
+    | '/manage/profile'
     | '/manage/regional'
+    | '/manage/requests'
     | '/federations'
   id:
     | '__root__'
     | '/'
+    | '/manage'
     | '/calendar'
     | '/disciplines'
     | '/privacy'
@@ -278,13 +396,18 @@ export interface FileRouteTypes {
     | '/events/$eventId'
     | '/federations/$federationId'
     | '/manage/admin'
+    | '/manage/events'
+    | '/manage/feedback'
+    | '/manage/profile'
     | '/manage/regional'
+    | '/manage/requests'
     | '/federations/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ManageRouteRoute: typeof ManageRouteRouteWithChildren
   CalendarRoute: typeof CalendarRoute
   DisciplinesRoute: typeof DisciplinesRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -293,13 +416,12 @@ export interface RootRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   EventsEventIdRoute: typeof EventsEventIdRoute
   FederationsFederationIdRoute: typeof FederationsFederationIdRoute
-  ManageAdminRoute: typeof ManageAdminRoute
-  ManageRegionalRoute: typeof ManageRegionalRoute
   FederationsIndexRoute: typeof FederationsIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ManageRouteRoute: ManageRouteRouteWithChildren,
   CalendarRoute: CalendarRoute,
   DisciplinesRoute: DisciplinesRoute,
   PrivacyRoute: PrivacyRoute,
@@ -308,8 +430,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   EventsEventIdRoute: EventsEventIdRoute,
   FederationsFederationIdRoute: FederationsFederationIdRoute,
-  ManageAdminRoute: ManageAdminRoute,
-  ManageRegionalRoute: ManageRegionalRoute,
   FederationsIndexRoute: FederationsIndexRoute,
 }
 
@@ -324,6 +444,7 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/manage",
         "/calendar",
         "/disciplines",
         "/privacy",
@@ -332,13 +453,22 @@ export const routeTree = rootRoute
         "/auth/login",
         "/events/$eventId",
         "/federations/$federationId",
-        "/manage/admin",
-        "/manage/regional",
         "/federations/"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/manage": {
+      "filePath": "manage/route.tsx",
+      "children": [
+        "/manage/admin",
+        "/manage/events",
+        "/manage/feedback",
+        "/manage/profile",
+        "/manage/regional",
+        "/manage/requests"
+      ]
     },
     "/calendar": {
       "filePath": "calendar.tsx"
@@ -365,10 +495,28 @@ export const routeTree = rootRoute
       "filePath": "federations/$federationId.tsx"
     },
     "/manage/admin": {
-      "filePath": "manage/admin.tsx"
+      "filePath": "manage/admin.tsx",
+      "parent": "/manage"
+    },
+    "/manage/events": {
+      "filePath": "manage/events.tsx",
+      "parent": "/manage"
+    },
+    "/manage/feedback": {
+      "filePath": "manage/feedback.tsx",
+      "parent": "/manage"
+    },
+    "/manage/profile": {
+      "filePath": "manage/profile.tsx",
+      "parent": "/manage"
     },
     "/manage/regional": {
-      "filePath": "manage/regional.tsx"
+      "filePath": "manage/regional.tsx",
+      "parent": "/manage"
+    },
+    "/manage/requests": {
+      "filePath": "manage/requests.tsx",
+      "parent": "/manage"
     },
     "/federations/": {
       "filePath": "federations/index.tsx"

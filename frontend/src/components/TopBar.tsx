@@ -1,14 +1,12 @@
 import { $api } from '@/api'
-import { useMe } from '@/api/me.ts'
+import { useMe, useMyFederation } from '@/api/me.ts'
 import { Button } from '@/components/ui/button.tsx'
 import { useQueryClient } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 
 export function TopBar() {
   const { data: me } = useMe()
-  const { data: myFederation } = $api.useQuery('get', '/federations/{id}', {
-    params: { path: { id: me?.federation ?? '' } },
-  }, { enabled: !!me?.federation })
+  const { data: myFederation } = useMyFederation()
 
   const queryClient = useQueryClient()
   const { mutate: performLogout } = $api.useMutation('post', '/users/logout', {
