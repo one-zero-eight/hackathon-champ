@@ -1,7 +1,7 @@
-import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
-import { Link, createFileRoute } from '@tanstack/react-router'
 import { Card, CardContent } from '@/components/ui/card'
+import { createFileRoute, Link } from '@tanstack/react-router'
+import { motion } from 'framer-motion'
 import ChevronRight from '~icons/lucide/chevron-right'
 
 export const Route = createFileRoute('/about')({
@@ -10,7 +10,7 @@ export const Route = createFileRoute('/about')({
 
 function AboutPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white to-gray-50/50 px-4 pt-[calc(var(--header-height)+2rem)] pb-16">
+    <main className="min-h-screen bg-gray-50 px-4 pb-16 pt-[calc(var(--header-height)+2rem)]">
       <div className="mx-auto max-w-4xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -19,7 +19,7 @@ function AboutPage() {
           className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100"
         >
           {/* Header */}
-          <div className="border-b border-gray-100 bg-gray-50/50 px-8 py-12">
+          <div className="border-b border-gray-100 px-8 py-12">
             <h1 className="bg-gradient-to-br from-gray-900 to-gray-700 bg-clip-text text-center text-4xl font-bold tracking-tight text-transparent sm:text-5xl">
               О проекте
             </h1>
@@ -153,4 +153,4 @@ function AboutPage() {
       </div>
     </main>
   )
-} 
+}
