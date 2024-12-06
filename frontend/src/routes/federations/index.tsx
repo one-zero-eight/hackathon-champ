@@ -1,3 +1,4 @@
+import { $api } from '@/api'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/federations/')({
@@ -5,5 +6,16 @@ export const Route = createFileRoute('/federations/')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/federations"!</div>
+  const { data: federations, isPending } = $api.useQuery('get', '/federations/')
+
+  return (
+    <div>
+      {isPending && 'Загрузка...'}
+      {federations?.map(federation => (
+        <div key={federation.id}>
+          {federation.region}
+        </div>
+      ))}
+    </div>
+  )
 }
