@@ -4,9 +4,9 @@ import { EventCard } from '@/components/EventCard'
 import { Button } from '@/components/ui/button.tsx'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { plainDatesForFilter } from '@/lib/utils'
-import { createFileRoute } from '@tanstack/react-router'
-import { motion } from 'framer-motion'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useMemo } from 'react'
+import { motion } from 'framer-motion'
 import CountUp from 'react-countup'
 import { Temporal } from 'temporal-polyfill'
 import BarChart from '~icons/lucide/bar-chart'
@@ -113,7 +113,7 @@ function RouteComponent() {
               {
                 icon: <Users className="size-5" />,
                 title: 'Управление участниками',
-                description: 'Эффективне управление профилями участников',
+                description: 'Эффективное управление профилями участников',
               },
               {
                 icon: <Calendar className="size-5" />,
@@ -384,12 +384,12 @@ function RouteComponent() {
                 © 2024 ФСП Линк. Все права защищены.
               </p>
               <div className="flex space-x-6">
-                <a href="#" className="text-xs hover:text-white">
+                <Link to="/terms" className="text-xs hover:text-white">
                   Условия использования
-                </a>
-                <a href="#" className="text-xs hover:text-white">
+                </Link>
+                <Link to="/privacy" className="text-xs hover:text-white">
                   Политика конфиденциальности
-                </a>
+                </Link>
               </div>
             </div>
           </div>

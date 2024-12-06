@@ -11,7 +11,9 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as TermsImport } from './routes/terms'
 import { Route as SearchImport } from './routes/search'
+import { Route as PrivacyImport } from './routes/privacy'
 import { Route as DisciplinesImport } from './routes/disciplines'
 import { Route as CalendarImport } from './routes/calendar'
 import { Route as IndexImport } from './routes/index'
@@ -24,9 +26,21 @@ import { Route as AuthLoginImport } from './routes/auth/login'
 
 // Create/Update Routes
 
+const TermsRoute = TermsImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const SearchRoute = SearchImport.update({
   id: '/search',
   path: '/search',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const PrivacyRoute = PrivacyImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -109,11 +123,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DisciplinesImport
       parentRoute: typeof rootRoute
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyImport
+      parentRoute: typeof rootRoute
+    }
     '/search': {
       id: '/search'
       path: '/search'
       fullPath: '/search'
       preLoaderRoute: typeof SearchImport
+      parentRoute: typeof rootRoute
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsImport
       parentRoute: typeof rootRoute
     }
     '/auth/login': {
@@ -167,7 +195,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/calendar': typeof CalendarRoute
   '/disciplines': typeof DisciplinesRoute
+  '/privacy': typeof PrivacyRoute
   '/search': typeof SearchRoute
+  '/terms': typeof TermsRoute
   '/auth/login': typeof AuthLoginRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/federations/$federationId': typeof FederationsFederationIdRoute
@@ -180,7 +210,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/calendar': typeof CalendarRoute
   '/disciplines': typeof DisciplinesRoute
+  '/privacy': typeof PrivacyRoute
   '/search': typeof SearchRoute
+  '/terms': typeof TermsRoute
   '/auth/login': typeof AuthLoginRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/federations/$federationId': typeof FederationsFederationIdRoute
@@ -194,7 +226,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/calendar': typeof CalendarRoute
   '/disciplines': typeof DisciplinesRoute
+  '/privacy': typeof PrivacyRoute
   '/search': typeof SearchRoute
+  '/terms': typeof TermsRoute
   '/auth/login': typeof AuthLoginRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/federations/$federationId': typeof FederationsFederationIdRoute
@@ -209,7 +243,9 @@ export interface FileRouteTypes {
     | '/'
     | '/calendar'
     | '/disciplines'
+    | '/privacy'
     | '/search'
+    | '/terms'
     | '/auth/login'
     | '/events/$eventId'
     | '/federations/$federationId'
@@ -221,7 +257,9 @@ export interface FileRouteTypes {
     | '/'
     | '/calendar'
     | '/disciplines'
+    | '/privacy'
     | '/search'
+    | '/terms'
     | '/auth/login'
     | '/events/$eventId'
     | '/federations/$federationId'
@@ -233,7 +271,9 @@ export interface FileRouteTypes {
     | '/'
     | '/calendar'
     | '/disciplines'
+    | '/privacy'
     | '/search'
+    | '/terms'
     | '/auth/login'
     | '/events/$eventId'
     | '/federations/$federationId'
@@ -247,7 +287,9 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CalendarRoute: typeof CalendarRoute
   DisciplinesRoute: typeof DisciplinesRoute
+  PrivacyRoute: typeof PrivacyRoute
   SearchRoute: typeof SearchRoute
+  TermsRoute: typeof TermsRoute
   AuthLoginRoute: typeof AuthLoginRoute
   EventsEventIdRoute: typeof EventsEventIdRoute
   FederationsFederationIdRoute: typeof FederationsFederationIdRoute
@@ -260,7 +302,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CalendarRoute: CalendarRoute,
   DisciplinesRoute: DisciplinesRoute,
+  PrivacyRoute: PrivacyRoute,
   SearchRoute: SearchRoute,
+  TermsRoute: TermsRoute,
   AuthLoginRoute: AuthLoginRoute,
   EventsEventIdRoute: EventsEventIdRoute,
   FederationsFederationIdRoute: FederationsFederationIdRoute,
@@ -282,7 +326,9 @@ export const routeTree = rootRoute
         "/",
         "/calendar",
         "/disciplines",
+        "/privacy",
         "/search",
+        "/terms",
         "/auth/login",
         "/events/$eventId",
         "/federations/$federationId",
@@ -300,8 +346,14 @@ export const routeTree = rootRoute
     "/disciplines": {
       "filePath": "disciplines.tsx"
     },
+    "/privacy": {
+      "filePath": "privacy.tsx"
+    },
     "/search": {
       "filePath": "search.tsx"
+    },
+    "/terms": {
+      "filePath": "terms.tsx"
     },
     "/auth/login": {
       "filePath": "auth/login.tsx"
