@@ -31,7 +31,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { useToast } from '@/components/ui/use-toast'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import Search from '~icons/lucide/search'
@@ -48,13 +48,7 @@ function RouteComponent() {
   const [selectedStatus, setSelectedStatus] = useState<SchemaStatusEnum | null>(null)
   const { toast } = useToast()
 
-  const { data: federations, isLoading } = $api.useQuery(
-    'get',
-    '/federations/',
-    {
-
-    },
-  )
+  const { data: federations, isLoading } = $api.useQuery('get', '/federations/')
 
   const byDistrict = useMemo(() => {
     if (!federations)
@@ -89,12 +83,18 @@ function RouteComponent() {
     'post',
     '/federations/{id}/accredite',
     {
-      onSuccess: () => {
+      onSuccess: (data) => {
         toast({
           title: 'Статус обновлен',
           description: 'Статус федерации успешно обновлен',
         })
         setStatusComment('')
+        queryClient.invalidateQueries({
+          queryKey: $api.queryOptions('get', '/federations/').queryKey,
+        })
+        queryClient.invalidateQueries({
+          queryKey: $api.queryOptions('get', '/federations/{id}', { params: { path: { id: data.id } } }).queryKey,
+        })
       },
     },
   )
