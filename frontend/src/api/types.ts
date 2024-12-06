@@ -201,8 +201,52 @@ export interface paths {
          * @description Get info about one event.
          */
         get: operations["events_get_event"];
-        put?: never;
+        /**
+         * Update Event
+         * @description Update event.
+         */
+        put: operations["events_update_event"];
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/suggest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Suggest Event
+         * @description Suggest event.
+         */
+        post: operations["events_suggest_event"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/{id}/accredite": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Accredite Event
+         * @description Accredit event.
+         */
+        post: operations["events_accredite_event"];
         delete?: never;
         options?: never;
         head?: never;
@@ -402,16 +446,48 @@ export interface paths {
          * @description Get info about one event.
          */
         get: operations["federations_get_federation"];
-        /**
-         * Update Federation
-         * @description Update one federation.
-         */
-        put: operations["federations_update_federation"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/federations/{id}/accredite": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
         /**
          * Accredite Federation
          * @description Accredit federation.
          */
         post: operations["federations_accredite_federation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/federations/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update Federation
+         * @description Update one federation.
+         */
+        put: operations["federations_update_federation"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -501,85 +577,7 @@ export interface components {
             disciplines: string[];
         };
         /** Event */
-        "Event-Input": {
-            /**
-             * Id
-             * @description MongoDB document ObjectID
-             * @example 5eb7cf5a86d9755df3a6c593
-             */
-            _id?: string;
-            /**
-             * Host Federation
-             * @description Федерация, организующая мероприятие (None - для парсинга со стороны разработчиков)
-             */
-            host_federation?: string | null;
-            /**
-             * Title
-             * @description Наименование спортивного мероприятия
-             */
-            title: string;
-            /**
-             * Description
-             * @description Описание
-             */
-            description?: string | null;
-            /** @description Пол участников (None - любой) */
-            gender?: components["schemas"]["Gender"] | null;
-            /**
-             * Age Min
-             * @description Минимальный возраст участников
-             */
-            age_min?: number | null;
-            /**
-             * Age Max
-             * @description Максимальный возраст участников
-             */
-            age_max?: number | null;
-            /**
-             * Sport
-             * @description Название вида спорта
-             */
-            sport: string;
-            /**
-             * Discipline
-             * @description Названия дисциплин
-             */
-            discipline: string[];
-            /**
-             * Start Date
-             * Format: date-time
-             * @description Дата начала
-             */
-            start_date: string;
-            /**
-             * End Date
-             * Format: date-time
-             * @description Дата конца
-             */
-            end_date: string;
-            /**
-             * Location
-             * @description Места проведения
-             */
-            location: components["schemas"]["EventLocation"][];
-            /**
-             * Participant Count
-             * @description Количество участников
-             */
-            participant_count?: number | null;
-            /**
-             * Ekp Id
-             * @description № СМ в ЕКП
-             */
-            ekp_id?: number | null;
-            /**
-             * Page
-             * @description Страница в ЕКП
-             */
-            page?: number | null;
-        };
-        /** Event */
-        "Event-Output": {
+        Event: {
             /**
              * Id
              * Format: objectid
@@ -593,6 +591,21 @@ export interface components {
              * @description Федерация, организующая мероприятие (None - для парсинга со стороны разработчиков)
              */
             host_federation: string | null;
+            /**
+             * @description Статус мероприятия
+             * @default on_consideration
+             */
+            status: components["schemas"]["EventStatusEnum"];
+            /**
+             * Status Comment
+             * @description Комментарий к статусу
+             */
+            status_comment: string | null;
+            /**
+             * Accreditation Comment
+             * @description Комментарий к аккредитации. Заполняет представитель для того, чтобы сообщить доп. информацию администратору
+             */
+            accreditation_comment: string | null;
             /**
              * Title
              * @description Наименование спортивного мероприятия
@@ -676,6 +689,98 @@ export interface components {
              */
             city?: string | null;
         };
+        /** EventSchema */
+        EventSchema: {
+            /**
+             * Host Federation
+             * @description Федерация, организующая мероприятие (None - для парсинга со стороны разработчиков)
+             */
+            host_federation?: string | null;
+            /**
+             * @description Статус мероприятия
+             * @default on_consideration
+             */
+            status: components["schemas"]["EventStatusEnum"];
+            /**
+             * Status Comment
+             * @description Комментарий к статусу
+             */
+            status_comment?: string | null;
+            /**
+             * Accreditation Comment
+             * @description Комментарий к аккредитации. Заполняет представитель для того, чтобы сообщить доп. информацию администратору
+             */
+            accreditation_comment?: string | null;
+            /**
+             * Title
+             * @description Наименование спортивного мероприятия
+             */
+            title: string;
+            /**
+             * Description
+             * @description Описание
+             */
+            description?: string | null;
+            /** @description Пол участников (None - любой) */
+            gender?: components["schemas"]["Gender"] | null;
+            /**
+             * Age Min
+             * @description Минимальный возраст участников
+             */
+            age_min?: number | null;
+            /**
+             * Age Max
+             * @description Максимальный возраст участников
+             */
+            age_max?: number | null;
+            /**
+             * Sport
+             * @description Название вида спорта
+             */
+            sport: string;
+            /**
+             * Discipline
+             * @description Названия дисциплин
+             */
+            discipline: string[];
+            /**
+             * Start Date
+             * Format: date-time
+             * @description Дата начала
+             */
+            start_date: string;
+            /**
+             * End Date
+             * Format: date-time
+             * @description Дата конца
+             */
+            end_date: string;
+            /**
+             * Location
+             * @description Места проведения
+             */
+            location: components["schemas"]["EventLocation"][];
+            /**
+             * Participant Count
+             * @description Количество участников
+             */
+            participant_count?: number | null;
+            /**
+             * Ekp Id
+             * @description № СМ в ЕКП
+             */
+            ekp_id?: number | null;
+            /**
+             * Page
+             * @description Страница в ЕКП
+             */
+            page?: number | null;
+        };
+        /**
+         * EventStatusEnum
+         * @enum {string}
+         */
+        EventStatusEnum: "on_consideration" | "accredited" | "rejected";
         /** Federation */
         Federation: {
             /**
@@ -944,7 +1049,7 @@ export interface components {
             /** Pages Total */
             pages_total: number;
             /** Events */
-            events: components["schemas"]["Event-Output"][];
+            events: components["schemas"]["Event"][];
         };
         /** Selection */
         Selection: {
@@ -1023,9 +1128,10 @@ export type SchemaBodyEventsShareSelection = components['schemas']['Body_events_
 export type SchemaCreateUser = components['schemas']['CreateUser'];
 export type SchemaDateFilter = components['schemas']['DateFilter'];
 export type SchemaDisciplinesFilterVariants = components['schemas']['DisciplinesFilterVariants'];
-export type SchemaEventInput = components['schemas']['Event-Input'];
-export type SchemaEventOutput = components['schemas']['Event-Output'];
+export type SchemaEvent = components['schemas']['Event'];
 export type SchemaEventLocation = components['schemas']['EventLocation'];
+export type SchemaEventSchema = components['schemas']['EventSchema'];
+export type SchemaEventStatusEnum = components['schemas']['EventStatusEnum'];
 export type SchemaFederation = components['schemas']['Federation'];
 export type SchemaFederationSchema = components['schemas']['FederationSchema'];
 export type SchemaFeedback = components['schemas']['Feedback'];
@@ -1329,7 +1435,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Event-Output"];
+                    "application/json": components["schemas"]["Event"];
                 };
             };
         };
@@ -1349,7 +1455,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Event-Output"][];
+                    "application/json": components["schemas"]["Event"][];
                 };
             };
         };
@@ -1363,7 +1469,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["Event-Input"][];
+                "application/json": components["schemas"]["EventSchema"][];
             };
         };
         responses: {
@@ -1411,7 +1517,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Event-Output"];
+                    "application/json": components["schemas"]["Event"];
                 };
             };
             /** @description Event not found */
@@ -1420,6 +1526,115 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    events_update_event: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EventSchema"];
+            };
+        };
+        responses: {
+            /** @description Event info updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Event"];
+                };
+            };
+            /** @description Only admin or related federation can update event */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    events_suggest_event: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EventSchema"];
+            };
+        };
+        responses: {
+            /** @description Suggest event */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Event"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    events_accredite_event: {
+        parameters: {
+            query: {
+                status: components["schemas"]["EventStatusEnum"];
+                status_comment?: string | null;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Event info updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Event"];
+                };
             };
             /** @description Validation Error */
             422: {
@@ -1771,48 +1986,6 @@ export interface operations {
             };
         };
     };
-    federations_update_federation: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["FederationSchema"];
-            };
-        };
-        responses: {
-            /** @description Update federation */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Federation"];
-                };
-            };
-            /** @description Only admin or federation owner can update federation */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
     federations_accredite_federation: {
         parameters: {
             query: {
@@ -1845,6 +2018,48 @@ export interface operations {
             };
             /** @description Federation not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    federations_update_federation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FederationSchema"];
+            };
+        };
+        responses: {
+            /** @description Update federation */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Federation"];
+                };
+            };
+            /** @description Only admin or federation owner can update federation */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
