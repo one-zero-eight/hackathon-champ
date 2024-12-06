@@ -18,7 +18,7 @@ export function FederationLogo({
     <div className={cn(
       'relative flex items-center justify-center overflow-hidden bg-[#1B1C21]',
       size === 'card' && 'size-12 rounded-md',
-      size === 'federation' && 'size-24 rounded-lg',
+      size === 'federation' && 'size-[128px] rounded-lg',
     )}
     >
       {(!logoUrl || isError)
