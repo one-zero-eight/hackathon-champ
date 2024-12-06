@@ -1,5 +1,4 @@
-import type { SchemaFederation, SchemaStatusEnum } from '../../../api/types'
-import { $api } from '@/api'
+import type { SchemaStatusEnum } from '../../../api/types'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -36,7 +35,17 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import Search from '~icons/lucide/search'
 
-export const Route = createFileRoute('/manage/admin/federations')({
+interface SchemaEvent {
+  id: string
+  name: string
+  date: string
+  status: SchemaStatusEnum
+  status_comment?: string
+  organizer?: string
+  location?: string
+}
+
+export const Route = createFileRoute('/manage/admin/events')({
   component: RouteComponent,
 })
 
@@ -44,60 +53,63 @@ function RouteComponent() {
   const queryClient = useQueryClient()
   const [statusComment, setStatusComment] = useState<string>('')
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null)
   const [selectedStatus, setSelectedStatus] = useState<SchemaStatusEnum | null>(null)
   const { toast } = useToast()
 
-  const { data: federations, isLoading } = $api.useQuery(
-    'get',
-    '/federations/',
-    {
-
+  const { data: events, isLoading } = useQuery<SchemaEvent[]>({
+    queryKey: ['events'],
+    queryFn: async () => {
+      const response = await fetch('/api/events/')
+      if (!response.ok)
+        throw new Error('Failed to fetch events')
+      const data = await response.json()
+      return Array.isArray(data) ? data : []
     },
-  )
+  })
 
-  const byDistrict = useMemo(() => {
-    if (!federations)
-      return new Map()
-    const map = new Map<string, SchemaFederation[]>()
-    for (const federation of federations) {
-      const district = federation.district ?? ''
-      const list = map.get(district) ?? []
-      list.push(federation)
-      map.set(district, list)
-    }
-    return map
-  }, [federations])
-
-  const filteredFederations = useMemo(() => {
-    if (!federations)
+  const filteredEvents = useMemo(() => {
+    if (!events)
       return []
-    return federations.filter((federation) => {
+    return events.filter((event: SchemaEvent) => {
+      if (!event || typeof event !== 'object')
+        return false
+
       const matchesSearch = searchQuery === ''
-        || federation.region.toLowerCase().includes(searchQuery.toLowerCase())
-        || federation.district?.toLowerCase().includes(searchQuery.toLowerCase())
-        || federation.head?.toLowerCase().includes(searchQuery.toLowerCase())
+        || (event.name && event.name.toLowerCase().includes(searchQuery.toLowerCase()))
+        || (event.location && event.location.toLowerCase().includes(searchQuery.toLowerCase()))
+        || (event.organizer && event.organizer.toLowerCase().includes(searchQuery.toLowerCase()))
 
-      const matchesDistrict = !selectedDistrict || federation.district === selectedDistrict
-      const matchesStatus = !selectedStatus || federation.status === selectedStatus
+      const matchesStatus = !selectedStatus || event.status === selectedStatus
 
-      return matchesSearch && matchesDistrict && matchesStatus
+      return matchesSearch && matchesStatus
     })
-  }, [federations, searchQuery, selectedDistrict, selectedStatus])
+  }, [events, searchQuery, selectedStatus])
 
-  const { mutate: accrediteMutation } = $api.useMutation(
-    'post',
-    '/federations/{id}/accredite',
-    {
-      onSuccess: () => {
-        toast({
-          title: 'Статус обновлен',
-          description: 'Статус федерации успешно обновлен',
-        })
-        setStatusComment('')
-      },
+  const accrediteMutation = useMutation({
+    mutationFn: async ({ id, status, comment }: { id: string, status: SchemaStatusEnum, comment?: string }) => {
+      const response = await fetch(`/api/events/${id}/accredite?status=${status}${comment ? `&status_comment=${encodeURIComponent(comment)}` : ''}`, {
+        method: 'POST',
+      })
+      if (!response.ok)
+        throw new Error('Failed to update event status')
+      return response.json()
     },
-  )
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events'] })
+      toast({
+        title: 'Статус обновлен',
+        description: 'Статус мероприятия успешно обновлен',
+      })
+      setStatusComment('')
+    },
+    onError: (error) => {
+      toast({
+        title: 'Ошбка',
+        description: `Не удалось обновить статус: ${error.message}`,
+        variant: 'destructive',
+      })
+    },
+  })
 
   const getStatusBadgeVariant = (status: SchemaStatusEnum): 'default' | 'destructive' | 'secondary' | 'outline' => {
     switch (status) {
@@ -116,21 +128,20 @@ function RouteComponent() {
     return (
       <div className="container mx-auto space-y-6 p-8">
         <div>
-          <h1 className="text-3xl font-bold">Управление федерациями</h1>
+          <h1 className="text-3xl font-bold">Управление мероприятиями</h1>
           <p className="mt-2 text-muted-foreground">
-            Просмотр и управление статусами федераций
+            Просмотр и управление статусами мероприятий
           </p>
         </div>
 
         <div className="flex gap-4">
           <div className="h-10 w-[300px] animate-pulse rounded bg-muted" />
           <div className="h-10 w-[200px] animate-pulse rounded bg-muted" />
-          <div className="h-10 w-[200px] animate-pulse rounded bg-muted" />
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Список федераций</CardTitle>
+            <CardTitle>Список мероприятий</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -138,12 +149,12 @@ function RouteComponent() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-[200px]">Регион</TableHead>
-                      <TableHead className="w-[150px]">Округ</TableHead>
+                      <TableHead className="w-[200px]">Название</TableHead>
+                      <TableHead className="w-[150px]">Дата</TableHead>
                       <TableHead className="w-[150px]">Статус</TableHead>
                       <TableHead>Комментарий</TableHead>
-                      <TableHead className="w-[150px]">Руководитель</TableHead>
-                      <TableHead className="w-[200px]">Контакты</TableHead>
+                      <TableHead className="w-[150px]">Организатор</TableHead>
+                      <TableHead className="w-[200px]">Место проведения</TableHead>
                       <TableHead className="w-[300px]">Действия</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -155,12 +166,7 @@ function RouteComponent() {
                         <TableCell><div className="h-6 w-28 animate-pulse rounded bg-muted" /></TableCell>
                         <TableCell><div className="h-4 w-48 animate-pulse rounded bg-muted" /></TableCell>
                         <TableCell><div className="h-4 w-28 animate-pulse rounded bg-muted" /></TableCell>
-                        <TableCell>
-                          <div className="space-y-2">
-                            <div className="h-4 w-32 animate-pulse rounded bg-muted" />
-                            <div className="h-4 w-28 animate-pulse rounded bg-muted" />
-                          </div>
-                        </TableCell>
+                        <TableCell><div className="h-4 w-32 animate-pulse rounded bg-muted" /></TableCell>
                         <TableCell>
                           <div className="space-y-2">
                             <div className="h-8 w-full animate-pulse rounded bg-muted" />
@@ -185,9 +191,9 @@ function RouteComponent() {
   return (
     <div className="container mx-auto space-y-6 p-8">
       <div>
-        <h1 className="text-3xl font-bold">Управление федерациями</h1>
+        <h1 className="text-3xl font-bold">Управление мероприятиями</h1>
         <p className="mt-2 text-muted-foreground">
-          Просмотр и управление статусами федераций
+          Просмотр и управление статусами мероприятий
         </p>
       </div>
 
@@ -197,61 +203,31 @@ function RouteComponent() {
             <Button variant="outline" className="w-[300px] justify-start text-muted-foreground">
               <Search className="mr-2 size-4 shrink-0" />
               <span className="truncate">
-                {searchQuery || 'Поиск федерации...'}
+                {searchQuery || 'Поиск мероприятия...'}
               </span>
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-[400px] p-0" align="start">
             <Command>
               <CommandInput
-                placeholder="Поиск по региону или руководителю..."
+                placeholder="Поиск по названию или организатору..."
                 value={searchQuery}
                 onValueChange={setSearchQuery}
               />
               <CommandList>
                 <CommandEmpty>Ничего не найдено.</CommandEmpty>
-                {Array.from(byDistrict.entries()).map(([district, feds]) => (
-                  <CommandGroup key={district} heading={district || 'Без округа'}>
-                    {feds.map((federation: SchemaFederation) => (
-                      <CommandItem
-                        key={federation.id}
-                        value={`${district} ${federation.region}`}
-                        onSelect={() => setSearchQuery(federation.region)}
-                        className="flex items-center"
-                      >
-                        <span className="truncate">{federation.region}</span>
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                ))}
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
-
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" className="w-[200px] justify-start">
-              <span className="truncate">
-                {selectedDistrict || 'Все округа'}
-              </span>
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-[300px] p-0">
-            <Command>
-              <CommandList>
-                <CommandItem onSelect={() => setSelectedDistrict(null)}>
-                  Все округа
-                </CommandItem>
-                {Array.from(byDistrict.keys()).map(district => (
-                  <CommandItem
-                    key={district}
-                    onSelect={() => setSelectedDistrict(district)}
-                    className="flex items-center"
-                  >
-                    <span className="truncate">{district || 'Без округа'}</span>
-                  </CommandItem>
-                ))}
+                <CommandGroup>
+                  {events?.map((event: SchemaEvent) => (
+                    <CommandItem
+                      key={event.id}
+                      value={event.name}
+                      onSelect={() => setSearchQuery(event.name)}
+                      className="flex items-center"
+                    >
+                      <span className="truncate">{event.name}</span>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
               </CommandList>
             </Command>
           </PopoverContent>
@@ -263,7 +239,7 @@ function RouteComponent() {
               {selectedStatus
                 ? (selectedStatus === 'on_consideration'
                     ? 'На рассмотрении'
-                    : selectedStatus === 'accredited' ? 'Аккредитована' : 'Отклонена')
+                    : selectedStatus === 'accredited' ? 'Подтверждено' : 'Отклонено')
                 : 'Все статусы'}
             </Button>
           </PopoverTrigger>
@@ -277,10 +253,10 @@ function RouteComponent() {
                   На рассмотрении
                 </CommandItem>
                 <CommandItem onSelect={() => setSelectedStatus('accredited')}>
-                  Аккредитована
+                  Подтверждено
                 </CommandItem>
                 <CommandItem onSelect={() => setSelectedStatus('rejected')}>
-                  Отклонена
+                  Отклонено
                 </CommandItem>
               </CommandList>
             </Command>
@@ -290,7 +266,7 @@ function RouteComponent() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Список федераций</CardTitle>
+          <CardTitle>Список мероприятий</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -298,40 +274,35 @@ function RouteComponent() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[200px]">Регион</TableHead>
-                    <TableHead className="w-[150px]">Округ</TableHead>
+                    <TableHead className="w-[200px]">Название</TableHead>
+                    <TableHead className="w-[150px]">Дата</TableHead>
                     <TableHead className="w-[150px]">Статус</TableHead>
                     <TableHead>Комментарий</TableHead>
-                    <TableHead className="w-[150px]">Руководитель</TableHead>
-                    <TableHead className="w-[200px]">Контакты</TableHead>
+                    <TableHead className="w-[150px]">Организатор</TableHead>
+                    <TableHead className="w-[200px]">Место проведения</TableHead>
                     <TableHead className="w-[300px]">Действия</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredFederations.map(federation => (
-                    <TableRow key={federation.id}>
-                      <TableCell>{federation.region}</TableCell>
-                      <TableCell>{federation.district}</TableCell>
+                  {(filteredEvents || []).map((event: SchemaEvent) => (
+                    <TableRow key={event.id}>
+                      <TableCell>{event.name || '-'}</TableCell>
+                      <TableCell>{event.date ? new Date(event.date).toLocaleDateString() : '-'}</TableCell>
                       <TableCell>
-                        <Badge variant={getStatusBadgeVariant(federation.status)}>
-                          {federation.status === 'on_consideration'
+                        <Badge variant={getStatusBadgeVariant(event.status)}>
+                          {event.status === 'on_consideration'
                             ? 'На рассмотрении'
-                            : federation.status === 'accredited' ? 'Аккредитована' : 'Отклонена'}
+                            : event.status === 'accredited' ? 'Подтверждено' : 'Отклонено'}
                         </Badge>
                       </TableCell>
-                      <TableCell>{federation.status_comment}</TableCell>
-                      <TableCell>{federation.head}</TableCell>
-                      <TableCell>
-                        <div className="space-y-1">
-                          {federation.email && <div className="text-sm">{federation.email}</div>}
-                          {federation.phone && <div className="text-sm">{federation.phone}</div>}
-                        </div>
-                      </TableCell>
+                      <TableCell>{event.status_comment || '-'}</TableCell>
+                      <TableCell>{event.organizer || '-'}</TableCell>
+                      <TableCell>{event.location || '-'}</TableCell>
                       <TableCell>
                         <div className="space-y-2">
                           <div className="space-y-2">
                             <label className="text-sm font-medium">
-                              Комментарий к статусу
+                              Комментарий к статус
                             </label>
                             <Input
                               placeholder="Введите комментарий"
@@ -344,17 +315,17 @@ function RouteComponent() {
                               <DialogTrigger asChild>
                                 <Button
                                   variant="default"
-                                  disabled={federation.status === 'accredited'}
+                                  disabled={event.status === 'accredited'}
                                   className="w-full"
                                 >
-                                  Аккредитовать
+                                  Подтвердить
                                 </Button>
                               </DialogTrigger>
                               <DialogContent>
                                 <DialogHeader>
-                                  <DialogTitle>Аккредитация федерации</DialogTitle>
+                                  <DialogTitle>Подтверждение мероприятия</DialogTitle>
                                   <DialogDescription>
-                                    Вы уверены, что хотите аккредитовать эту федерацию?
+                                    Вы уверены, что хотите подтвердить это мероприятие?
                                   </DialogDescription>
                                 </DialogHeader>
                                 <DialogFooter className="gap-2">
@@ -363,14 +334,10 @@ function RouteComponent() {
                                   </Button>
                                   <Button
                                     onClick={() => {
-                                      accrediteMutation({
-                                        params: {
-                                          path: { id: federation.id },
-                                          query: {
-                                            status: 'accredited',
-                                            status_comment: statusComment,
-                                          },
-                                        },
+                                      accrediteMutation.mutate({
+                                        id: event.id,
+                                        status: 'accredited',
+                                        comment: statusComment,
                                       })
                                       document.querySelector('dialog')?.close()
                                     }}
@@ -385,7 +352,7 @@ function RouteComponent() {
                               <DialogTrigger asChild>
                                 <Button
                                   variant="destructive"
-                                  disabled={federation.status === 'rejected'}
+                                  disabled={event.status === 'rejected'}
                                   className="w-full"
                                 >
                                   Отклонить
@@ -393,9 +360,9 @@ function RouteComponent() {
                               </DialogTrigger>
                               <DialogContent>
                                 <DialogHeader>
-                                  <DialogTitle>Отклонение федерации</DialogTitle>
+                                  <DialogTitle>Отклонение мероприятия</DialogTitle>
                                   <DialogDescription>
-                                    Вы уверены, что хоти��е отклонить эту федеацию?
+                                    Вы уверены, что хотите отклонить это мероприятие?
                                   </DialogDescription>
                                 </DialogHeader>
                                 <DialogFooter className="gap-2">
@@ -405,14 +372,10 @@ function RouteComponent() {
                                   <Button
                                     variant="destructive"
                                     onClick={() => {
-                                      accrediteMutation({
-                                        params: {
-                                          path: { id: federation.id },
-                                          query: {
-                                            status: 'rejected',
-                                            status_comment: statusComment,
-                                          },
-                                        },
+                                      accrediteMutation.mutate({
+                                        id: event.id,
+                                        status: 'rejected',
+                                        comment: statusComment,
                                       })
                                       document.querySelector('dialog')?.close()
                                     }}

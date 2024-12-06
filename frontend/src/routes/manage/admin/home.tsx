@@ -54,12 +54,25 @@ function RouteComponent() {
     },
   )
 
+  // Fetch all feedback/applications
+  const { data: feedback, isPending: feedbackLoading } = $api.useQuery(
+    'get',
+    '/feedback/',
+  )
+
   // Calculate federation statistics
   const federationStats = {
     total: federations?.length ?? 0,
     accredited: federations?.filter(f => f.status === 'accredited').length ?? 0,
     pending: federations?.filter(f => f.status === 'on_consideration').length ?? 0,
     rejected: federations?.filter(f => f.status === 'rejected').length ?? 0,
+  }
+
+  // Calculate feedback statistics
+  const weekAgo = Temporal.Now.instant().subtract({ hours: 24 * 7 }).toString()
+  const feedbackStats = {
+    total: feedback?.length ?? 0,
+    newThisWeek: feedback?.filter(f => f.id > weekAgo).length ?? 0,
   }
 
   return (
@@ -84,7 +97,7 @@ function RouteComponent() {
       <div className="grid gap-6">
         {/* Quick Stats */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {federationsLoading
+          {federationsLoading || feedbackLoading
             ? (
                 <>
                   <Card>
@@ -196,14 +209,16 @@ function RouteComponent() {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm font-medium text-gray-500">
-                            Заявок
+                            Запросов
                           </p>
-                          <p className="text-2xl font-bold">24</p>
+                          <p className="text-2xl font-bold">{feedbackStats.total}</p>
                         </div>
                         <FileText className="size-8 text-yellow-500" />
                       </div>
                       <div className="mt-4 flex items-center text-sm text-gray-500">
-                        8 новых за неделю
+                        {feedbackStats.newThisWeek}
+                        {' '}
+                        новых за неделю
                       </div>
                     </CardContent>
                   </Card>
