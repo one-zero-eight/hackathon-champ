@@ -1,10 +1,11 @@
 import { queryClient } from '@/api/query-client.ts'
+import { Toaster } from '@/components/ui/toaster'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { createRouter, RouterProvider } from '@tanstack/react-router'
 import ReactDOM from 'react-dom/client'
+
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
-import { Toaster } from '@/components/ui/toaster'
 
 import './index.css'
 
