@@ -670,6 +670,8 @@ export interface components {
              * @description Страница в ЕКП
              */
             page: number | null;
+            /** @description Результаты мероприятия */
+            results: components["schemas"]["Results"] | null;
         };
         /** EventLocation */
         EventLocation: {
@@ -775,12 +777,14 @@ export interface components {
              * @description Страница в ЕКП
              */
             page?: number | null;
+            /** @description Результаты мероприятия */
+            results?: components["schemas"]["Results"] | null;
         };
         /**
          * EventStatusEnum
          * @enum {string}
          */
-        EventStatusEnum: "on_consideration" | "accredited" | "rejected";
+        EventStatusEnum: "draft" | "on_consideration" | "accredited" | "rejected";
         /** Federation */
         Federation: {
             /**
@@ -1032,12 +1036,40 @@ export interface components {
             /** Page No */
             page_no: number;
         };
+        /** Protocol */
+        Protocol: {
+            /**
+             * By Url
+             * @description Ссылка на протокол
+             */
+            by_url?: string | null;
+            /**
+             * By File
+             * @description Путь к файлу в S3
+             */
+            by_file?: string | null;
+        };
         /** RegionsFilterVariants */
         RegionsFilterVariants: {
             /** Region */
             region: string | null;
             /** Cities */
             cities: string[];
+        };
+        /** Results */
+        Results: {
+            /**
+             * Protocols
+             * @description Протоколы зачёта, список ссылок
+             * @default []
+             */
+            protocols: components["schemas"]["Protocol"][];
+            /**
+             * Team Places
+             * @description Места команд
+             * @default []
+             */
+            team_places: components["schemas"]["TeamPlace"][];
         };
         /** SearchEventsResponse */
         SearchEventsResponse: {
@@ -1080,6 +1112,29 @@ export interface components {
          * @enum {string}
          */
         StatusEnum: "on_consideration" | "accredited" | "rejected";
+        /** TeamPlace */
+        TeamPlace: {
+            /**
+             * Place
+             * @description Место (1, 2, 3-5)
+             */
+            place: string;
+            /**
+             * Team
+             * @description Название команды
+             */
+            team: string;
+            /**
+             * Members
+             * @description Состав команды
+             */
+            members: string[];
+            /**
+             * Score
+             * @description Очки
+             */
+            score?: unknown | null;
+        };
         /** UpdateUser */
         UpdateUser: {
             /** Login */
@@ -1144,11 +1199,14 @@ export type SchemaLocationsFilterVariants = components['schemas']['LocationsFilt
 export type SchemaMinMaxFilter = components['schemas']['MinMaxFilter'];
 export type SchemaOrder = components['schemas']['Order'];
 export type SchemaPagination = components['schemas']['Pagination'];
+export type SchemaProtocol = components['schemas']['Protocol'];
 export type SchemaRegionsFilterVariants = components['schemas']['RegionsFilterVariants'];
+export type SchemaResults = components['schemas']['Results'];
 export type SchemaSearchEventsResponse = components['schemas']['SearchEventsResponse'];
 export type SchemaSelection = components['schemas']['Selection'];
 export type SchemaSort = components['schemas']['Sort'];
 export type SchemaStatusEnum = components['schemas']['StatusEnum'];
+export type SchemaTeamPlace = components['schemas']['TeamPlace'];
 export type SchemaUpdateUser = components['schemas']['UpdateUser'];
 export type SchemaUserRole = components['schemas']['UserRole'];
 export type SchemaValidationError = components['schemas']['ValidationError'];
