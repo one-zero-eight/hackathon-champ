@@ -104,8 +104,9 @@ function RouteComponent() {
           <div className="h-10 w-[200px] animate-pulse rounded bg-muted" />
           <div className="h-10 w-[200px] animate-pulse rounded bg-muted" />
         </div>
+
         <div>
-          <h1 className="text-3xl font-bold">Список федераций</h1>
+          <h1 className="text-2xl font-bold">Список федераций</h1>
         </div>
 
         <div className="space-y-4">
@@ -160,7 +161,6 @@ function RouteComponent() {
             </Table>
           </div>
         </div>
-
       </div>
     )
   }
@@ -341,7 +341,6 @@ function RouteComponent() {
           </Table>
         </div>
       </div>
-
     </div>
   )
 }
