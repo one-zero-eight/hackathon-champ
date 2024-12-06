@@ -1,0 +1,49 @@
+<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-image width="150px" src="https://github.com/user-attachments/assets/b1675f8f-1beb-4cd6-8dc5-ee3407c413df"></mj-image>
+        <mj-text
+          font-family="helvetica"
+          align="center"
+          font-size="24px"
+          color="#000"
+          font-weight="bold"
+        >
+          Уведомление ФСП Линк
+        </mj-text>
+
+        <mj-text
+          font-family="helvetica"
+          align="center"
+          font-size="16px"
+          color="#000"
+        >
+          ${{message}}
+        </mj-text>
+
+        <mj-button
+          background-color="#0056b3"
+          color="#ffffff"
+          font-family="helvetica"
+          font-size="18px"
+          href="https://champ.innohassle.ru"
+          border-radius="5px"
+          padding="20px"
+        >
+          Перейти на сайт
+        </mj-button>
+
+        <mj-text
+          font-family="helvetica"
+          align="center"
+          font-size="14px"
+          color="#666"
+          padding-top="20px"
+        >
+          Спасибо, что пользуетесь ФСП Линк!
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

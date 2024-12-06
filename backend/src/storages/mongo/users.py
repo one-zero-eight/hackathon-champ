@@ -19,6 +19,7 @@ class UserSchema(BaseSchema):
     password_hash: str
     federation: PydanticObjectId | None = None
     role: UserRole = UserRole.DEFAULT
+    email: str | None = None
 
 
 class User(UserSchema, CustomDocument):

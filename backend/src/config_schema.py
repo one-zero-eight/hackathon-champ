@@ -14,6 +14,17 @@ class SettingBaseModel(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True, extra="forbid")
 
 
+class SMTP(SettingBaseModel):
+    host: str = "smtp.yandex.ru"
+    "SMTP server host"
+    port: int = 587
+    "SMTP server port"
+    username: str
+    "SMTP server username"
+    password: SecretStr
+    "SMTP server password"
+
+
 class MinioSettings(SettingBaseModel):
     endpoint: str = "127.0.0.1:9000"
     "URL of the target service."
@@ -50,6 +61,8 @@ class Settings(SettingBaseModel):
     "Path to the directory with static files"
     minio: MinioSettings
     "Minio settings"
+    smtp: SMTP | None = None
+    "SMTP settings"
 
     @classmethod
     def from_yaml(cls, path: Path) -> "Settings":

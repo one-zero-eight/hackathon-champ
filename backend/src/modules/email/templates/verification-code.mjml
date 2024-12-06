@@ -1,0 +1,46 @@
+<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-image width="150px" src="https://github.com/user-attachments/assets/b1675f8f-1beb-4cd6-8dc5-ee3407c413df"></mj-image>
+        <mj-text
+          font-family="helvetica"
+          align="center"
+          font-size="24px"
+          color="#000"
+          font-weight="bold"
+        >
+          Подтверждение Email
+        </mj-text>
+
+        <mj-text
+          font-family="helvetica"
+          align="center"
+          font-size="16px"
+          color="#000"
+        >
+          Код:
+        </mj-text>
+
+        <mj-text
+          font-family="helvetica"
+          align="center"
+          font-size="32px"
+          color="#000"
+          font-weight="bold"
+        >
+          ${{code}}
+        </mj-text>
+
+        <mj-text
+          font-family="helvetica"
+          align="center"
+          font-size="16px"
+          color="#000"
+        >
+          Не распространяйте этот код. Используйте его только один раз.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

@@ -11,6 +11,22 @@ class StatusEnum(StrEnum):
     ACCREDITED = "accredited"
     REJECTED = "rejected"
 
+    def ru(self):
+        if self == StatusEnum.ON_CONSIDERATION:
+            return "На рассмотрении"
+        if self == StatusEnum.ACCREDITED:
+            return "Аккредитована"
+        if self == StatusEnum.REJECTED:
+            return "Отклонена"
+
+    def color(self):
+        if self == StatusEnum.ON_CONSIDERATION:
+            return "blue"
+        if self == StatusEnum.ACCREDITED:
+            return "green"
+        if self == StatusEnum.REJECTED:
+            return "red"
+
 
 class FederationSchema(BaseSchema):
     region: str = Field(examples=["г. Москва"])

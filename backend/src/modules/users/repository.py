@@ -3,7 +3,7 @@ __all__ = ["user_repository"]
 from beanie import PydanticObjectId
 
 from src.modules.users.schemas import CreateUser, UpdateUser
-from src.storages.mongo.users import User
+from src.storages.mongo.users import User, UserRole
 
 
 # noinspection PyMethodMayBeStatic
@@ -28,6 +28,12 @@ class UserRepository:
     async def read_all(self) -> list[User]:
         return await User.all().to_list()
 
+    async def read_all_admins(self) -> list[User]:
+        return await User.find(User.role == UserRole.ADMIN).to_list()
+
+    async def read_for_federation(self, federation_id: PydanticObjectId) -> list[User]:
+        return await User.find(User.federation == federation_id).to_list()
+
     async def read_id_and_password_hash(self, login: str) -> tuple[PydanticObjectId, str] | None:
         user = await User.find_one(User.login == login)
         if user is None:
@@ -39,6 +45,10 @@ class UserRepository:
 
     async def is_banned(self, user_id: str | PydanticObjectId) -> bool:
         return False
+
+    async def set_email(self, user_id: PydanticObjectId, email: str) -> User | None:
+        await User.find_one(User.id == user_id).update({"$set": {"email": email}})
+        return await User.get(user_id)
 
 
 user_repository: UserRepository = UserRepository()

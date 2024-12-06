@@ -38,6 +38,34 @@ $defs:
     - secret_key
     title: MinioSettings
     type: object
+  SMTP:
+    additionalProperties: false
+    properties:
+      host:
+        default: smtp.yandex.ru
+        description: SMTP server host
+        title: Host
+        type: string
+      port:
+        default: 587
+        description: SMTP server port
+        title: Port
+        type: integer
+      username:
+        description: SMTP server username
+        title: Username
+        type: string
+      password:
+        description: SMTP server password
+        format: password
+        title: Password
+        type: string
+        writeOnly: true
+    required:
+    - username
+    - password
+    title: SMTP
+    type: object
 additionalProperties: false
 description: Settings for the application.
 properties:
@@ -89,6 +117,12 @@ properties:
   minio:
     $ref: '#/$defs/MinioSettings'
     description: Minio settings
+  smtp:
+    anyOf:
+    - $ref: '#/$defs/SMTP'
+    - type: 'null'
+    default: null
+    description: SMTP settings
 required:
 - database_uri
 - session_secret_key

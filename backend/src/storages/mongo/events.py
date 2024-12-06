@@ -38,6 +38,26 @@ class EventStatusEnum(StrEnum):
     REJECTED = "rejected"
     "Отклонено"
 
+    def ru(self):
+        if self == EventStatusEnum.DRAFT:
+            return "Черновик"
+        if self == EventStatusEnum.ON_CONSIDERATION:
+            return "На рассмотрении"
+        if self == EventStatusEnum.ACCREDITED:
+            return "Аккредитовано"
+        if self == EventStatusEnum.REJECTED:
+            return "Отклонено"
+
+    def color(self):
+        if self == EventStatusEnum.DRAFT:
+            return "gray"
+        if self == EventStatusEnum.ON_CONSIDERATION:
+            return "blue"
+        if self == EventStatusEnum.ACCREDITED:
+            return "green"
+        if self == EventStatusEnum.REJECTED:
+            return "red"
+
 
 class TeamPlace(BaseSchema):
     place: str

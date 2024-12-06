@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from starlette.exceptions import HTTPException
 
 from src.api.dependencies import USER_AUTH
+from src.modules.feedback.repository import feedback_repository
 from src.modules.notify.repository import notify_repository
 from src.modules.users.repository import user_repository
 from src.storages.mongo.feedback import Feedback, FeedbackSchema
@@ -10,20 +11,6 @@ from src.storages.mongo.notify import NewFeedback, NotifySchema
 from src.storages.mongo.users import UserRole
 
 router = APIRouter(prefix="/feedback", tags=["Feedback"])
-
-
-class FeedbackRepository:
-    async def create(self, feedback: FeedbackSchema) -> Feedback:
-        return await Feedback.model_validate(feedback, from_attributes=True).insert()
-
-    async def get_all(self) -> list[Feedback]:
-        return await Feedback.all().to_list()
-
-    async def get_all_for_federation(self, id: PydanticObjectId) -> list[Feedback]:
-        return await Feedback.find(Feedback.federation == id).to_list()
-
-
-feedback_repository = FeedbackRepository()
 
 
 @router.post("/", responses={200: {"description": "Feedback created"}})

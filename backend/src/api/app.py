@@ -78,6 +78,7 @@ app.add_middleware(
 
 app.mount(settings.static_mount_path, StaticFiles(directory=settings.static_directory), name="static")
 
+from src.modules.email.routes import router as router_email  # noqa: E402
 from src.modules.events.routes import router as router_events  # noqa: E402
 from src.modules.federation.routes import router as router_federation  # noqa: E402
 from src.modules.feedback.routes import router as router_feedback  # noqa: E402
@@ -91,3 +92,4 @@ app.include_router(router_federation)
 app.include_router(router_feedback)
 app.include_router(router_files)
 app.include_router(router_notify)
+app.include_router(router_email)

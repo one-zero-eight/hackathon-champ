@@ -21,6 +21,7 @@ class ViewUser(BaseSchema):
     login: str
     role: UserRole
     federation: PydanticObjectId | None = None
+    email: str | None = None
 
 
 class UserAuthData(BaseSchema):
