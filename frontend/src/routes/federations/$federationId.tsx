@@ -1,16 +1,16 @@
 import { $api } from '@/api'
-import { createFileRoute } from '@tanstack/react-router'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import Mail from '~icons/lucide/mail'
-import Phone from '~icons/lucide/phone'
-import Globe from '~icons/lucide/globe'
-import MapPin from '~icons/lucide/map-pin'
+import { createFileRoute } from '@tanstack/react-router'
 import Building from '~icons/lucide/building'
-import Users from '~icons/lucide/users'
-import Trophy from '~icons/lucide/trophy'
+import Globe from '~icons/lucide/globe'
+import Mail from '~icons/lucide/mail'
+import MapPin from '~icons/lucide/map-pin'
 import Medal from '~icons/lucide/medal'
+import Phone from '~icons/lucide/phone'
+import Trophy from '~icons/lucide/trophy'
+import Users from '~icons/lucide/users'
 
 type Federation = {
   id: string
@@ -28,7 +28,7 @@ type Federation = {
   competitions_count: number
   achievements: string[]
   address: string | null
-  location: { lat: number; lng: number } | null
+  location: { lat: number, lng: number } | null
 }
 
 const STATUS_COLORS = {
@@ -58,8 +58,8 @@ function RouteComponent() {
     return (
       <div className="container mx-auto py-8">
         <div className="space-y-4">
-          <div className="h-8 w-64 bg-muted rounded animate-pulse" />
-          <div className="h-96 bg-muted rounded animate-pulse" />
+          <div className="h-8 w-64 animate-pulse rounded bg-muted" />
+          <div className="h-96 animate-pulse rounded bg-muted" />
         </div>
       </div>
     )
@@ -68,30 +68,31 @@ function RouteComponent() {
   if (isError) {
     return (
       <div className="container mx-auto py-8">
-        <div className="bg-destructive/10 text-destructive px-4 py-2 rounded">
+        <div className="rounded bg-destructive/10 px-4 py-2 text-destructive">
           Произошла ошибка при загрузке данных федерации
         </div>
       </div>
     )
   }
 
-  if (!federation) return null
+  if (!federation)
+    return null
 
   return (
-    <div className="container mx-auto py-8 space-y-6">
+    <div className="container mx-auto space-y-6 py-8">
       <div className="flex items-start gap-6">
-        <div className="h-24 w-24 rounded-xl bg-muted flex items-center justify-center">
-          <Building className="h-12 w-12" />
+        <div className="flex size-24 items-center justify-center rounded-xl bg-muted">
+          <Building className="size-12" />
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-4">
             <h1 className="text-3xl font-bold">{federation.region}</h1>
-            <div className={`px-3 py-1 rounded-full text-sm font-medium ${STATUS_COLORS[federation.status]}`}>
+            <div className={`rounded-full px-3 py-1 text-sm font-medium ${STATUS_COLORS[federation.status]}`}>
               {STATUS_LABELS[federation.status]}
             </div>
           </div>
           {federation.district && (
-            <p className="text-lg text-muted-foreground mt-1">{federation.district}</p>
+            <p className="mt-1 text-lg text-muted-foreground">{federation.district}</p>
           )}
           {federation.description && (
             <p className="mt-4 text-muted-foreground">{federation.description}</p>
@@ -107,17 +108,17 @@ function RouteComponent() {
           <CardContent className="space-y-4">
             {federation.head && (
               <div>
-                <div className="text-sm font-medium">Руководитель</div>
+                <SectionLabel>Руководитель</SectionLabel>
                 <div className="mt-1">{federation.head}</div>
               </div>
             )}
-            
+
             {federation.email && (
               <div>
-                <div className="text-sm font-medium">Email</div>
+                <SectionLabel>Email</SectionLabel>
                 <Button variant="link" className="mt-1 h-auto p-0" asChild>
                   <a href={`mailto:${federation.email}`} className="flex items-center gap-2">
-                    <Mail className="h-4 w-4" />
+                    <Mail className="size-4" />
                     {federation.email}
                   </a>
                 </Button>
@@ -126,10 +127,10 @@ function RouteComponent() {
 
             {federation.phone && (
               <div>
-                <div className="text-sm font-medium">Телефон</div>
+                <SectionLabel>Телефон</SectionLabel>
                 <Button variant="link" className="mt-1 h-auto p-0" asChild>
                   <a href={`tel:${federation.phone}`} className="flex items-center gap-2">
-                    <Phone className="h-4 w-4" />
+                    <Phone className="size-4" />
                     {federation.phone}
                   </a>
                 </Button>
@@ -138,10 +139,10 @@ function RouteComponent() {
 
             {federation.website && (
               <div>
-                <div className="text-sm font-medium">Сайт</div>
+                <SectionLabel>Сайт</SectionLabel>
                 <Button variant="link" className="mt-1 h-auto p-0" asChild>
                   <a href={federation.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
-                    <Globe className="h-4 w-4" />
+                    <Globe className="size-4" />
                     {federation.website}
                   </a>
                 </Button>
@@ -150,9 +151,9 @@ function RouteComponent() {
 
             {federation.address && (
               <div>
-                <div className="text-sm font-medium">Адрес</div>
+                <SectionLabel>Адрес</SectionLabel>
                 <div className="mt-1 flex items-start gap-2">
-                  <MapPin className="h-4 w-4 mt-1" />
+                  <MapPin className="mt-1 size-4" />
                   <span>{federation.address}</span>
                 </div>
               </div>
@@ -167,17 +168,17 @@ function RouteComponent() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
-                <div className="text-sm font-medium text-muted-foreground">Участников</div>
-                <div className="text-2xl font-bold flex items-center gap-2">
-                  <Users className="h-5 w-5" />
+                <SectionLabel>Участников</SectionLabel>
+                <div className="flex items-center gap-2 text-2xl font-bold">
+                  <Users className="size-5" />
                   {federation.members_count}
                 </div>
               </div>
-              
+
               <div className="space-y-1">
-                <div className="text-sm font-medium text-muted-foreground">Соревнований</div>
-                <div className="text-2xl font-bold flex items-center gap-2">
-                  <Trophy className="h-5 w-5" />
+                <SectionLabel>Соревнований</SectionLabel>
+                <div className="flex items-center gap-2 text-2xl font-bold">
+                  <Trophy className="size-5" />
                   {federation.competitions_count}
                 </div>
               </div>
@@ -186,19 +187,19 @@ function RouteComponent() {
             <Separator />
 
             <div>
-              <div className="text-sm font-medium mb-2">Достижения</div>
-              {federation.achievements && federation.achievements.length > 0 ? (
-                <div className="space-y-2">
-                  {federation.achievements.map((achievement: string, i: number) => (
-                    <div key={i} className="flex items-start gap-2">
-                      <Medal className="h-4 w-4 mt-1" />
-                      <span>{achievement}</span>
+              <SectionLabel>Достижения</SectionLabel>
+              {federation.achievements && federation.achievements.length > 0
+                ? (
+                    <div className="space-y-2">
+                      {federation.achievements.map(achievement => (
+                        <div key={achievement} className="flex items-start gap-2">
+                          <Medal className="mt-1 size-4" />
+                          <span>{achievement}</span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-sm text-muted-foreground">Нет данных о достижениях</div>
-              )}
+                  )
+                : (<div className="text-sm text-muted-foreground">Нет данных о достижениях</div>)}
             </div>
           </CardContent>
         </Card>
@@ -211,7 +212,7 @@ function RouteComponent() {
           </CardHeader>
           <CardContent>
             <div className="h-[400px] rounded-lg bg-muted">
-              <div className="h-full flex items-center justify-center text-muted-foreground">
+              <div className="flex h-full items-center justify-center text-muted-foreground">
                 Карта будет добавлена позже
               </div>
             </div>
@@ -220,4 +221,8 @@ function RouteComponent() {
       )}
     </div>
   )
+}
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return <div className="text-sm font-semibold text-muted-foreground">{children}</div>
 }
