@@ -1,36 +1,16 @@
 import { $api } from '@/api'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
 import { urlToMaps } from '@/lib/utils'
 import { createFileRoute } from '@tanstack/react-router'
 import Building from '~icons/lucide/building'
 import Globe from '~icons/lucide/globe'
 import Mail from '~icons/lucide/mail'
 import MapPin from '~icons/lucide/map-pin'
-import Medal from '~icons/lucide/medal'
 import Phone from '~icons/lucide/phone'
 import Trophy from '~icons/lucide/trophy'
 import Users from '~icons/lucide/users'
-
-type Federation = {
-  id: string
-  region: string
-  district: string | null
-  status: 'on_consideration' | 'accredited' | 'rejected'
-  status_comment: string | null
-  description: string | null
-  head: string | null
-  email: string | null
-  phone: string | null
-  logo: string | null
-  website: string | null
-  members_count: number
-  competitions_count: number
-  achievements: string[]
-  address: string | null
-  location: { lat: number, lng: number } | null
-}
+import Telegram from '~icons/ph/telegram-logo'
 
 const STATUS_COLORS = {
   on_consideration: 'bg-yellow-500 text-yellow-950',
@@ -50,10 +30,9 @@ export const Route = createFileRoute('/federations/$federationId')({
 
 function RouteComponent() {
   const { federationId } = Route.useParams()
-  const { data, isPending, isError } = $api.useQuery('get', `/federations/{id}`, {
+  const { data: federation, isPending, isError } = $api.useQuery('get', `/federations/{id}`, {
     params: { path: { id: federationId } },
   })
-  const federation = data as Federation | undefined
 
   if (isPending) {
     return (
@@ -138,13 +117,25 @@ function RouteComponent() {
               </div>
             )}
 
-            {federation.website && (
+            {federation.site && (
               <div>
                 <SectionLabel>Сайт</SectionLabel>
                 <Button variant="link" className="mt-1 h-auto p-0" asChild>
-                  <a href={federation.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                  <a href={federation.site} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
                     <Globe />
-                    {federation.website}
+                    {federation.site}
+                  </a>
+                </Button>
+              </div>
+            )}
+
+            {federation.telegram && (
+              <div>
+                <SectionLabel>Telegram</SectionLabel>
+                <Button variant="link" className="mt-1 h-auto p-0" asChild>
+                  <a href={federation.telegram} target="_blank" rel="noopener noreferrer">
+                    <Telegram />
+                    {federation.telegram}
                   </a>
                 </Button>
               </div>
@@ -178,7 +169,7 @@ function RouteComponent() {
                 <SectionLabel>Участников</SectionLabel>
                 <div className="flex items-center gap-2 text-2xl font-bold">
                   <Users className="size-5" />
-                  {federation.members_count}
+                  TODO
                 </div>
               </div>
 
@@ -186,46 +177,14 @@ function RouteComponent() {
                 <SectionLabel>Соревнований</SectionLabel>
                 <div className="flex items-center gap-2 text-2xl font-bold">
                   <Trophy className="size-5" />
-                  {federation.competitions_count}
+                  TODO
                 </div>
               </div>
             </div>
 
-            <Separator />
-
-            <div>
-              <SectionLabel>Достижения</SectionLabel>
-              {federation.achievements && federation.achievements.length > 0
-                ? (
-                    <div className="space-y-2">
-                      {federation.achievements.map(achievement => (
-                        <div key={achievement} className="flex items-start gap-2">
-                          <Medal className="mt-1 size-4" />
-                          <span>{achievement}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )
-                : (<div className="text-sm text-muted-foreground">Нет данных о достижениях</div>)}
-            </div>
           </CardContent>
         </Card>
       </div>
-
-      {federation.location && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Расположение на карте</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[400px] rounded-lg bg-muted">
-              <div className="flex h-full items-center justify-center text-muted-foreground">
-                Карта будет добавлена позже
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   )
 }
