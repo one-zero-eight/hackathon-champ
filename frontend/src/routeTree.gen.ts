@@ -12,6 +12,7 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as SearchImport } from './routes/search'
+import { Route as FederationsImport } from './routes/federations'
 import { Route as DisciplinesImport } from './routes/disciplines'
 import { Route as CalendarImport } from './routes/calendar'
 import { Route as IndexImport } from './routes/index'
@@ -25,6 +26,12 @@ import { Route as AuthLoginImport } from './routes/auth/login'
 const SearchRoute = SearchImport.update({
   id: '/search',
   path: '/search',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const FederationsRoute = FederationsImport.update({
+  id: '/federations',
+  path: '/federations',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -95,6 +102,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DisciplinesImport
       parentRoute: typeof rootRoute
     }
+    '/federations': {
+      id: '/federations'
+      path: '/federations'
+      fullPath: '/federations'
+      preLoaderRoute: typeof FederationsImport
+      parentRoute: typeof rootRoute
+    }
     '/search': {
       id: '/search'
       path: '/search'
@@ -139,6 +153,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/calendar': typeof CalendarRoute
   '/disciplines': typeof DisciplinesRoute
+  '/federations': typeof FederationsRoute
   '/search': typeof SearchRoute
   '/auth/login': typeof AuthLoginRoute
   '/events/$eventId': typeof EventsEventIdRoute
@@ -150,6 +165,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/calendar': typeof CalendarRoute
   '/disciplines': typeof DisciplinesRoute
+  '/federations': typeof FederationsRoute
   '/search': typeof SearchRoute
   '/auth/login': typeof AuthLoginRoute
   '/events/$eventId': typeof EventsEventIdRoute
@@ -162,6 +178,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/calendar': typeof CalendarRoute
   '/disciplines': typeof DisciplinesRoute
+  '/federations': typeof FederationsRoute
   '/search': typeof SearchRoute
   '/auth/login': typeof AuthLoginRoute
   '/events/$eventId': typeof EventsEventIdRoute
@@ -175,6 +192,7 @@ export interface FileRouteTypes {
     | '/'
     | '/calendar'
     | '/disciplines'
+    | '/federations'
     | '/search'
     | '/auth/login'
     | '/events/$eventId'
@@ -185,6 +203,7 @@ export interface FileRouteTypes {
     | '/'
     | '/calendar'
     | '/disciplines'
+    | '/federations'
     | '/search'
     | '/auth/login'
     | '/events/$eventId'
@@ -195,6 +214,7 @@ export interface FileRouteTypes {
     | '/'
     | '/calendar'
     | '/disciplines'
+    | '/federations'
     | '/search'
     | '/auth/login'
     | '/events/$eventId'
@@ -207,6 +227,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CalendarRoute: typeof CalendarRoute
   DisciplinesRoute: typeof DisciplinesRoute
+  FederationsRoute: typeof FederationsRoute
   SearchRoute: typeof SearchRoute
   AuthLoginRoute: typeof AuthLoginRoute
   EventsEventIdRoute: typeof EventsEventIdRoute
@@ -218,6 +239,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CalendarRoute: CalendarRoute,
   DisciplinesRoute: DisciplinesRoute,
+  FederationsRoute: FederationsRoute,
   SearchRoute: SearchRoute,
   AuthLoginRoute: AuthLoginRoute,
   EventsEventIdRoute: EventsEventIdRoute,
@@ -238,6 +260,7 @@ export const routeTree = rootRoute
         "/",
         "/calendar",
         "/disciplines",
+        "/federations",
         "/search",
         "/auth/login",
         "/events/$eventId",
@@ -253,6 +276,9 @@ export const routeTree = rootRoute
     },
     "/disciplines": {
       "filePath": "disciplines.tsx"
+    },
+    "/federations": {
+      "filePath": "federations.tsx"
     },
     "/search": {
       "filePath": "search.tsx"

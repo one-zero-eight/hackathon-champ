@@ -31,6 +31,14 @@ export function TopBar() {
         </Button>
         <Button asChild variant="link">
           <Link
+            to="/federations"
+            activeProps={{ className: 'underline' }}
+          >
+            Региональные федерации
+          </Link>
+        </Button>
+        <Button asChild variant="link">
+          <Link
             to="/calendar"
             activeProps={{ className: 'underline' }}
           >
