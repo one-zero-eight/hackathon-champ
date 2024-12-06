@@ -70,6 +70,7 @@
 :root {
   --header-height: 50px;
   --search-sidebar-width: 350px;
+  overflow-y: scroll;
 }
 
 html,
