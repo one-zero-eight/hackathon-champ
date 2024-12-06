@@ -2,7 +2,6 @@ import type { SchemaFederation, SchemaStatusEnum } from '../../../api/types'
 import { $api } from '@/api'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Command,
   CommandEmpty,
@@ -105,66 +104,63 @@ function RouteComponent() {
           <div className="h-10 w-[200px] animate-pulse rounded bg-muted" />
           <div className="h-10 w-[200px] animate-pulse rounded bg-muted" />
         </div>
+        <div>
+          <h1 className="text-3xl font-bold">Список федераций</h1>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Список федераций</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[200px]">Регион</TableHead>
-                      <TableHead className="w-[150px]">Округ</TableHead>
-                      <TableHead className="w-[150px]">Статус</TableHead>
-                      <TableHead className="w-[150px]">Руководитель</TableHead>
-                      <TableHead className="w-[200px]">Контакты</TableHead>
-                      <TableHead className="w-[300px]">Действия</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {Array.from(
-                      { length: 5 },
-                      (_, index) => `placeholder-${index}`,
-                    ).map(key => (
-                      <TableRow key={key}>
-                        <TableCell>
-                          <div className="h-4 w-32 animate-pulse rounded bg-muted" />
-                        </TableCell>
-                        <TableCell>
-                          <div className="h-4 w-24 animate-pulse rounded bg-muted" />
-                        </TableCell>
-                        <TableCell>
-                          <div className="h-6 w-28 animate-pulse rounded bg-muted" />
-                        </TableCell>
-                        <TableCell>
-                          <div className="h-4 w-28 animate-pulse rounded bg-muted" />
-                        </TableCell>
-                        <TableCell>
-                          <div className="space-y-2">
-                            <div className="h-4 w-32 animate-pulse rounded bg-muted" />
-                            <div className="h-4 w-28 animate-pulse rounded bg-muted" />
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="space-y-2">
-                            <div className="h-8 w-full animate-pulse rounded bg-muted" />
-                            <div className="flex gap-2">
-                              <div className="h-9 w-full animate-pulse rounded bg-muted" />
-                              <div className="h-9 w-full animate-pulse rounded bg-muted" />
-                            </div>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="space-y-4">
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[200px]">Регион</TableHead>
+                  <TableHead className="w-[150px]">Округ</TableHead>
+                  <TableHead className="w-[150px]">Статус</TableHead>
+                  <TableHead className="w-[150px]">Руководитель</TableHead>
+                  <TableHead className="w-[200px]">Контакты</TableHead>
+                  <TableHead className="w-[300px]">Действия</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {Array.from(
+                  { length: 5 },
+                  (_, index) => `placeholder-${index}`,
+                ).map(key => (
+                  <TableRow key={key}>
+                    <TableCell>
+                      <div className="h-4 w-32 animate-pulse rounded bg-muted" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-4 w-24 animate-pulse rounded bg-muted" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-6 w-28 animate-pulse rounded bg-muted" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-4 w-28 animate-pulse rounded bg-muted" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-2">
+                        <div className="h-4 w-32 animate-pulse rounded bg-muted" />
+                        <div className="h-4 w-28 animate-pulse rounded bg-muted" />
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-2">
+                        <div className="h-8 w-full animate-pulse rounded bg-muted" />
+                        <div className="flex gap-2">
+                          <div className="h-9 w-full animate-pulse rounded bg-muted" />
+                          <div className="h-9 w-full animate-pulse rounded bg-muted" />
+                        </div>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+
       </div>
     )
   }
@@ -285,69 +281,67 @@ function RouteComponent() {
         </Popover>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Список федераций</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[200px]">Регион</TableHead>
-                    <TableHead className="w-[150px]">Округ</TableHead>
-                    <TableHead className="w-[150px]">Руководитель</TableHead>
-                    <TableHead className="w-[200px]">Контакты</TableHead>
-                    <TableHead className="w-[300px]">Действия</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredFederations.map(federation => (
-                    <TableRow key={federation.id}>
-                      <TableCell className="flex flex-col">
-                        <span className="w-fit">{federation.region}</span>
-                        <Badge
-                          variant={getStatusBadgeVariant(federation.status)}
-                          className="w-fit"
-                        >
-                          {federation.status === 'on_consideration'
-                            ? 'На рассмотрении'
-                            : federation.status === 'accredited'
-                              ? 'Аккредитована'
-                              : 'Отклонена'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{federation.district}</TableCell>
-                      <TableCell>{federation.head}</TableCell>
-                      <TableCell>
-                        <div className="space-y-1">
-                          {federation.email && (
-                            <div className="text-sm">{federation.email}</div>
-                          )}
-                          {federation.phone && (
-                            <div className="text-sm">{federation.phone}</div>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          asChild
-                          variant="outline"
-                        >
-                          <Link to="/manage/federations/$id" params={{ id: federation.id }}>
-                            Редактировать
-                          </Link>
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <div>
+        <h1 className="text-2xl font-bold">Список федераций</h1>
+      </div>
+
+      <div className="space-y-4 bg-card">
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[200px]">Регион</TableHead>
+                <TableHead className="w-[150px]">Округ</TableHead>
+                <TableHead className="w-[150px]">Руководитель</TableHead>
+                <TableHead className="w-[200px]">Контакты</TableHead>
+                <TableHead className="w-[300px]">Действия</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredFederations.map(federation => (
+                <TableRow key={federation.id}>
+                  <TableCell className="flex flex-col">
+                    <span className="w-fit">{federation.region}</span>
+                    <Badge
+                      variant={getStatusBadgeVariant(federation.status)}
+                      className="w-fit"
+                    >
+                      {federation.status === 'on_consideration'
+                        ? 'На рассмотрении'
+                        : federation.status === 'accredited'
+                          ? 'Аккредитована'
+                          : 'Отклонена'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{federation.district}</TableCell>
+                  <TableCell>{federation.head}</TableCell>
+                  <TableCell>
+                    <div className="space-y-1">
+                      {federation.email && (
+                        <div className="text-sm">{federation.email}</div>
+                      )}
+                      {federation.phone && (
+                        <div className="text-sm">{federation.phone}</div>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Button asChild variant="outline">
+                      <Link
+                        to="/manage/federations/$id"
+                        params={{ id: federation.id }}
+                      >
+                        Редактировать
+                      </Link>
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+
     </div>
   )
 }
