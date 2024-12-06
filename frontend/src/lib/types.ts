@@ -11,3 +11,4 @@ export type Sort = SchemaSort
 export type Location = SchemaEventLocation
 export type Federation = SchemaFederation
 export type Event = SchemaEvent
+export type EventStatus = Event['status']

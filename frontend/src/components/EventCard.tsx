@@ -5,6 +5,7 @@ import { cn, infoForDateRange, locationText } from '@/lib/utils.ts'
 import LinkIcon from '~icons/lucide/link'
 import MapPin from '~icons/lucide/map-pin'
 import Users from '~icons/lucide/users'
+import { EventStatusBadge } from './EventStatusBadge'
 import { Badge } from './ui/badge'
 import { Separator } from './ui/separator'
 
@@ -77,7 +78,7 @@ export function EventCard({
       </div>
 
       <div className="flex grow flex-col gap-2 p-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <Button
             asChild
             className="h-7 w-fit rounded-md px-2 text-xs"
@@ -94,6 +95,7 @@ export function EventCard({
               {event.ekp_id}
             </a>
           </Button>
+          <EventStatusBadge status={event.status} />
         </div>
         <h4 className="text-xl font-bold">{event.title}</h4>
         <div className="flex flex-wrap gap-1">
