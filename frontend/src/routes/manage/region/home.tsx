@@ -20,7 +20,6 @@ import Award from '~icons/lucide/award'
 import Bell from '~icons/lucide/bell'
 import CalendarIcon from '~icons/lucide/calendar'
 import ChevronRight from '~icons/lucide/chevron-right'
-import Filter from '~icons/lucide/filter'
 import Plus from '~icons/lucide/plus'
 import Users from '~icons/lucide/users'
 
@@ -51,7 +50,7 @@ function RouteComponent() {
   )
 
   return (
-    <main className="ml-64 flex-1 p-6">
+    <>
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Панель управления</h1>
@@ -60,13 +59,11 @@ function RouteComponent() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button>
-            <Plus className="mr-2 size-4" />
-            Новая заявка
-          </Button>
-          <Button variant="outline">
-            <Filter className="mr-2 size-4" />
-            Фильтры
+          <Button asChild>
+            <Link to="/manage/region/events/suggest">
+              <Plus className="mr-2 size-4" />
+              Новое мероприятие
+            </Link>
           </Button>
         </div>
       </div>
@@ -205,27 +202,31 @@ function RouteComponent() {
             <CardContent>
               <ScrollArea className="h-[400px] pr-4">
                 <div className="space-y-4">
-                  {eventsLoading ? (
-                    <>
-                      <Skeleton className="h-[120px]" />
-                      <Skeleton className="h-[120px]" />
-                      <Skeleton className="h-[120px]" />
-                    </>
-                  ) : upcomingEvents?.events.length ? (
-                    upcomingEvents.events.map((event) => (
-                      <EventCard key={event.id} event={event} />
-                    ))
-                  ) : (
-                    <div className="flex h-[200px] items-center justify-center text-gray-500">
-                      <div className="text-center">
-                        <CalendarIcon className="mx-auto mb-2 size-8 text-gray-400" />
-                        <p>Нет предстоящих мероприятий</p>
-                        <Button variant="link" className="mt-2">
-                          Создать мероприятие
-                        </Button>
-                      </div>
-                    </div>
-                  )}
+                  {eventsLoading
+                    ? (
+                        <>
+                          <Skeleton className="h-[120px]" />
+                          <Skeleton className="h-[120px]" />
+                          <Skeleton className="h-[120px]" />
+                        </>
+                      )
+                    : upcomingEvents?.events.length
+                      ? (
+                          upcomingEvents.events.map(event => (
+                            <EventCard key={event.id} event={event} />
+                          ))
+                        )
+                      : (
+                          <div className="flex h-[200px] items-center justify-center text-gray-500">
+                            <div className="text-center">
+                              <CalendarIcon className="mx-auto mb-2 size-8 text-gray-400" />
+                              <p>Нет предстоящих мероприятий</p>
+                              <Button variant="link" className="mt-2">
+                                Создать мероприятие
+                              </Button>
+                            </div>
+                          </div>
+                        )}
                 </div>
               </ScrollArea>
             </CardContent>
@@ -274,6 +275,6 @@ function RouteComponent() {
           </Card>
         </div>
       </div>
-    </main>
+    </>
   )
 }
