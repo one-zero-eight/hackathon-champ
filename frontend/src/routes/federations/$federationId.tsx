@@ -144,7 +144,7 @@ function RouteComponent() {
             {federation.address && (
               <div>
                 <SectionLabel>Адрес</SectionLabel>
-                <Button variant="link" className="mt-1 flex h-auto items-start gap-2 whitespace-break-spaces p-0" asChild>
+                <Button variant="link" className="mt-1 flex h-auto items-start justify-start gap-2 whitespace-break-spaces p-0" asChild>
                   <a
                     href={urlToMaps({ country: 'Россия', region: federation.region, city: federation.address })}
                     target="_blank"
