@@ -1,6 +1,7 @@
 import { $api } from '@/api'
 import { ColoredBadge } from '@/components/ColoredBadge'
 import { EventCard } from '@/components/EventCard'
+import { Notifications } from '@/components/Notifications'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -10,14 +11,12 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { plainDatesForFilter } from '@/lib/utils'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Temporal } from 'temporal-polyfill'
 import ArrowUpRight from '~icons/lucide/arrow-up-right'
 import Award from '~icons/lucide/award'
-import Bell from '~icons/lucide/bell'
 import CalendarIcon from '~icons/lucide/calendar'
 import ChevronRight from '~icons/lucide/chevron-right'
 import Plus from '~icons/lucide/plus'
@@ -183,97 +182,66 @@ function RouteComponent() {
             </CardContent>
           </Card>
 
-          {/* Upcoming Events */}
-          <Card className="col-span-2">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Ближайшие мероприятия</CardTitle>
-                <CardDescription>
-                  Мероприятия на ближайшие 30 дней
-                </CardDescription>
-              </div>
-              <Button variant="outline" asChild>
-                <Link to="/calendar">
-                  Календарь
-                  <ChevronRight className="ml-2 size-4" />
-                </Link>
-              </Button>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-[400px] pr-4">
-                <div className="space-y-4">
-                  {eventsLoading
-                    ? (
-                        <>
-                          <Skeleton className="h-[120px]" />
-                          <Skeleton className="h-[120px]" />
-                          <Skeleton className="h-[120px]" />
-                        </>
-                      )
-                    : upcomingEvents?.events.length
-                      ? (
-                          upcomingEvents.events.map(event => (
-                            <EventCard key={event.id} event={event} />
-                          ))
-                        )
-                      : (
-                          <div className="flex h-[200px] items-center justify-center text-gray-500">
-                            <div className="text-center">
-                              <CalendarIcon className="mx-auto mb-2 size-8 text-gray-400" />
-                              <p>Нет предстоящих мероприятий</p>
-                              <Button variant="link" className="mt-2">
-                                Создать мероприятие
-                              </Button>
-                            </div>
-                          </div>
-                        )}
-                </div>
-              </ScrollArea>
-            </CardContent>
-          </Card>
-
           {/* Notifications */}
-          <Card>
+          <Card className="col-span-2 flex flex-col">
             <CardHeader>
               <CardTitle>Уведомления</CardTitle>
-              <CardDescription>
-                Последние обновления и напоминания
-              </CardDescription>
+              <CardDescription>Уведомления о новых заявках и мероприятиях</CardDescription>
             </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-[300px]">
-                <div className="space-y-4">
-                  <div className="flex items-start gap-4">
-                    <div className="rounded-full bg-blue-100 p-2">
-                      <Bell className="size-4 text-blue-500" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">
-                        Новая заявка одобрена
-                      </p>
-                      <p className="text-xs text-gray-500">2 часа назад</p>
-                    </div>
-                  </div>
-                  <Separator />
-                  <div className="flex items-start gap-4">
-                    <div className="rounded-full bg-yellow-100 p-2">
-                      <Bell className="size-4 text-yellow-500" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">
-                        Приближается дедлайн подачи заявок
-                      </p>
-                      <p className="text-xs text-gray-500">5 часов назад</p>
-                    </div>
-                  </div>
-                  <Button variant="outline" className="mt-4 w-full">
-                    Все уведомления
-                  </Button>
-                </div>
-              </ScrollArea>
+            <CardContent className="flex max-h-[300px] grow flex-col overflow-y-auto">
+              <Notifications type="my-federation" />
             </CardContent>
           </Card>
         </div>
+
+        {/* Upcoming Events */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Ближайшие мероприятия</CardTitle>
+              <CardDescription>
+                Мероприятия на ближайшие 30 дней
+              </CardDescription>
+            </div>
+            <Button variant="outline" asChild>
+              <Link to="/calendar">
+                Календарь
+                <ChevronRight className="ml-2 size-4" />
+              </Link>
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-[400px] pr-4">
+              <div className="space-y-4">
+                {eventsLoading
+                  ? (
+                      <>
+                        <Skeleton className="h-[120px]" />
+                        <Skeleton className="h-[120px]" />
+                        <Skeleton className="h-[120px]" />
+                      </>
+                    )
+                  : upcomingEvents?.events.length
+                    ? (
+                        upcomingEvents.events.map(event => (
+                          <EventCard key={event.id} event={event} />
+                        ))
+                      )
+                    : (
+                        <div className="flex h-[200px] items-center justify-center text-gray-500">
+                          <div className="text-center">
+                            <CalendarIcon className="mx-auto mb-2 size-8 text-gray-400" />
+                            <p>Нет предстоящих мероприятий</p>
+                            <Button variant="link" className="mt-2">
+                              Создать мероприятие
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+              </div>
+            </ScrollArea>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

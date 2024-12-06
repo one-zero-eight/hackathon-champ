@@ -1,5 +1,6 @@
 import { $api } from '@/api'
 import { EventCard } from '@/components/EventCard'
+import { Notifications } from '@/components/Notifications'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -300,6 +301,19 @@ function RouteComponent() {
             </CardContent>
           </Card>
 
+          {/* Notifications */}
+          <Card className="col-span-2 flex flex-col">
+            <CardHeader>
+              <CardTitle>Уведомления</CardTitle>
+              <CardDescription>Уведомления о новых заявках и мероприятиях</CardDescription>
+            </CardHeader>
+            <CardContent className="flex max-h-[300px] grow flex-col overflow-y-auto">
+              <Notifications type="admin" />
+            </CardContent>
+          </Card>
+        </div>
+
+        <div>
           {/* Upcoming Events */}
           <Card className="col-span-2">
             <CardHeader className="flex flex-row items-center justify-between">

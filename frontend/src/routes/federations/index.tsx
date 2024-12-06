@@ -1,7 +1,7 @@
 import type { Federation } from '@/lib/types'
 import { $api } from '@/api'
 import { FederationLogo } from '@/components/FederationLogo'
-import { FederationStatusIcon } from '@/components/FederationStatusIcon'
+import { StatusIcon } from '@/components/StatusIcon'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import {
@@ -112,7 +112,7 @@ function RouteComponent() {
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
                             <h3 className="font-semibold">{federation.region}</h3>
-                            <FederationStatusIcon
+                            <StatusIcon
                               status={federation.status}
                               className={cn(
                                 federation.status === 'on_consideration' && 'text-yellow-500',

@@ -129,3 +129,37 @@ export function normalizeFilters(f: Filters): Filters {
 export function urlToMaps(location: Location) {
   return `https://yandex.ru/maps/?text=${encodeURIComponent(locationText(location))}`
 }
+
+/**
+ * Returns a human-readable label for the difference between two dates.
+ *
+ * @example
+ * labelForDateDiff(new Date(), new Date(Date.now() - 1000)) // "только что"
+ * labelForDateDiff(new Date(), new Date(Date.now() - 2 * 60 * 1000)) // "2 минуты назад"
+ * labelForDateDiff(new Date(), new Date(Date.now() - 2 * 60 * 60 * 1000)) // "2 часа назад"
+ * labelForDateDiff(new Date(), new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)) // "2 дня назад"
+ */
+export function labelForDateDiff(
+  from: Date,
+  to: Date,
+): string {
+  const aMs = from.getTime()
+  const bMs = to.getTime()
+
+  if (aMs < bMs) {
+    return 'todo'
+  }
+
+  const diffSec = Math.floor((aMs - bMs) / 1000)
+
+  if (diffSec < 60)
+    return 'только что'
+  const diffMin = Math.floor(diffSec / 60)
+  if (diffMin < 60)
+    return `${diffMin} ${pluralize(diffMin, 'минуту', 'минуты', 'минут')} назад`
+  const diffHours = Math.floor(diffMin / 60)
+  if (diffHours < 24)
+    return `${diffHours} ${pluralize(diffHours, 'час', 'часа', 'часов')} назад`
+  const diffDays = Math.floor(diffHours / 24)
+  return `${diffDays} ${pluralize(diffDays, 'день', 'дня', 'дней')} назад`
+}
