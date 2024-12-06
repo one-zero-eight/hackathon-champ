@@ -6,20 +6,13 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from starlette.responses import Response
 
-from src.api.exceptions import IncorrectCredentialsException
 from src.modules.events.repository import events_repository
 from src.modules.events.schemas import DateFilter, Filters, Pagination, Sort
 from src.modules.ics_utils import get_base_calendar
 from src.storages.mongo.events import Event
 from src.storages.mongo.selection import Selection
 
-router = APIRouter(
-    prefix="/events",
-    tags=["Events"],
-    responses={
-        **IncorrectCredentialsException.responses,
-    },
-)
+router = APIRouter(prefix="/events", tags=["Events"])
 
 
 @router.get("/random-event")

@@ -2,20 +2,13 @@ from beanie import PydanticObjectId
 from fastapi import APIRouter, HTTPException
 
 from src.api.dependencies import USER_AUTH
-from src.api.exceptions import IncorrectCredentialsException
 from src.modules.federation.repository import federation_repository
 from src.modules.users.repository import user_repository
 from src.storages.mongo import Federation
 from src.storages.mongo.federation import FederationSchema, StatusEnum
 from src.storages.mongo.users import UserRole
 
-router = APIRouter(
-    prefix="/federations",
-    tags=["Federations"],
-    responses={
-        **IncorrectCredentialsException.responses,
-    },
-)
+router = APIRouter(prefix="/federations", tags=["Federations"])
 
 
 @router.get("/", responses={200: {"description": "Info about all federations"}})
