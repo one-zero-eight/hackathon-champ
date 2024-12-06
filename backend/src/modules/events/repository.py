@@ -149,9 +149,7 @@ class EventsRepository:
         return await Selection.get(id_)
 
     async def update(self, id: PydanticObjectId, event: EventSchema) -> Event | None:
-        await Event.find_one(Event.id == id).update(
-            {"$set": event.model_dump(exclude={"id", "status", "status_comment"})}
-        )
+        await Event.find_one(Event.id == id).update({"$set": event.model_dump()})
         return await Event.get(id)
 
 
