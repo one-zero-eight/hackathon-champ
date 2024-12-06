@@ -1,4 +1,5 @@
 import { useMe, useMyFederation } from '@/api/me.ts'
+import { NavLink } from '@/components/NavLink'
 import { Button } from '@/components/ui/button.tsx'
 import { Separator } from '@/components/ui/separator.tsx'
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
@@ -45,18 +46,9 @@ function AdminNav() {
       </div>
 
       <nav className="flex flex-col p-2">
-        <Button asChild variant="link" className="mb-1 justify-start">
-          <Link
-            to="/manage/admin/home"
-            className="relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-[15px] font-medium underline-offset-4"
-            activeProps={{
-              className: 'underline',
-            }}
-          >
-            <Home className="size-5" />
-            Самое важное
-          </Link>
-        </Button>
+        <NavLink to="/manage/admin/home" icon={Home}>
+          Самое важное
+        </NavLink>
       </nav>
     </>
   )
@@ -74,71 +66,26 @@ function FederationNav() {
         </p>
       </div>
 
-      <nav className="flex flex-col p-2">
-        <Button asChild variant="link" className="mb-1 justify-start">
-          <Link
-            to="/manage/region/home"
-            className="relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-[15px] font-medium underline-offset-4"
-            activeProps={{
-              className: 'underline',
-            }}
-          >
-            <Home className="size-5" />
-            Самое важное
-          </Link>
-        </Button>
+      <nav className="flex flex-col gap-1 p-2">
+        <NavLink to="/manage/region/home" icon={Home}>
+          Самое важное
+        </NavLink>
 
-        <Button asChild variant="link" className="mb-1 justify-start">
-          <Link
-            to="/manage/region/events"
-            className="relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-[15px] font-medium underline-offset-4"
-            activeProps={{
-              className: 'underline',
-            }}
-          >
-            <Award className="size-5" />
-            Мероприятия
-          </Link>
-        </Button>
+        <NavLink to="/manage/region/events" icon={Award}>
+          Мероприятия
+        </NavLink>
 
-        <Button asChild variant="link" className="mb-1 justify-start">
-          <Link
-            to="/manage/region/requests"
-            className="relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-[15px] font-medium underline-offset-4"
-            activeProps={{
-              className: 'underline',
-            }}
-          >
-            <FileText className="size-5" />
-            Заявки
-          </Link>
-        </Button>
+        <NavLink to="/manage/region/requests" icon={FileText}>
+          Заявки
+        </NavLink>
 
-        <Button asChild variant="link" className="mb-1 justify-start">
-          <Link
-            to="/manage/region/feedback"
-            className="relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-[15px] font-medium underline-offset-4"
-            activeProps={{
-              className: 'underline',
-            }}
-          >
-            <MessageSquare className="size-5" />
-            Связь с федерацией
-          </Link>
-        </Button>
+        <NavLink to="/manage/region/feedback" icon={MessageSquare}>
+          Связь с федерацией
+        </NavLink>
 
-        <Button asChild variant="link" className="mb-1 justify-start">
-          <Link
-            to="/manage/region/profile"
-            className="relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-[15px] font-medium underline-offset-4"
-            activeProps={{
-              className: 'underline',
-            }}
-          >
-            <User className="size-5" />
-            Настройки профиля
-          </Link>
-        </Button>
+        <NavLink to="/manage/region/profile" icon={User}>
+          Настройки профиля
+        </NavLink>
       </nav>
     </>
   )

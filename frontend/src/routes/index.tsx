@@ -25,7 +25,7 @@ function RouteComponent() {
   })
 
   return (
-    <main className="mt-[calc(var(--header-height)*-1)] flex w-full flex-col">
+    <main className="flex w-full flex-col">
       {/* Hero Section */}
       <section className="relative mt-[-var(--header-height)] min-h-screen overflow-hidden bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 px-4">
         <div className="absolute inset-0">

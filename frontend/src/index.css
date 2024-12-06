@@ -68,11 +68,9 @@
 }
 
 :root {
-  --header-height: 50px;
+  --header-height: 60px;
   --search-sidebar-width: 350px;
   --manage-sidebar-width: 300px;
-
-  overflow-y: auto;
 }
 
 html,
