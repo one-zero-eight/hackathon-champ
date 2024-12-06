@@ -3,8 +3,21 @@ import { $api } from '@/api'
 import { useMyFederation } from '@/api/me'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
@@ -15,7 +28,10 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import Loader from '~icons/lucide/loader'
 
-const statusLabels: Record<SchemaStatusEnum, { label: string, variant: 'default' | 'secondary' | 'destructive' }> = {
+const statusLabels: Record<
+  SchemaStatusEnum,
+  { label: string; variant: 'default' | 'secondary' | 'destructive' }
+> = {
   on_consideration: { label: 'На рассмотрении', variant: 'default' },
   accredited: { label: 'Аккредитована', variant: 'secondary' },
   rejected: { label: 'Отклонена', variant: 'destructive' },
@@ -35,14 +51,17 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
-export const Route = createFileRoute('/manage/region/profile')({
+export const Route = createFileRoute('/manage/federations/$id')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
   const [isLoading, setIsLoading] = useState(false)
   const { data: federation, refetch } = useMyFederation()
-  const { mutate: updateFederation } = $api.useMutation('put', '/federations/{id}/')
+  const { mutate: updateFederation } = $api.useMutation(
+    'put',
+    '/federations/{id}/',
+  )
   const { toast } = useToast()
 
   const form = useForm<ProfileFormValues>({
@@ -61,7 +80,9 @@ function RouteComponent() {
   })
 
   // Store initial values when federation data is loaded
-  const [initialValues, setInitialValues] = useState<ProfileFormValues | null>(null)
+  const [initialValues, setInitialValues] = useState<ProfileFormValues | null>(
+    null,
+  )
 
   useEffect(() => {
     if (federation) {
@@ -92,8 +113,7 @@ function RouteComponent() {
   }
 
   async function onSubmit(data: ProfileFormValues) {
-    if (!federation)
-      return
+    if (!federation) return
 
     setIsLoading(true)
     try {
@@ -110,30 +130,32 @@ function RouteComponent() {
         logo: data.logo,
       }
 
-      await updateFederation({
-        params: { path: { id: federation.id } },
-        body: updateData,
-      }, {
-        onSuccess: () => {
-          toast({
-            title: 'Успешно',
-            description: 'Данные федерации обновлены',
-            duration: 3000,
-          })
-          refetch()
+      await updateFederation(
+        {
+          params: { path: { id: federation.id } },
+          body: updateData,
         },
-        onError: (error) => {
-          toast({
-            title: 'Ошибка',
-            description: 'Не удалось обновить данные федерации',
-            variant: 'destructive',
-            duration: 5000,
-          })
-          console.error('Failed to update federation data:', error)
+        {
+          onSuccess: () => {
+            toast({
+              title: 'Успешно',
+              description: 'Данные федерации обновлены',
+              duration: 3000,
+            })
+            refetch()
+          },
+          onError: (error) => {
+            toast({
+              title: 'Ошибка',
+              description: 'Не удалось обновить данные федерации',
+              variant: 'destructive',
+              duration: 5000,
+            })
+            console.error('Failed to update federation data:', error)
+          },
         },
-      })
-    }
-    finally {
+      )
+    } finally {
       setIsLoading(false)
     }
   }
@@ -144,7 +166,9 @@ function RouteComponent() {
   return (
     <div className="container mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
       <div className="mb-8 space-y-2">
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Профиль федерации</h1>
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+          Профиль федерации
+        </h1>
         <p className="text-sm text-muted-foreground sm:text-base">
           Управление данными и настройками федерации
         </p>
@@ -169,13 +193,19 @@ function RouteComponent() {
               {federation.status_comment && (
                 <div className="flex flex-col gap-1.5">
                   <span className="font-medium">Комментарий к статусу:</span>
-                  <p className="text-sm text-muted-foreground">{federation.status_comment}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {federation.status_comment}
+                  </p>
                 </div>
               )}
               {federation.accreditation_comment && (
                 <div className="flex flex-col gap-1.5">
-                  <span className="font-medium">Комментарий к аккредитации:</span>
-                  <p className="text-sm text-muted-foreground">{federation.accreditation_comment}</p>
+                  <span className="font-medium">
+                    Комментарий к аккредитации:
+                  </span>
+                  <p className="text-sm text-muted-foreground">
+                    {federation.accreditation_comment}
+                  </p>
                 </div>
               )}
             </div>
@@ -214,7 +244,14 @@ function RouteComponent() {
                     <FormItem>
                       <FormLabel>Федеральный округ</FormLabel>
                       <FormControl>
-                        <Input placeholder="Название федерального округа" {...field} value={field.value || ''} onChange={e => field.onChange(e.target.value || null)} />
+                        <Input
+                          placeholder="Название федерального округа"
+                          {...field}
+                          value={field.value || ''}
+                          onChange={(e) =>
+                            field.onChange(e.target.value || null)
+                          }
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -233,7 +270,7 @@ function RouteComponent() {
                         className="min-h-[100px]"
                         {...field}
                         value={field.value || ''}
-                        onChange={e => field.onChange(e.target.value || null)}
+                        onChange={(e) => field.onChange(e.target.value || null)}
                       />
                     </FormControl>
                     <FormMessage />
@@ -263,7 +300,9 @@ function RouteComponent() {
                           placeholder="Иванов Иван Иванович"
                           {...field}
                           value={field.value || ''}
-                          onChange={e => field.onChange(e.target.value || null)}
+                          onChange={(e) =>
+                            field.onChange(e.target.value || null)
+                          }
                         />
                       </FormControl>
                       <FormMessage />
@@ -282,7 +321,9 @@ function RouteComponent() {
                           placeholder="example@mail.ru"
                           {...field}
                           value={field.value || ''}
-                          onChange={e => field.onChange(e.target.value || null)}
+                          onChange={(e) =>
+                            field.onChange(e.target.value || null)
+                          }
                         />
                       </FormControl>
                       <FormMessage />
@@ -303,7 +344,9 @@ function RouteComponent() {
                           placeholder="+7 (999) 123-45-67"
                           {...field}
                           value={field.value || ''}
-                          onChange={e => field.onChange(e.target.value || null)}
+                          onChange={(e) =>
+                            field.onChange(e.target.value || null)
+                          }
                         />
                       </FormControl>
                       <FormMessage />
@@ -321,7 +364,9 @@ function RouteComponent() {
                           placeholder="https://example.com"
                           {...field}
                           value={field.value || ''}
-                          onChange={e => field.onChange(e.target.value || null)}
+                          onChange={(e) =>
+                            field.onChange(e.target.value || null)
+                          }
                         />
                       </FormControl>
                       <FormMessage />
@@ -340,7 +385,7 @@ function RouteComponent() {
                         placeholder="ул. Примерная, д. 1, офис 123"
                         {...field}
                         value={field.value || ''}
-                        onChange={e => field.onChange(e.target.value || null)}
+                        onChange={(e) => field.onChange(e.target.value || null)}
                       />
                     </FormControl>
                     <FormMessage />
@@ -365,16 +410,14 @@ function RouteComponent() {
               disabled={isLoading || !hasChanges}
               className="w-full sm:w-auto"
             >
-              {isLoading
-                ? (
-                    <>
-                      <Loader className="mr-2 size-4 animate-spin" />
-                      Сохранение...
-                    </>
-                  )
-                : (
-                    'Сохранить изменения'
-                  )}
+              {isLoading ? (
+                <>
+                  <Loader className="mr-2 size-4 animate-spin" />
+                  Сохранение...
+                </>
+              ) : (
+                'Сохранить изменения'
+              )}
             </Button>
           </div>
         </form>

@@ -48,7 +48,7 @@ function AdminNav() {
         <NavLink to="/manage/admin/home" icon={Home}>
           Самое важное
         </NavLink>
-        <NavLink to="/manage/admin/federations" icon={Users}>
+        <NavLink to="/manage/federations" icon={Users}>
           Федерации
         </NavLink>
         <NavLink to="/manage/events/all" icon={Award}>
@@ -84,7 +84,7 @@ function FederationNav() {
           Связь с федерацией
         </NavLink>
 
-        <NavLink to="/manage/region/profile" icon={User}>
+        <NavLink to="/manage/federations/$id" params={{ id: myFederation?.id }} icon={User}>
           Настройки профиля
         </NavLink>
       </nav>

@@ -4,11 +4,13 @@ import { Button } from './ui/button'
 
 export function NavLink({
   to,
+  params,
   children,
   className,
   icon: Icon,
 }: {
   to: string
+  params?: any
   children: React.ReactNode
   className?: string
   icon?: React.ComponentType<{ className?: string }>
@@ -21,6 +23,7 @@ export function NavLink({
     >
       <Link
         to={to}
+        params={params}
         activeProps={{ className: 'text-purple-700 bg-accent' }}
       >
         {Icon && <Icon className="size-5" />}
