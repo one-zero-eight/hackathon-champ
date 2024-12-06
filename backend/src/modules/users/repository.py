@@ -2,7 +2,7 @@ __all__ = ["user_repository"]
 
 from beanie import PydanticObjectId
 
-from src.modules.users.schemas import CreateUser
+from src.modules.users.schemas import CreateUser, UpdateUser
 from src.storages.mongo.users import User
 
 
@@ -18,8 +18,15 @@ class UserRepository:
 
         return await created.insert()
 
+    async def update(self, user_id: PydanticObjectId, data: UpdateUser) -> User | None:
+        await User.find_one(User.id == user_id).update({"$set": data.model_dump(exclude_unset=True)})
+        return await User.get(user_id)
+
     async def read(self, user_id: PydanticObjectId) -> User | None:
         return await User.get(user_id)
+
+    async def read_all(self) -> list[User]:
+        return await User.all().to_list()
 
     async def read_id_and_password_hash(self, login: str) -> tuple[PydanticObjectId, str] | None:
         user = await User.find_one(User.login == login)

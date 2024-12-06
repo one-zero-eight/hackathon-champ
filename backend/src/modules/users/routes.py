@@ -1,9 +1,11 @@
-from fastapi import APIRouter, Request
+from beanie import PydanticObjectId
+from fastapi import APIRouter, HTTPException, Request
 
 from src.api.dependencies import USER_AUTH
 from src.api.exceptions import IncorrectCredentialsException
 from src.modules.users.repository import user_repository
-from src.modules.users.schemas import ViewUser
+from src.modules.users.schemas import CreateUser, UpdateUser, ViewUser
+from src.storages.mongo.users import UserRole
 
 router = APIRouter(
     prefix="/users",
@@ -37,6 +39,76 @@ async def register_by_credentials(login: str, password: str, request: Request) -
     user = CreateUser(login=login, password=password)
     created = await user_repository.create(user)
     request.session["uid"] = str(created.id)
+
+
+@router.post(
+    "/create",
+    responses={200: {"description": "Successfully created"}, 403: {"description": "Only admin can create users"}},
+)
+async def create_user(data: CreateUser, auth: USER_AUTH) -> ViewUser:
+    """
+    Create user
+    """
+    user = await user_repository.read(auth.user_id)
+    if user.role == UserRole.ADMIN:
+        created = await user_repository.create(data)
+        return created
+    else:
+        raise IncorrectCredentialsException()
+
+
+@router.get(
+    "/", responses={200: {"description": "Info about all users"}, 403: {"description": "Only admin can get users"}}
+)
+async def get_all_users(auth: USER_AUTH) -> list[ViewUser]:
+    """
+    Get info about all users.
+    """
+    user = await user_repository.read(auth.user_id)
+    if user.role == UserRole.ADMIN:
+        return await user_repository.read_all()
+    else:
+        raise HTTPException(status_code=403, detail="Only admin can get users")
+
+
+@router.get(
+    "/{id}",
+    responses={200: {"description": "Info about user"}, 403: {"description": "Only admin can get users"}},
+)
+async def get_user(id: PydanticObjectId, auth: USER_AUTH) -> ViewUser:
+    """
+    Get info about one user.
+    """
+    user = await user_repository.read(auth.user_id)
+    if user.role == UserRole.ADMIN:
+        u = await user_repository.read(id)
+        if u is None:
+            raise HTTPException(status_code=404, detail="User not found")
+        return u
+    else:
+        raise HTTPException(status_code=403, detail="Only admin can get users")
+
+
+@router.post(
+    "/{id}",
+    responses={
+        200: {"description": "User info updated"},
+        403: {"description": "Only admin can update users"},
+        404: {"description": "User not found"},
+    },
+)
+async def update_user(id: PydanticObjectId, data: UpdateUser, auth: USER_AUTH) -> ViewUser:
+    """
+    Update user info
+    """
+    user = await user_repository.read(auth.user_id)
+    if user.role == UserRole.ADMIN:
+        updated = await user_repository.update(id, data)
+        if updated is None:
+            raise HTTPException(status_code=404, detail="User not found")
+        return updated
+    else:
+        raise HTTPException(status_code=403, detail="Only admin can update users")
 
 
 @router.post(
