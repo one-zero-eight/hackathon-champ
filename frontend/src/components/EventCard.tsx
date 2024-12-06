@@ -166,7 +166,7 @@ export function EventCard({
               className="h-7 w-fit rounded-md px-2 text-xs"
               variant="secondary"
             >
-              <Link to="/manage/region/events/$id" params={{ id: event.id }} className="!text-blue-500">
+              <Link to="/manage/events/$id" params={{ id: event.id }} className="!text-blue-500">
                 Редактировать
               </Link>
             </Button>

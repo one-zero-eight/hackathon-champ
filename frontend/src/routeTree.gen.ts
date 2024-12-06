@@ -25,16 +25,15 @@ import { Route as FederationsIndexImport } from './routes/federations/index'
 import { Route as FederationsFederationIdImport } from './routes/federations/$federationId'
 import { Route as EventsEventIdImport } from './routes/events/$eventId'
 import { Route as AuthLoginImport } from './routes/auth/login'
-import { Route as ManageRegionRequestsImport } from './routes/manage/region/requests'
 import { Route as ManageRegionProfileImport } from './routes/manage/region/profile'
 import { Route as ManageRegionHomeImport } from './routes/manage/region/home'
 import { Route as ManageRegionFeedbackImport } from './routes/manage/region/feedback'
+import { Route as ManageEventsSuggestImport } from './routes/manage/events/suggest'
+import { Route as ManageEventsRegionImport } from './routes/manage/events/region'
+import { Route as ManageEventsAllImport } from './routes/manage/events/all'
+import { Route as ManageEventsIdImport } from './routes/manage/events/$id'
 import { Route as ManageAdminHomeImport } from './routes/manage/admin/home'
 import { Route as ManageAdminFederationsImport } from './routes/manage/admin/federations'
-import { Route as ManageAdminEventsImport } from './routes/manage/admin/events'
-import { Route as ManageRegionEventsIndexImport } from './routes/manage/region/events/index'
-import { Route as ManageRegionEventsSuggestImport } from './routes/manage/region/events/suggest'
-import { Route as ManageRegionEventsIdImport } from './routes/manage/region/events/$id'
 
 // Create/Update Routes
 
@@ -122,12 +121,6 @@ const AuthLoginRoute = AuthLoginImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const ManageRegionRequestsRoute = ManageRegionRequestsImport.update({
-  id: '/region/requests',
-  path: '/region/requests',
-  getParentRoute: () => ManageRouteRoute,
-} as any)
-
 const ManageRegionProfileRoute = ManageRegionProfileImport.update({
   id: '/region/profile',
   path: '/region/profile',
@@ -146,6 +139,30 @@ const ManageRegionFeedbackRoute = ManageRegionFeedbackImport.update({
   getParentRoute: () => ManageRouteRoute,
 } as any)
 
+const ManageEventsSuggestRoute = ManageEventsSuggestImport.update({
+  id: '/events/suggest',
+  path: '/events/suggest',
+  getParentRoute: () => ManageRouteRoute,
+} as any)
+
+const ManageEventsRegionRoute = ManageEventsRegionImport.update({
+  id: '/events/region',
+  path: '/events/region',
+  getParentRoute: () => ManageRouteRoute,
+} as any)
+
+const ManageEventsAllRoute = ManageEventsAllImport.update({
+  id: '/events/all',
+  path: '/events/all',
+  getParentRoute: () => ManageRouteRoute,
+} as any)
+
+const ManageEventsIdRoute = ManageEventsIdImport.update({
+  id: '/events/$id',
+  path: '/events/$id',
+  getParentRoute: () => ManageRouteRoute,
+} as any)
+
 const ManageAdminHomeRoute = ManageAdminHomeImport.update({
   id: '/admin/home',
   path: '/admin/home',
@@ -155,30 +172,6 @@ const ManageAdminHomeRoute = ManageAdminHomeImport.update({
 const ManageAdminFederationsRoute = ManageAdminFederationsImport.update({
   id: '/admin/federations',
   path: '/admin/federations',
-  getParentRoute: () => ManageRouteRoute,
-} as any)
-
-const ManageAdminEventsRoute = ManageAdminEventsImport.update({
-  id: '/admin/events',
-  path: '/admin/events',
-  getParentRoute: () => ManageRouteRoute,
-} as any)
-
-const ManageRegionEventsIndexRoute = ManageRegionEventsIndexImport.update({
-  id: '/region/events/',
-  path: '/region/events/',
-  getParentRoute: () => ManageRouteRoute,
-} as any)
-
-const ManageRegionEventsSuggestRoute = ManageRegionEventsSuggestImport.update({
-  id: '/region/events/suggest',
-  path: '/region/events/suggest',
-  getParentRoute: () => ManageRouteRoute,
-} as any)
-
-const ManageRegionEventsIdRoute = ManageRegionEventsIdImport.update({
-  id: '/region/events/$id',
-  path: '/region/events/$id',
   getParentRoute: () => ManageRouteRoute,
 } as any)
 
@@ -284,13 +277,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageIndexImport
       parentRoute: typeof ManageRouteImport
     }
-    '/manage/admin/events': {
-      id: '/manage/admin/events'
-      path: '/admin/events'
-      fullPath: '/manage/admin/events'
-      preLoaderRoute: typeof ManageAdminEventsImport
-      parentRoute: typeof ManageRouteImport
-    }
     '/manage/admin/federations': {
       id: '/manage/admin/federations'
       path: '/admin/federations'
@@ -303,6 +289,34 @@ declare module '@tanstack/react-router' {
       path: '/admin/home'
       fullPath: '/manage/admin/home'
       preLoaderRoute: typeof ManageAdminHomeImport
+      parentRoute: typeof ManageRouteImport
+    }
+    '/manage/events/$id': {
+      id: '/manage/events/$id'
+      path: '/events/$id'
+      fullPath: '/manage/events/$id'
+      preLoaderRoute: typeof ManageEventsIdImport
+      parentRoute: typeof ManageRouteImport
+    }
+    '/manage/events/all': {
+      id: '/manage/events/all'
+      path: '/events/all'
+      fullPath: '/manage/events/all'
+      preLoaderRoute: typeof ManageEventsAllImport
+      parentRoute: typeof ManageRouteImport
+    }
+    '/manage/events/region': {
+      id: '/manage/events/region'
+      path: '/events/region'
+      fullPath: '/manage/events/region'
+      preLoaderRoute: typeof ManageEventsRegionImport
+      parentRoute: typeof ManageRouteImport
+    }
+    '/manage/events/suggest': {
+      id: '/manage/events/suggest'
+      path: '/events/suggest'
+      fullPath: '/manage/events/suggest'
+      preLoaderRoute: typeof ManageEventsSuggestImport
       parentRoute: typeof ManageRouteImport
     }
     '/manage/region/feedback': {
@@ -326,34 +340,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageRegionProfileImport
       parentRoute: typeof ManageRouteImport
     }
-    '/manage/region/requests': {
-      id: '/manage/region/requests'
-      path: '/region/requests'
-      fullPath: '/manage/region/requests'
-      preLoaderRoute: typeof ManageRegionRequestsImport
-      parentRoute: typeof ManageRouteImport
-    }
-    '/manage/region/events/$id': {
-      id: '/manage/region/events/$id'
-      path: '/region/events/$id'
-      fullPath: '/manage/region/events/$id'
-      preLoaderRoute: typeof ManageRegionEventsIdImport
-      parentRoute: typeof ManageRouteImport
-    }
-    '/manage/region/events/suggest': {
-      id: '/manage/region/events/suggest'
-      path: '/region/events/suggest'
-      fullPath: '/manage/region/events/suggest'
-      preLoaderRoute: typeof ManageRegionEventsSuggestImport
-      parentRoute: typeof ManageRouteImport
-    }
-    '/manage/region/events/': {
-      id: '/manage/region/events/'
-      path: '/region/events'
-      fullPath: '/manage/region/events'
-      preLoaderRoute: typeof ManageRegionEventsIndexImport
-      parentRoute: typeof ManageRouteImport
-    }
   }
 }
 
@@ -361,30 +347,28 @@ declare module '@tanstack/react-router' {
 
 interface ManageRouteRouteChildren {
   ManageIndexRoute: typeof ManageIndexRoute
-  ManageAdminEventsRoute: typeof ManageAdminEventsRoute
   ManageAdminFederationsRoute: typeof ManageAdminFederationsRoute
   ManageAdminHomeRoute: typeof ManageAdminHomeRoute
+  ManageEventsIdRoute: typeof ManageEventsIdRoute
+  ManageEventsAllRoute: typeof ManageEventsAllRoute
+  ManageEventsRegionRoute: typeof ManageEventsRegionRoute
+  ManageEventsSuggestRoute: typeof ManageEventsSuggestRoute
   ManageRegionFeedbackRoute: typeof ManageRegionFeedbackRoute
   ManageRegionHomeRoute: typeof ManageRegionHomeRoute
   ManageRegionProfileRoute: typeof ManageRegionProfileRoute
-  ManageRegionRequestsRoute: typeof ManageRegionRequestsRoute
-  ManageRegionEventsIdRoute: typeof ManageRegionEventsIdRoute
-  ManageRegionEventsSuggestRoute: typeof ManageRegionEventsSuggestRoute
-  ManageRegionEventsIndexRoute: typeof ManageRegionEventsIndexRoute
 }
 
 const ManageRouteRouteChildren: ManageRouteRouteChildren = {
   ManageIndexRoute: ManageIndexRoute,
-  ManageAdminEventsRoute: ManageAdminEventsRoute,
   ManageAdminFederationsRoute: ManageAdminFederationsRoute,
   ManageAdminHomeRoute: ManageAdminHomeRoute,
+  ManageEventsIdRoute: ManageEventsIdRoute,
+  ManageEventsAllRoute: ManageEventsAllRoute,
+  ManageEventsRegionRoute: ManageEventsRegionRoute,
+  ManageEventsSuggestRoute: ManageEventsSuggestRoute,
   ManageRegionFeedbackRoute: ManageRegionFeedbackRoute,
   ManageRegionHomeRoute: ManageRegionHomeRoute,
   ManageRegionProfileRoute: ManageRegionProfileRoute,
-  ManageRegionRequestsRoute: ManageRegionRequestsRoute,
-  ManageRegionEventsIdRoute: ManageRegionEventsIdRoute,
-  ManageRegionEventsSuggestRoute: ManageRegionEventsSuggestRoute,
-  ManageRegionEventsIndexRoute: ManageRegionEventsIndexRoute,
 }
 
 const ManageRouteRouteWithChildren = ManageRouteRoute._addFileChildren(
@@ -406,16 +390,15 @@ export interface FileRoutesByFullPath {
   '/federations/$federationId': typeof FederationsFederationIdRoute
   '/federations': typeof FederationsIndexRoute
   '/manage/': typeof ManageIndexRoute
-  '/manage/admin/events': typeof ManageAdminEventsRoute
   '/manage/admin/federations': typeof ManageAdminFederationsRoute
   '/manage/admin/home': typeof ManageAdminHomeRoute
+  '/manage/events/$id': typeof ManageEventsIdRoute
+  '/manage/events/all': typeof ManageEventsAllRoute
+  '/manage/events/region': typeof ManageEventsRegionRoute
+  '/manage/events/suggest': typeof ManageEventsSuggestRoute
   '/manage/region/feedback': typeof ManageRegionFeedbackRoute
   '/manage/region/home': typeof ManageRegionHomeRoute
   '/manage/region/profile': typeof ManageRegionProfileRoute
-  '/manage/region/requests': typeof ManageRegionRequestsRoute
-  '/manage/region/events/$id': typeof ManageRegionEventsIdRoute
-  '/manage/region/events/suggest': typeof ManageRegionEventsSuggestRoute
-  '/manage/region/events': typeof ManageRegionEventsIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -432,16 +415,15 @@ export interface FileRoutesByTo {
   '/federations/$federationId': typeof FederationsFederationIdRoute
   '/federations': typeof FederationsIndexRoute
   '/manage': typeof ManageIndexRoute
-  '/manage/admin/events': typeof ManageAdminEventsRoute
   '/manage/admin/federations': typeof ManageAdminFederationsRoute
   '/manage/admin/home': typeof ManageAdminHomeRoute
+  '/manage/events/$id': typeof ManageEventsIdRoute
+  '/manage/events/all': typeof ManageEventsAllRoute
+  '/manage/events/region': typeof ManageEventsRegionRoute
+  '/manage/events/suggest': typeof ManageEventsSuggestRoute
   '/manage/region/feedback': typeof ManageRegionFeedbackRoute
   '/manage/region/home': typeof ManageRegionHomeRoute
   '/manage/region/profile': typeof ManageRegionProfileRoute
-  '/manage/region/requests': typeof ManageRegionRequestsRoute
-  '/manage/region/events/$id': typeof ManageRegionEventsIdRoute
-  '/manage/region/events/suggest': typeof ManageRegionEventsSuggestRoute
-  '/manage/region/events': typeof ManageRegionEventsIndexRoute
 }
 
 export interface FileRoutesById {
@@ -460,16 +442,15 @@ export interface FileRoutesById {
   '/federations/$federationId': typeof FederationsFederationIdRoute
   '/federations/': typeof FederationsIndexRoute
   '/manage/': typeof ManageIndexRoute
-  '/manage/admin/events': typeof ManageAdminEventsRoute
   '/manage/admin/federations': typeof ManageAdminFederationsRoute
   '/manage/admin/home': typeof ManageAdminHomeRoute
+  '/manage/events/$id': typeof ManageEventsIdRoute
+  '/manage/events/all': typeof ManageEventsAllRoute
+  '/manage/events/region': typeof ManageEventsRegionRoute
+  '/manage/events/suggest': typeof ManageEventsSuggestRoute
   '/manage/region/feedback': typeof ManageRegionFeedbackRoute
   '/manage/region/home': typeof ManageRegionHomeRoute
   '/manage/region/profile': typeof ManageRegionProfileRoute
-  '/manage/region/requests': typeof ManageRegionRequestsRoute
-  '/manage/region/events/$id': typeof ManageRegionEventsIdRoute
-  '/manage/region/events/suggest': typeof ManageRegionEventsSuggestRoute
-  '/manage/region/events/': typeof ManageRegionEventsIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -489,16 +470,15 @@ export interface FileRouteTypes {
     | '/federations/$federationId'
     | '/federations'
     | '/manage/'
-    | '/manage/admin/events'
     | '/manage/admin/federations'
     | '/manage/admin/home'
+    | '/manage/events/$id'
+    | '/manage/events/all'
+    | '/manage/events/region'
+    | '/manage/events/suggest'
     | '/manage/region/feedback'
     | '/manage/region/home'
     | '/manage/region/profile'
-    | '/manage/region/requests'
-    | '/manage/region/events/$id'
-    | '/manage/region/events/suggest'
-    | '/manage/region/events'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -514,16 +494,15 @@ export interface FileRouteTypes {
     | '/federations/$federationId'
     | '/federations'
     | '/manage'
-    | '/manage/admin/events'
     | '/manage/admin/federations'
     | '/manage/admin/home'
+    | '/manage/events/$id'
+    | '/manage/events/all'
+    | '/manage/events/region'
+    | '/manage/events/suggest'
     | '/manage/region/feedback'
     | '/manage/region/home'
     | '/manage/region/profile'
-    | '/manage/region/requests'
-    | '/manage/region/events/$id'
-    | '/manage/region/events/suggest'
-    | '/manage/region/events'
   id:
     | '__root__'
     | '/'
@@ -540,16 +519,15 @@ export interface FileRouteTypes {
     | '/federations/$federationId'
     | '/federations/'
     | '/manage/'
-    | '/manage/admin/events'
     | '/manage/admin/federations'
     | '/manage/admin/home'
+    | '/manage/events/$id'
+    | '/manage/events/all'
+    | '/manage/events/region'
+    | '/manage/events/suggest'
     | '/manage/region/feedback'
     | '/manage/region/home'
     | '/manage/region/profile'
-    | '/manage/region/requests'
-    | '/manage/region/events/$id'
-    | '/manage/region/events/suggest'
-    | '/manage/region/events/'
   fileRoutesById: FileRoutesById
 }
 
@@ -617,16 +595,15 @@ export const routeTree = rootRoute
       "filePath": "manage/route.tsx",
       "children": [
         "/manage/",
-        "/manage/admin/events",
         "/manage/admin/federations",
         "/manage/admin/home",
+        "/manage/events/$id",
+        "/manage/events/all",
+        "/manage/events/region",
+        "/manage/events/suggest",
         "/manage/region/feedback",
         "/manage/region/home",
-        "/manage/region/profile",
-        "/manage/region/requests",
-        "/manage/region/events/$id",
-        "/manage/region/events/suggest",
-        "/manage/region/events/"
+        "/manage/region/profile"
       ]
     },
     "/about": {
@@ -666,16 +643,28 @@ export const routeTree = rootRoute
       "filePath": "manage/index.tsx",
       "parent": "/manage"
     },
-    "/manage/admin/events": {
-      "filePath": "manage/admin/events.tsx",
-      "parent": "/manage"
-    },
     "/manage/admin/federations": {
       "filePath": "manage/admin/federations.tsx",
       "parent": "/manage"
     },
     "/manage/admin/home": {
       "filePath": "manage/admin/home.tsx",
+      "parent": "/manage"
+    },
+    "/manage/events/$id": {
+      "filePath": "manage/events/$id.tsx",
+      "parent": "/manage"
+    },
+    "/manage/events/all": {
+      "filePath": "manage/events/all.tsx",
+      "parent": "/manage"
+    },
+    "/manage/events/region": {
+      "filePath": "manage/events/region.tsx",
+      "parent": "/manage"
+    },
+    "/manage/events/suggest": {
+      "filePath": "manage/events/suggest.tsx",
       "parent": "/manage"
     },
     "/manage/region/feedback": {
@@ -688,22 +677,6 @@ export const routeTree = rootRoute
     },
     "/manage/region/profile": {
       "filePath": "manage/region/profile.tsx",
-      "parent": "/manage"
-    },
-    "/manage/region/requests": {
-      "filePath": "manage/region/requests.tsx",
-      "parent": "/manage"
-    },
-    "/manage/region/events/$id": {
-      "filePath": "manage/region/events/$id.tsx",
-      "parent": "/manage"
-    },
-    "/manage/region/events/suggest": {
-      "filePath": "manage/region/events/suggest.tsx",
-      "parent": "/manage"
-    },
-    "/manage/region/events/": {
-      "filePath": "manage/region/events/index.tsx",
       "parent": "/manage"
     }
   }

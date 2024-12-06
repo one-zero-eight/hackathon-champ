@@ -53,7 +53,7 @@ export function CreateEventForm() {
       }, {
         onSuccess: (data) => {
           toast.success('Мероприятие успешно создано!')
-          navigate({ to: '/manage/region/events/$id', params: { id: data.id } })
+          navigate({ to: '/manage/events/$id', params: { id: data.id } })
         },
       })
     }
@@ -157,7 +157,7 @@ export function CreateEventForm() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => navigate({ to: '/manage/region/events' })}
+                onClick={() => navigate({ to: '/manage/events' })}
                 className="order-2 w-full sm:order-1 sm:w-auto"
               >
                 Отмена

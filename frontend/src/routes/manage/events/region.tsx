@@ -7,22 +7,28 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { useMemo } from 'react'
 import Plus from '~icons/lucide/plus'
 
-export const Route = createFileRoute('/manage/region/events/')({
+export const Route = createFileRoute('/manage/events/region')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const { data: myFederation, isLoading: myFederationLoading } = useMyFederation()
-  const { data: eventsData, isLoading: eventsLoading } = $api.useQuery('get', '/events/')
+  const { data: myFederation, isLoading: myFederationLoading }
+    = useMyFederation()
+  const { data: eventsData, isLoading: eventsLoading } = $api.useQuery(
+    'get',
+    '/events/',
+  )
 
   const someLoading = myFederationLoading || eventsLoading
 
-  const allEvents = useMemo(() => (eventsData ?? []), [eventsData])
-  const myFederationEvents = useMemo(() => (
-    myFederation
-      ? allEvents.filter(event => event.host_federation === myFederation.id)
-      : []
-  ), [allEvents, myFederation])
+  const allEvents = useMemo(() => eventsData ?? [], [eventsData])
+  const myFederationEvents = useMemo(
+    () =>
+      myFederation
+        ? allEvents.filter(event => event.host_federation === myFederation.id)
+        : [],
+    [allEvents, myFederation],
+  )
 
   return (
     <div className="p-6">
@@ -35,7 +41,7 @@ function RouteComponent() {
         </div>
         <div className="flex gap-2">
           <Button asChild>
-            <Link to="/manage/region/events/suggest">
+            <Link to="/manage/events/suggest">
               <Plus className="mr-2 size-4" />
               Новое мероприятие
             </Link>

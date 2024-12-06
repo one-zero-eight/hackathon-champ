@@ -1,7 +1,7 @@
 import { CreateEventForm } from '@/components/event/CreateEventForm.tsx'
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/manage/region/events/suggest')({
+export const Route = createFileRoute('/manage/events/suggest')({
   component: RouteComponent,
 })
 

@@ -60,7 +60,7 @@ function RouteComponent() {
         </div>
         <div className="flex gap-2">
           <Button asChild>
-            <Link to="/manage/region/events/suggest">
+            <Link to="/manage/events/suggest">
               <Plus className="mr-2 size-4" />
               Новое мероприятие
             </Link>

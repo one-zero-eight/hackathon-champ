@@ -3,7 +3,6 @@ import { NavLink } from '@/components/NavLink'
 import { Separator } from '@/components/ui/separator.tsx'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import Award from '~icons/lucide/award'
-import FileText from '~icons/lucide/file-text'
 import Home from '~icons/lucide/home'
 import MessageSquare from '~icons/lucide/message-square'
 import User from '~icons/lucide/user'
@@ -52,7 +51,7 @@ function AdminNav() {
         <NavLink to="/manage/admin/federations" icon={Users}>
           Федерации
         </NavLink>
-        <NavLink to="/manage/admin/events" icon={Award}>
+        <NavLink to="/manage/events/all" icon={Award}>
           Мероприятия
         </NavLink>
       </nav>
@@ -77,12 +76,8 @@ function FederationNav() {
           Самое важное
         </NavLink>
 
-        <NavLink to="/manage/region/events" icon={Award}>
+        <NavLink to="/manage/events/region" icon={Award}>
           Мероприятия
-        </NavLink>
-
-        <NavLink to="/manage/region/requests" icon={FileText}>
-          Заявки
         </NavLink>
 
         <NavLink to="/manage/region/feedback" icon={MessageSquare}>
