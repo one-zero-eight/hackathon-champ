@@ -16,87 +16,89 @@ export function TopBar() {
   })
 
   return (
-    <header className="fixed top-0 z-10 flex h-[--header-height] w-full justify-between border-b bg-white bg-opacity-90 backdrop-blur">
-      <div className="flex items-center gap-2 px-2">
-        <img src="/favicon.png" className="size-8" />
-        <Button asChild variant="link">
-          <Link to="/" activeProps={{ className: 'underline' }}>
-            Главная
-          </Link>
-        </Button>
-        <Button asChild variant="link">
-          <Link
-            to="/disciplines"
-            activeProps={{ className: 'underline' }}
-          >
-            Дисциплины
-          </Link>
-        </Button>
-        <Button asChild variant="link">
-          <Link
-            to="/federations"
-            activeProps={{ className: 'underline' }}
-          >
-            Региональные федерации
-          </Link>
-        </Button>
-        <Button asChild variant="link">
-          <Link
-            to="/calendar"
-            activeProps={{ className: 'underline' }}
-          >
-            Календарь
-          </Link>
-        </Button>
-        <Button asChild variant="link">
-          <Link
-            to="/search"
-            activeProps={{ className: 'underline' }}
-          >
-            Поиск
-          </Link>
-        </Button>
-      </div>
-
-      <div className="flex items-center gap-2 px-2">
-        {!me && (
+    <header className="fixed top-0 z-10 flex h-[--header-height] w-full items-center border-b bg-white bg-opacity-90 backdrop-blur">
+      <div className="container mx-auto flex w-full justify-between px-4">
+        <div className="flex items-center gap-2">
+          <img src="/favicon.png" className="size-8" />
           <Button asChild variant="link">
-            <Link
-              to="/auth/login"
-              activeProps={{ className: 'underline' }}
-            >
-              Войти
+            <Link to="/" activeProps={{ className: 'underline' }}>
+              Главная
             </Link>
           </Button>
-        )}
-        {me?.federation && (
-          <>
-            <div className="text-lg">{myFederation?.region}</div>
+          <Button asChild variant="link">
+            <Link
+              to="/disciplines"
+              activeProps={{ className: 'underline' }}
+            >
+              Дисциплины
+            </Link>
+          </Button>
+          <Button asChild variant="link">
+            <Link
+              to="/federations"
+              activeProps={{ className: 'underline' }}
+            >
+              Региональные федерации
+            </Link>
+          </Button>
+          <Button asChild variant="link">
+            <Link
+              to="/calendar"
+              activeProps={{ className: 'underline' }}
+            >
+              Календарь
+            </Link>
+          </Button>
+          <Button asChild variant="link">
+            <Link
+              to="/search"
+              activeProps={{ className: 'underline' }}
+            >
+              Поиск
+            </Link>
+          </Button>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {!me && (
             <Button asChild variant="link">
               <Link
-                to="/manage/regional"
+                to="/auth/login"
                 activeProps={{ className: 'underline' }}
               >
-                Управление федерацией
+                Войти
               </Link>
             </Button>
-          </>
-        )}
-        {me?.role === 'admin' && (
-          <Button asChild variant="link">
-            <Link
-              to="/manage/admin"
-              activeProps={{ className: 'underline' }}
-            >
-              Панель администратора
-            </Link>
-          </Button>
-        )}
-        {me && (
-          <Button variant="link" onClick={() => performLogout({})}>
-            Выйти
-          </Button>
-        )}
+          )}
+          {me?.federation && (
+            <>
+              <div className="text-lg">{myFederation?.region}</div>
+              <Button asChild variant="link">
+                <Link
+                  to="/manage/regional"
+                  activeProps={{ className: 'underline' }}
+                >
+                  Управление федерацией
+                </Link>
+              </Button>
+            </>
+          )}
+          {me?.role === 'admin' && (
+            <Button asChild variant="link">
+              <Link
+                to="/manage/admin"
+                activeProps={{ className: 'underline' }}
+              >
+                Панель администратора
+              </Link>
+            </Button>
+          )}
+          {me && (
+            <Button variant="link" onClick={() => performLogout({})}>
+              Выйти
+            </Button>
+          )}
+        </div>
       </div>
     </header>
   )

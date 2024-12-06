@@ -2,32 +2,27 @@ import type { Filters, Sort } from '@/lib/types'
 import { $api } from '@/api'
 import { EventCard } from '@/components/EventCard'
 import { Button } from '@/components/ui/button.tsx'
-import { Input } from '@/components/ui/input.tsx'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
-import { Skeleton } from '@/components/ui/skeleton'
 import { plainDatesForFilter } from '@/lib/utils'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useMemo, useState } from 'react'
+import { createFileRoute } from '@tanstack/react-router'
+import { motion } from 'framer-motion'
+import { useMemo } from 'react'
 import CountUp from 'react-countup'
 import { Temporal } from 'temporal-polyfill'
-import Calendar from '~icons/lucide/calendar'
-import Users from '~icons/lucide/users'
-import FileText from '~icons/lucide/file-text'
 import BarChart from '~icons/lucide/bar-chart'
+import Calendar from '~icons/lucide/calendar'
 import ChevronRight from '~icons/lucide/chevron-right'
-import { motion } from 'framer-motion'
+import FileText from '~icons/lucide/file-text'
+import Users from '~icons/lucide/users'
 
 export const Route = createFileRoute('/')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const navigate = useNavigate()
   const { data: eventsTotal } = $api.useQuery('post', '/events/search/count', {
     body: {},
   })
-  const { data: randomEvent } = $api.useQuery('get', '/events/random-event')
-  const [search, setSearch] = useState('')
 
   return (
     <main className="flex w-full flex-col">
@@ -35,10 +30,10 @@ function RouteComponent() {
       <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 px-4 pt-[calc(var(--header-height)-6rem)]">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-30 mix-blend-overlay" />
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-400/20 via-fuchsia-500/20 to-indigo-500/20 animate-gradient" />
+          <div className="absolute inset-0 animate-gradient bg-gradient-to-br from-purple-400/20 via-fuchsia-500/20 to-indigo-500/20" />
           <div className="absolute inset-0 backdrop-blur-[1px]" />
         </div>
-        <div className="relative mx-auto max-w-7xl py-16 sm:py-24">
+        <div className="container relative mx-auto px-4 py-16 sm:py-24">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -91,12 +86,12 @@ function RouteComponent() {
             </motion.div>
           </motion.div>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white to-transparent" />
       </section>
 
       {/* Key Features Section */}
       <section className="py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -157,7 +152,7 @@ function RouteComponent() {
       {/* Calendar Preview Section */}
       <section className="relative overflow-hidden bg-gray-50 py-24 sm:py-32">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-5" />
-        <div className="relative mx-auto max-w-7xl px-4">
+        <div className="container relative mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -194,7 +189,7 @@ function RouteComponent() {
       {/* Statistics Section */}
       <section className="relative overflow-hidden bg-purple-600 py-16 sm:py-24">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10" />
-        <div className="relative mx-auto max-w-7xl px-4">
+        <div className="container relative mx-auto px-4">
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
             {[
               {
@@ -214,7 +209,7 @@ function RouteComponent() {
               },
             ].map((stat, index) => (
               <motion.div
-                key={index}
+                key={stat.label}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -237,7 +232,7 @@ function RouteComponent() {
       </section>
 
       {/* How to Start Section */}
-      <section className="py-16 sm:py-24 bg-gray-50">
+      <section className="bg-gray-50 py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -250,7 +245,7 @@ function RouteComponent() {
               Как начать?
             </h2>
           </motion.div>
-          
+
           <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-3">
             {[
               {
@@ -270,7 +265,7 @@ function RouteComponent() {
               },
             ].map((step, index) => (
               <motion.div
-                key={index}
+                key={step.step}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -310,7 +305,7 @@ function RouteComponent() {
 
       {/* Footer Section */}
       <footer className="bg-gray-900 text-gray-400">
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {/* Logo and Description */}
             <div className="space-y-4">
