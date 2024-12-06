@@ -9,20 +9,18 @@ import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { plainDatesForFilter } from '@/lib/utils'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import {
-  ArrowUpRight,
-  Award,
-  Bell,
-  Calendar as CalendarIcon,
-  ChevronRight,
-  FileText,
-  Filter,
-  MessageSquare,
-  Plus,
-  User,
-  Users,
-} from 'lucide-react'
 import { Temporal } from 'temporal-polyfill'
+import ArrowUpRight from '~icons/lucide/arrow-up-right'
+import Award from '~icons/lucide/award'
+import Bell from '~icons/lucide/bell'
+import CalendarIcon from '~icons/lucide/calendar'
+import ChevronRight from '~icons/lucide/chevron-right'
+import FileText from '~icons/lucide/file-text'
+import Filter from '~icons/lucide/filter'
+import MessageSquare from '~icons/lucide/message-square'
+import Plus from '~icons/lucide/plus'
+import User from '~icons/lucide/user'
+import Users from '~icons/lucide/users'
 
 // Extend ViewUser type with additional properties
 type RegionalUser = {
