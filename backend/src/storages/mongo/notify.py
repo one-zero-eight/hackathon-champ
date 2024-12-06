@@ -76,7 +76,7 @@ class AccreditedEvent(BaseSchema):
 
 
 Inner = Annotated[
-    AccreditationRequestFederation | AccreditationRequestEvent | AccreditedFederation | AccreditedEvent,
+    AccreditationRequestFederation | AccreditationRequestEvent | AccreditedFederation | AccreditedEvent | NewFeedback,
     Discriminator("notify_type"),
 ]
 

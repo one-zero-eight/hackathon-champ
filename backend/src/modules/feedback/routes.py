@@ -3,8 +3,10 @@ from fastapi import APIRouter
 from starlette.exceptions import HTTPException
 
 from src.api.dependencies import USER_AUTH
+from src.modules.notify.repository import notify_repository
 from src.modules.users.repository import user_repository
 from src.storages.mongo.feedback import Feedback, FeedbackSchema
+from src.storages.mongo.notify import NewFeedback, NotifySchema
 from src.storages.mongo.users import UserRole
 
 router = APIRouter(prefix="/feedback", tags=["Feedback"])
@@ -29,7 +31,11 @@ async def create_feedback(feedback: FeedbackSchema) -> Feedback:
     """
     Create one feedback.
     """
-    return await feedback_repository.create(feedback)
+    created = await feedback_repository.create(feedback)
+    await notify_repository.create_notify(
+        NotifySchema(for_admin=True, for_federation=created.federation, inner=NewFeedback(feedback_id=created.id))
+    )
+    return created
 
 
 @router.get(
