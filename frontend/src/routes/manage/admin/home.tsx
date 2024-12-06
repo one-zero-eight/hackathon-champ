@@ -16,11 +16,11 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { Temporal } from 'temporal-polyfill'
 import ArrowUpRight from '~icons/lucide/arrow-up-right'
 import Award from '~icons/lucide/award'
+import Building from '~icons/lucide/building'
 import CalendarIcon from '~icons/lucide/calendar'
 import ChevronRight from '~icons/lucide/chevron-right'
-import Plus from '~icons/lucide/plus'
-import Building from '~icons/lucide/building'
 import FileText from '~icons/lucide/file-text'
+import Plus from '~icons/lucide/plus'
 
 export const Route = createFileRoute('/manage/admin/home')({
   component: RouteComponent,
@@ -28,7 +28,7 @@ export const Route = createFileRoute('/manage/admin/home')({
 
 function RouteComponent() {
   // Fetch all federations
-  const { data: federations } = $api.useQuery(
+  const { data: federations, isPending: federationsLoading } = $api.useQuery(
     'get',
     '/federations/',
   )
@@ -84,71 +84,131 @@ function RouteComponent() {
       <div className="grid gap-6">
         {/* Quick Stats */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">
-                    Всего федераций
-                  </p>
-                  <p className="text-2xl font-bold">{federationStats.total}</p>
-                </div>
-                <Building className="size-8 text-blue-500" />
-              </div>
-              <div className="mt-4 flex items-center text-sm text-gray-500">
-                <ArrowUpRight className="mr-1 size-4 text-green-500" />
-                {federationStats.pending} на рассмотрении
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">
-                    Аккредитовано
-                  </p>
-                  <p className="text-2xl font-bold">{federationStats.accredited}</p>
-                </div>
-                <Award className="size-8 text-green-500" />
-              </div>
-              <div className="mt-4 flex items-center text-sm text-gray-500">
-                {((federationStats.accredited / federationStats.total) * 100).toFixed(1)}% от общего числа
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">
-                    Мероприятий
-                  </p>
-                  <p className="text-2xl font-bold">{upcomingEvents?.events.length ?? 0}</p>
-                </div>
-                <CalendarIcon className="size-8 text-purple-500" />
-              </div>
-              <div className="mt-4 flex items-center text-sm text-gray-500">
-                На ближайшие 30 дней
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">
-                    Заявок
-                  </p>
-                  <p className="text-2xl font-bold">24</p>
-                </div>
-                <FileText className="size-8 text-yellow-500" />
-              </div>
-              <div className="mt-4 flex items-center text-sm text-gray-500">
-                8 новых за неделю
-              </div>
-            </CardContent>
-          </Card>
+          {federationsLoading
+            ? (
+                <>
+                  <Card>
+                    <CardContent className="pt-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-2">
+                          <Skeleton className="h-4 w-24" />
+                          <Skeleton className="h-8 w-16" />
+                        </div>
+                        <Skeleton className="size-8 rounded" />
+                      </div>
+                      <Skeleton className="mt-4 h-4 w-32" />
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-2">
+                          <Skeleton className="h-4 w-24" />
+                          <Skeleton className="h-8 w-16" />
+                        </div>
+                        <Skeleton className="size-8 rounded" />
+                      </div>
+                      <Skeleton className="mt-4 h-4 w-32" />
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-2">
+                          <Skeleton className="h-4 w-24" />
+                          <Skeleton className="h-8 w-16" />
+                        </div>
+                        <Skeleton className="size-8 rounded" />
+                      </div>
+                      <Skeleton className="mt-4 h-4 w-32" />
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-2">
+                          <Skeleton className="h-4 w-24" />
+                          <Skeleton className="h-8 w-16" />
+                        </div>
+                        <Skeleton className="size-8 rounded" />
+                      </div>
+                      <Skeleton className="mt-4 h-4 w-32" />
+                    </CardContent>
+                  </Card>
+                </>
+              )
+            : (
+                <>
+                  <Card>
+                    <CardContent className="pt-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">
+                            Всего федераций
+                          </p>
+                          <p className="text-2xl font-bold">{federationStats.total}</p>
+                        </div>
+                        <Building className="size-8 text-blue-500" />
+                      </div>
+                      <div className="mt-4 flex items-center text-sm text-gray-500">
+                        <ArrowUpRight className="mr-1 size-4 text-green-500" />
+                        {federationStats.pending}
+                        {' '}
+                        на рассмотрении
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">
+                            Аккредитовано
+                          </p>
+                          <p className="text-2xl font-bold">{federationStats.accredited}</p>
+                        </div>
+                        <Award className="size-8 text-green-500" />
+                      </div>
+                      <div className="mt-4 flex items-center text-sm text-gray-500">
+                        {((federationStats.accredited / federationStats.total) * 100).toFixed(1)}
+                        % от общего числа
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">
+                            Мероприятий
+                          </p>
+                          <p className="text-2xl font-bold">{upcomingEvents?.events.length ?? 0}</p>
+                        </div>
+                        <CalendarIcon className="size-8 text-purple-500" />
+                      </div>
+                      <div className="mt-4 flex items-center text-sm text-gray-500">
+                        На ближайшие 30 дней
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">
+                            Заявок
+                          </p>
+                          <p className="text-2xl font-bold">24</p>
+                        </div>
+                        <FileText className="size-8 text-yellow-500" />
+                      </div>
+                      <div className="mt-4 flex items-center text-sm text-gray-500">
+                        8 новых за неделю
+                      </div>
+                    </CardContent>
+                  </Card>
+                </>
+              )}
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -159,40 +219,69 @@ function RouteComponent() {
               <CardDescription>Текущий статус региональных федераций</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="size-2 rounded-full bg-green-500"></div>
-                    <span>Аккредитованы</span>
-                  </div>
-                  <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
-                    {federationStats.accredited}
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="size-2 rounded-full bg-blue-500"></div>
-                    <span>На рассмотрении</span>
-                  </div>
-                  <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">
-                    {federationStats.pending}
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="size-2 rounded-full bg-red-500"></div>
-                    <span>Отклонены</span>
-                  </div>
-                  <Badge className="bg-red-100 text-red-700 hover:bg-red-100">
-                    {federationStats.rejected}
-                  </Badge>
-                </div>
-                <Button variant="outline" className="mt-4 w-full" asChild>
-                  <Link to="/calendar">
-                    Управление федерациями
-                  </Link>
-                </Button>
-              </div>
+              {federationsLoading
+                ? (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Skeleton className="size-2 rounded-full" />
+                          <Skeleton className="h-4 w-24" />
+                        </div>
+                        <Skeleton className="h-6 w-12 rounded-full" />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Skeleton className="size-2 rounded-full" />
+                          <Skeleton className="h-4 w-24" />
+                        </div>
+                        <Skeleton className="h-6 w-12 rounded-full" />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Skeleton className="size-2 rounded-full" />
+                          <Skeleton className="h-4 w-24" />
+                        </div>
+                        <Skeleton className="h-6 w-12 rounded-full" />
+                      </div>
+                      <Skeleton className="mt-4 h-9 w-full" />
+                    </div>
+                  )
+                : (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="size-2 rounded-full bg-green-500"></div>
+                          <span>Аккредитованы</span>
+                        </div>
+                        <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
+                          {federationStats.accredited}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="size-2 rounded-full bg-blue-500"></div>
+                          <span>На рассмотрении</span>
+                        </div>
+                        <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">
+                          {federationStats.pending}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="size-2 rounded-full bg-red-500"></div>
+                          <span>Отклонены</span>
+                        </div>
+                        <Badge className="bg-red-100 text-red-700 hover:bg-red-100">
+                          {federationStats.rejected}
+                        </Badge>
+                      </div>
+                      <Button variant="outline" className="mt-4 w-full" asChild>
+                        <Link to="/manage/admin/federations">
+                          Управление федерациями
+                        </Link>
+                      </Button>
+                    </div>
+                  )}
             </CardContent>
           </Card>
 
@@ -215,29 +304,33 @@ function RouteComponent() {
             <CardContent>
               <ScrollArea className="h-[400px] pr-4">
                 <div className="space-y-4">
-                  {eventsLoading ? (
-                    <>
-                      <Skeleton className="h-[120px]" />
-                      <Skeleton className="h-[120px]" />
-                      <Skeleton className="h-[120px]" />
-                    </>
-                  ) : upcomingEvents?.events.length ? (
-                    upcomingEvents.events.map(event => (
-                      <EventCard key={event.id} event={event} />
-                    ))
-                  ) : (
-                    <div className="flex h-[200px] items-center justify-center text-gray-500">
-                      <div className="text-center">
-                        <CalendarIcon className="mx-auto mb-2 size-8 text-gray-400" />
-                        <p>Нет предстоящих мероприятий</p>
-                        <Button variant="link" asChild className="mt-2">
-                          <Link to="/calendar">
-                            Создать мероприятие
-                          </Link>
-                        </Button>
-                      </div>
-                    </div>
-                  )}
+                  {eventsLoading
+                    ? (
+                        <>
+                          <Skeleton className="h-[120px]" />
+                          <Skeleton className="h-[120px]" />
+                          <Skeleton className="h-[120px]" />
+                        </>
+                      )
+                    : upcomingEvents?.events.length
+                      ? (
+                          upcomingEvents.events.map(event => (
+                            <EventCard key={event.id} event={event} />
+                          ))
+                        )
+                      : (
+                          <div className="flex h-[200px] items-center justify-center text-gray-500">
+                            <div className="text-center">
+                              <CalendarIcon className="mx-auto mb-2 size-8 text-gray-400" />
+                              <p>Нет предстоящих мероприятий</p>
+                              <Button variant="link" asChild className="mt-2">
+                                <Link to="/calendar">
+                                  Создать мероприятие
+                                </Link>
+                              </Button>
+                            </div>
+                          </div>
+                        )}
                 </div>
               </ScrollArea>
             </CardContent>

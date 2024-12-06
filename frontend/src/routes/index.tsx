@@ -438,7 +438,17 @@ function EventSelection({
             <EventCard key={event.id} event={event} className="w-[900px]" />
           ))}
         </div>
-        <ScrollBar orientation="horizontal" />
+        <ScrollBar 
+          orientation="horizontal" 
+          className="scrollbar-thumb-rounded scrollbar-thumb-gray-400" 
+          style={{
+            height: '12px',
+            backgroundColor: 'var(--muted)',
+            borderRadius: 'var(--radius)',
+            border: '3px solid var(--muted)',
+            overflow: 'scroll',
+          }}
+        />
       </ScrollArea>
     </section>
   )

@@ -1,29 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState, useMemo } from 'react'
 import type { SchemaFederation, SchemaStatusEnum } from '../../../api/types'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { useToast } from '@/components/ui/use-toast'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Command,
   CommandEmpty,
@@ -32,7 +10,29 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { useToast } from '@/components/ui/use-toast'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { createFileRoute } from '@tanstack/react-router'
+import { useMemo, useState } from 'react'
 import Search from '~icons/lucide/search'
 
 export const Route = createFileRoute('/manage/admin/federations')({
@@ -51,13 +51,15 @@ function RouteComponent() {
     queryKey: ['federations'],
     queryFn: async () => {
       const response = await fetch('/api/federations/')
-      if (!response.ok) throw new Error('Failed to fetch federations')
+      if (!response.ok)
+        throw new Error('Failed to fetch federations')
       return response.json() as Promise<SchemaFederation[]>
     },
   })
 
   const byDistrict = useMemo(() => {
-    if (!federations) return new Map()
+    if (!federations)
+      return new Map()
     const map = new Map<string, SchemaFederation[]>()
     for (const federation of federations) {
       const district = federation.district ?? ''
@@ -69,13 +71,14 @@ function RouteComponent() {
   }, [federations])
 
   const filteredFederations = useMemo(() => {
-    if (!federations) return []
-    return federations.filter(federation => {
-      const matchesSearch = searchQuery === '' || 
-        federation.region.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        federation.district?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        federation.head?.toLowerCase().includes(searchQuery.toLowerCase())
-      
+    if (!federations)
+      return []
+    return federations.filter((federation) => {
+      const matchesSearch = searchQuery === ''
+        || federation.region.toLowerCase().includes(searchQuery.toLowerCase())
+        || federation.district?.toLowerCase().includes(searchQuery.toLowerCase())
+        || federation.head?.toLowerCase().includes(searchQuery.toLowerCase())
+
       const matchesDistrict = !selectedDistrict || federation.district === selectedDistrict
       const matchesStatus = !selectedStatus || federation.status === selectedStatus
 
@@ -84,31 +87,32 @@ function RouteComponent() {
   }, [federations, searchQuery, selectedDistrict, selectedStatus])
 
   const accrediteMutation = useMutation({
-    mutationFn: async ({ id, status, comment }: { id: string; status: SchemaStatusEnum; comment?: string }) => {
+    mutationFn: async ({ id, status, comment }: { id: string, status: SchemaStatusEnum, comment?: string }) => {
       const response = await fetch(`/api/federations/${id}/accredite?status=${status}${comment ? `&status_comment=${encodeURIComponent(comment)}` : ''}`, {
         method: 'POST',
       })
-      if (!response.ok) throw new Error('Failed to update federation status')
+      if (!response.ok)
+        throw new Error('Failed to update federation status')
       return response.json()
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['federations'] })
       toast({
-        title: "Статус обновлен",
-        description: "Статус федерации успешно обновлен",
+        title: 'Статус обновлен',
+        description: 'Статус федерации успешно обновлен',
       })
       setStatusComment('')
     },
     onError: (error) => {
       toast({
-        title: "Ошибка",
-        description: `Не удалось обновить статус: ${error.message}`,
-        variant: "destructive",
+        title: 'Ошибка',
+        description: `Не удалось обновить ��татус: ${error.message}`,
+        variant: 'destructive',
       })
     },
   })
 
-  const getStatusBadgeVariant = (status: SchemaStatusEnum): "default" | "destructive" | "secondary" | "outline" => {
+  const getStatusBadgeVariant = (status: SchemaStatusEnum): 'default' | 'destructive' | 'secondary' | 'outline' => {
     switch (status) {
       case 'accredited':
         return 'default'
@@ -123,11 +127,67 @@ function RouteComponent() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-8">
+      <div className="container mx-auto space-y-6 p-8">
+        <div>
+          <h1 className="text-3xl font-bold">Управление федерациями</h1>
+          <p className="mt-2 text-muted-foreground">
+            Просмотр и управление статусами федераций
+          </p>
+        </div>
+
+        <div className="flex gap-4">
+          <div className="h-10 w-[300px] animate-pulse rounded bg-muted" />
+          <div className="h-10 w-[200px] animate-pulse rounded bg-muted" />
+          <div className="h-10 w-[200px] animate-pulse rounded bg-muted" />
+        </div>
+
         <Card>
-          <CardContent className="pt-6">
-            <div className="flex justify-center">
-              <div className="text-muted-foreground">Загрузка...</div>
+          <CardHeader>
+            <CardTitle>Список федераций</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[200px]">Регион</TableHead>
+                      <TableHead className="w-[150px]">Округ</TableHead>
+                      <TableHead className="w-[150px]">Статус</TableHead>
+                      <TableHead>Комментарий</TableHead>
+                      <TableHead className="w-[150px]">Руководитель</TableHead>
+                      <TableHead className="w-[200px]">Контакты</TableHead>
+                      <TableHead className="w-[300px]">Действия</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {[...Array.from({ length: 5 })].map((_, index) => (
+                      <TableRow key={index}>
+                        <TableCell><div className="h-4 w-32 animate-pulse rounded bg-muted" /></TableCell>
+                        <TableCell><div className="h-4 w-24 animate-pulse rounded bg-muted" /></TableCell>
+                        <TableCell><div className="h-6 w-28 animate-pulse rounded bg-muted" /></TableCell>
+                        <TableCell><div className="h-4 w-48 animate-pulse rounded bg-muted" /></TableCell>
+                        <TableCell><div className="h-4 w-28 animate-pulse rounded bg-muted" /></TableCell>
+                        <TableCell>
+                          <div className="space-y-2">
+                            <div className="h-4 w-32 animate-pulse rounded bg-muted" />
+                            <div className="h-4 w-28 animate-pulse rounded bg-muted" />
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="space-y-2">
+                            <div className="h-8 w-full animate-pulse rounded bg-muted" />
+                            <div className="flex gap-2">
+                              <div className="h-9 w-full animate-pulse rounded bg-muted" />
+                              <div className="h-9 w-full animate-pulse rounded bg-muted" />
+                            </div>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -136,10 +196,10 @@ function RouteComponent() {
   }
 
   return (
-    <div className="container mx-auto px-8 py-8 space-y-6">
+    <div className="container mx-auto space-y-6 p-8">
       <div>
         <h1 className="text-3xl font-bold">Управление федерациями</h1>
-        <p className="text-muted-foreground mt-2">
+        <p className="mt-2 text-muted-foreground">
           Просмотр и управление статусами федераций
         </p>
       </div>
@@ -148,7 +208,7 @@ function RouteComponent() {
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline" className="w-[300px] justify-start text-muted-foreground">
-              <Search className="mr-2 h-4 w-4 shrink-0" />
+              <Search className="mr-2 size-4 shrink-0" />
               <span className="truncate">
                 {searchQuery || 'Поиск федерации...'}
               </span>
@@ -156,8 +216,8 @@ function RouteComponent() {
           </PopoverTrigger>
           <PopoverContent className="w-[400px] p-0" align="start">
             <Command>
-              <CommandInput 
-                placeholder="Поиск по региону или руководителю..." 
+              <CommandInput
+                placeholder="Поиск по региону или руководителю..."
                 value={searchQuery}
                 onValueChange={setSearchQuery}
               />
@@ -213,9 +273,10 @@ function RouteComponent() {
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline" className="w-[200px] justify-start">
-              {selectedStatus ? 
-                (selectedStatus === 'on_consideration' ? 'На рассмотрении' :
-                 selectedStatus === 'accredited' ? 'Аккредитована' : 'Отклонена')
+              {selectedStatus
+                ? (selectedStatus === 'on_consideration'
+                    ? 'На рассмотрении'
+                    : selectedStatus === 'accredited' ? 'Аккредитована' : 'Отклонена')
                 : 'Все статусы'}
             </Button>
           </PopoverTrigger>
@@ -260,14 +321,15 @@ function RouteComponent() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredFederations.map((federation) => (
+                  {filteredFederations.map(federation => (
                     <TableRow key={federation.id}>
                       <TableCell>{federation.region}</TableCell>
                       <TableCell>{federation.district}</TableCell>
                       <TableCell>
                         <Badge variant={getStatusBadgeVariant(federation.status)}>
-                          {federation.status === 'on_consideration' ? 'На рассмотрении' :
-                           federation.status === 'accredited' ? 'Аккредитована' : 'Отклонена'}
+                          {federation.status === 'on_consideration'
+                            ? 'На рассмотрении'
+                            : federation.status === 'accredited' ? 'Аккредитована' : 'Отклонена'}
                         </Badge>
                       </TableCell>
                       <TableCell>{federation.status_comment}</TableCell>
@@ -293,8 +355,8 @@ function RouteComponent() {
                           <div className="flex gap-2">
                             <Dialog>
                               <DialogTrigger asChild>
-                                <Button 
-                                  variant="default" 
+                                <Button
+                                  variant="default"
                                   disabled={federation.status === 'accredited'}
                                   className="w-full"
                                 >
@@ -317,7 +379,7 @@ function RouteComponent() {
                                       accrediteMutation.mutate({
                                         id: federation.id,
                                         status: 'accredited',
-                                        comment: statusComment
+                                        comment: statusComment,
                                       })
                                       document.querySelector('dialog')?.close()
                                     }}
@@ -330,7 +392,7 @@ function RouteComponent() {
 
                             <Dialog>
                               <DialogTrigger asChild>
-                                <Button 
+                                <Button
                                   variant="destructive"
                                   disabled={federation.status === 'rejected'}
                                   className="w-full"
@@ -355,7 +417,7 @@ function RouteComponent() {
                                       accrediteMutation.mutate({
                                         id: federation.id,
                                         status: 'rejected',
-                                        comment: statusComment
+                                        comment: statusComment,
                                       })
                                       document.querySelector('dialog')?.close()
                                     }}
