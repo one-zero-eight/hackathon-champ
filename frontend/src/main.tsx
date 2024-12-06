@@ -4,6 +4,7 @@ import { createRouter, RouterProvider } from '@tanstack/react-router'
 import ReactDOM from 'react-dom/client'
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
+import { Toaster } from '@/components/ui/toaster'
 
 import './index.css'
 
@@ -23,5 +24,6 @@ const root = ReactDOM.createRoot(rootElement)
 root.render(
   <QueryClientProvider client={queryClient}>
     <RouterProvider router={router} />
+    <Toaster />
   </QueryClientProvider>,
 )

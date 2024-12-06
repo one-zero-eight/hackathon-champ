@@ -12,6 +12,8 @@ import type { SchemaFederation, SchemaFederationSchema, SchemaStatusEnum, operat
 import { Badge } from '@/components/ui/badge'
 import { useMyFederation } from '@/api/me'
 import { $api } from '@/api'
+import { useToast } from '@/components/ui/use-toast'
+import { Loader2 } from 'lucide-react'
 
 const statusLabels: Record<SchemaStatusEnum, { label: string; variant: 'default' | 'secondary' | 'destructive' }> = {
   on_consideration: { label: 'На рассмотрении', variant: 'default' },
@@ -41,6 +43,7 @@ function RouteComponent() {
   const [isLoading, setIsLoading] = useState(false)
   const { data: federation, refetch } = useMyFederation()
   const { mutate: updateFederation } = $api.useMutation('put', '/federations/{id}/')
+  const { toast } = useToast()
   
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
@@ -57,9 +60,12 @@ function RouteComponent() {
     },
   })
 
+  // Store initial values when federation data is loaded
+  const [initialValues, setInitialValues] = useState<ProfileFormValues | null>(null)
+
   useEffect(() => {
     if (federation) {
-      form.reset({
+      const values = {
         region: federation.region,
         district: federation.district,
         description: federation.description,
@@ -69,9 +75,21 @@ function RouteComponent() {
         site: federation.site,
         address: federation.address,
         logo: federation.logo,
-      })
+      }
+      form.reset(values)
+      setInitialValues(values)
     }
   }, [federation, form])
+
+  const handleCancel = () => {
+    if (initialValues) {
+      form.reset(initialValues)
+      toast({
+        description: "Изменения отменены",
+        duration: 3000,
+      })
+    }
+  }
 
   async function onSubmit(data: ProfileFormValues) {
     if (!federation) return
@@ -91,20 +109,35 @@ function RouteComponent() {
         logo: data.logo,
       }
 
-      updateFederation({
+      await updateFederation({
         params: { path: { id: federation.id } },
         body: updateData,
       }, {
-        onSettled: () => {
+        onSuccess: () => {
+          toast({
+            title: "Успешно",
+            description: "Данные федерации обновлены",
+            duration: 3000,
+          })
           refetch()
         },
+        onError: (error) => {
+          toast({
+            title: "Ошибка",
+            description: "Не удалось обновить данные федерации",
+            variant: "destructive",
+            duration: 5000,
+          })
+          console.error('Failed to update federation data:', error)
+        },
       })
-    } catch (error) {
-      console.error('Failed to update federation data:', error)
     } finally {
       setIsLoading(false)
     }
   }
+
+  // Check if form is dirty (has changes)
+  const hasChanges = Object.keys(form.formState.dirtyFields).length > 0
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 max-w-4xl">
@@ -319,18 +352,25 @@ function RouteComponent() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => form.reset()}
-              disabled={isLoading}
+              onClick={handleCancel}
+              disabled={isLoading || !hasChanges}
               className="w-full sm:w-auto"
             >
               Отмена
             </Button>
             <Button 
               type="submit" 
-              disabled={isLoading}
+              disabled={isLoading || !hasChanges}
               className="w-full sm:w-auto"
             >
-              Сохранить изменения
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Сохранение...
+                </>
+              ) : (
+                'Сохранить изменения'
+              )}
             </Button>
           </div>
         </form>
