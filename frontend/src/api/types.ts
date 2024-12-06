@@ -592,10 +592,290 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/notify/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Notification
+         * @description Create a notification.
+         */
+        post: operations["notifications_create_notification"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notify/admin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Notifications For Admin
+         * @description Get all notifications for admins.
+         */
+        get: operations["notifications_get_notifications_for_admin"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notify/admin/unread": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Unread Notifications For Admin
+         * @description Get unread notifications for the current admin user.
+         */
+        get: operations["notifications_get_unread_notifications_for_admin"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notify/federation/{federation_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Notifications For Federation
+         * @description Get all notifications for a specific federation.
+         */
+        get: operations["notifications_get_notifications_for_federation"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notify/federation/{federation_id}/unread": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Unread Notifications For Federation
+         * @description Get unread notifications for a specific federation.
+         */
+        get: operations["notifications_get_unread_notifications_for_federation"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notify/{notify_id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Mark Notification As Read
+         * @description Mark a notification as read by the current user.
+         */
+        put: operations["notifications_mark_notification_as_read"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notify/{notify_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Notification
+         * @description Get details of a specific notification by ID.
+         */
+        get: operations["notifications_get_notification"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/email/connect-email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Start Email Flow */
+        post: operations["email_start_email_flow"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/email/validate-code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** End Email Flow */
+        post: operations["email_end_email_flow"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * AccreditationRequestEvent
+         * @description Пользователь отправил заявку на аккредитацию на событие
+         */
+        AccreditationRequestEvent: {
+            /**
+             * @description Тип уведомления (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            notify_type: "new_event";
+            /**
+             * Event Id
+             * @description ID события
+             * @example 5eb7cf5a86d9755df3a6c593
+             */
+            event_id: string;
+            /**
+             * Federation Id
+             * @description ID федерации
+             * @example 5eb7cf5a86d9755df3a6c593
+             */
+            federation_id: string;
+        };
+        /**
+         * AccreditationRequestFederation
+         * @description Пользователь зарегистрировал новую федерацию и отправил заявку на аккредитацию
+         */
+        AccreditationRequestFederation: {
+            /**
+             * @description Тип уведомления (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            notify_type: "new_federation";
+            /**
+             * Federation Id
+             * @description ID федерации
+             * @example 5eb7cf5a86d9755df3a6c593
+             */
+            federation_id: string;
+        };
+        /**
+         * AccreditedEvent
+         * @description Событие аккредитовано или отклонено
+         */
+        AccreditedEvent: {
+            /**
+             * @description Тип уведомления (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            notify_type: "accredited_event";
+            /**
+             * Event Id
+             * @description ID события
+             * @example 5eb7cf5a86d9755df3a6c593
+             */
+            event_id: string;
+            /** @description Статус события */
+            status: components["schemas"]["EventStatusEnum"];
+            /**
+             * Status Comment
+             * @description Комментарий к статусу
+             */
+            status_comment: string | null;
+        };
+        /**
+         * AccreditedFederation
+         * @description Федерация аккредитована или отклонена
+         */
+        AccreditedFederation: {
+            /**
+             * @description Тип уведомления (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            notify_type: "accredited_federation";
+            /**
+             * Federation Id
+             * @description ID федерации
+             * @example 5eb7cf5a86d9755df3a6c593
+             */
+            federation_id: string;
+            /** @description Статус федерации */
+            status: components["schemas"]["StatusEnum"];
+            /**
+             * Status Comment
+             * @description Комментарий к статусу
+             */
+            status_comment: string | null;
+        };
+        /** Body_email_end_email_flow */
+        Body_email_end_email_flow: {
+            /**
+             * Email Flow Id
+             * @example 5eb7cf5a86d9755df3a6c593
+             */
+            email_flow_id: string;
+            /** Verification Code */
+            verification_code: string;
+        };
+        /** Body_email_start_email_flow */
+        Body_email_start_email_flow: {
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
+        };
         /** Body_events_search_events */
         Body_events_search_events: {
             filters: components["schemas"]["Filters"];
@@ -638,6 +918,25 @@ export interface components {
             /** Disciplines */
             disciplines: string[];
         };
+        /** EmailFlowReference */
+        EmailFlowReference: {
+            /**
+             * Email Flow Id
+             * @example 5eb7cf5a86d9755df3a6c593
+             */
+            email_flow_id: string;
+        };
+        /** EmailFlowResult */
+        EmailFlowResult: {
+            status: components["schemas"]["EmailFlowVerificationStatus"];
+            /** Email */
+            email?: string | null;
+        };
+        /**
+         * EmailFlowVerificationStatus
+         * @enum {string}
+         */
+        EmailFlowVerificationStatus: "success" | "expired" | "incorrect" | "not_found";
         /** Event */
         Event: {
             /**
@@ -1087,6 +1386,93 @@ export interface components {
             max?: number | null;
         };
         /**
+         * NewFeedback
+         * @description Пользователь отправил обратную связь
+         */
+        NewFeedback: {
+            /**
+             * @description Тип уведомления (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            notify_type: "new_feedback";
+            /**
+             * Feedback Id
+             * @description ID обратной связи
+             * @example 5eb7cf5a86d9755df3a6c593
+             */
+            feedback_id: string;
+        };
+        /** Notify */
+        Notify: {
+            /**
+             * Id
+             * Format: objectid
+             * @description MongoDB document ObjectID
+             * @default None
+             * @example 5eb7cf5a86d9755df3a6c593
+             */
+            id: string;
+            /**
+             * Created At
+             * Format: date-time
+             * @description Дата создания уведомления
+             */
+            created_at: string;
+            /**
+             * Read By
+             * @description Список пользователей, которые прочитали уведомление
+             * @default []
+             */
+            read_by: string[];
+            /**
+             * For Admin
+             * @description Для администраторов
+             * @default false
+             */
+            for_admin: boolean;
+            /**
+             * For Federation
+             * @description Для какой федерации предназначено уведомление
+             */
+            for_federation: string | null;
+            /**
+             * Inner
+             * @description Тип уведомления и его содержимое
+             */
+            inner: components["schemas"]["AccreditationRequestFederation"] | components["schemas"]["AccreditationRequestEvent"] | components["schemas"]["AccreditedFederation"] | components["schemas"]["AccreditedEvent"] | components["schemas"]["NewFeedback"];
+        };
+        /** NotifySchema */
+        NotifySchema: {
+            /**
+             * Created At
+             * Format: date-time
+             * @description Дата создания уведомления
+             */
+            created_at?: string;
+            /**
+             * Read By
+             * @description Список пользователей, которые прочитали уведомление
+             * @default []
+             */
+            read_by: string[];
+            /**
+             * For Admin
+             * @description Для администраторов
+             * @default false
+             */
+            for_admin: boolean;
+            /**
+             * For Federation
+             * @description Для какой федерации предназначено уведомление
+             */
+            for_federation?: string | null;
+            /**
+             * Inner
+             * @description Тип уведомления и его содержимое
+             */
+            inner: components["schemas"]["AccreditationRequestFederation"] | components["schemas"]["AccreditationRequestEvent"] | components["schemas"]["AccreditedFederation"] | components["schemas"]["AccreditedEvent"] | components["schemas"]["NewFeedback"];
+        };
+        /**
          * Order
          * @enum {string}
          */
@@ -1232,6 +1618,8 @@ export interface components {
             role: components["schemas"]["UserRole"];
             /** Federation */
             federation?: string | null;
+            /** Email */
+            email?: string | null;
         };
     };
     responses: never;
@@ -1240,12 +1628,21 @@ export interface components {
     headers: never;
     pathItems: never;
 }
+export type SchemaAccreditationRequestEvent = components['schemas']['AccreditationRequestEvent'];
+export type SchemaAccreditationRequestFederation = components['schemas']['AccreditationRequestFederation'];
+export type SchemaAccreditedEvent = components['schemas']['AccreditedEvent'];
+export type SchemaAccreditedFederation = components['schemas']['AccreditedFederation'];
+export type SchemaBodyEmailEndEmailFlow = components['schemas']['Body_email_end_email_flow'];
+export type SchemaBodyEmailStartEmailFlow = components['schemas']['Body_email_start_email_flow'];
 export type SchemaBodyEventsSearchEvents = components['schemas']['Body_events_search_events'];
 export type SchemaBodyEventsShareSelection = components['schemas']['Body_events_share_selection'];
 export type SchemaBodyFileworkerUploadFile = components['schemas']['Body_fileworker_upload_file'];
 export type SchemaCreateUser = components['schemas']['CreateUser'];
 export type SchemaDateFilter = components['schemas']['DateFilter'];
 export type SchemaDisciplinesFilterVariants = components['schemas']['DisciplinesFilterVariants'];
+export type SchemaEmailFlowReference = components['schemas']['EmailFlowReference'];
+export type SchemaEmailFlowResult = components['schemas']['EmailFlowResult'];
+export type SchemaEmailFlowVerificationStatus = components['schemas']['EmailFlowVerificationStatus'];
 export type SchemaEvent = components['schemas']['Event'];
 export type SchemaEventLocation = components['schemas']['EventLocation'];
 export type SchemaEventSchema = components['schemas']['EventSchema'];
@@ -1260,6 +1657,9 @@ export type SchemaHttpValidationError = components['schemas']['HTTPValidationErr
 export type SchemaLocationFilter = components['schemas']['LocationFilter'];
 export type SchemaLocationsFilterVariants = components['schemas']['LocationsFilterVariants'];
 export type SchemaMinMaxFilter = components['schemas']['MinMaxFilter'];
+export type SchemaNewFeedback = components['schemas']['NewFeedback'];
+export type SchemaNotify = components['schemas']['Notify'];
+export type SchemaNotifySchema = components['schemas']['NotifySchema'];
 export type SchemaOrder = components['schemas']['Order'];
 export type SchemaPagination = components['schemas']['Pagination'];
 export type SchemaProtocol = components['schemas']['Protocol'];
@@ -1685,6 +2085,13 @@ export interface operations {
             };
             /** @description Only admin or related federation can update event */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Event not found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2380,6 +2787,311 @@ export interface operations {
                 content: {
                     "application/json": unknown;
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    notifications_create_notification: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NotifySchema"];
+            };
+        };
+        responses: {
+            /** @description Create notification */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Notify"];
+                };
+            };
+            /** @description Only admins can access this resource */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    notifications_get_notifications_for_admin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Get all notifications for admins */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Notify"][];
+                };
+            };
+        };
+    };
+    notifications_get_unread_notifications_for_admin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Get unread notifications for admin */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Notify"][];
+                };
+            };
+        };
+    };
+    notifications_get_notifications_for_federation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                federation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Get notifications for a federation */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Notify"][];
+                };
+            };
+            /** @description Only admins or federation owners can access this resource */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    notifications_get_unread_notifications_for_federation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                federation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Get unread notifications for federation */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Notify"][];
+                };
+            };
+            /** @description Only admins or federation owners can access this resource */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    notifications_mark_notification_as_read: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                notify_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Mark notification as read */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    notifications_get_notification: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                notify_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Get notification details */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Notify"];
+                };
+            };
+            /** @description Only admins can access this resource */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Notification not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    email_start_email_flow: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Body_email_start_email_flow"];
+            };
+        };
+        responses: {
+            /** @description Start email flow */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmailFlowReference"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    email_end_email_flow: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Body_email_end_email_flow"];
+            };
+        };
+        responses: {
+            /** @description End email flow */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmailFlowResult"];
+                };
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {

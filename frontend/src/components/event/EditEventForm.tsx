@@ -1,5 +1,5 @@
 import type { SchemaEventSchema } from '@/api/types.ts'
-import { $api } from '@/api'
+import { $api, apiFetch } from '@/api'
 import { useMe } from '@/api/me.ts'
 import { EventStatusBadge } from '@/components/EventStatusBadge.tsx'
 import { DatePicker } from '@/components/filters/DatesFilter.tsx'
@@ -13,11 +13,14 @@ import { Label } from '@/components/ui/label.tsx'
 import { Textarea } from '@/components/ui/textarea.tsx'
 import { useToast } from '@/components/ui/use-toast.ts'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
+import { useDropzone } from 'react-dropzone'
 import { useForm } from 'react-hook-form'
 import { Temporal } from 'temporal-polyfill'
 import { z } from 'zod'
 import Loader from '~icons/lucide/loader'
+import Trash from '~icons/lucide/trash'
 
 const editEventFormSchema = z.object({
   title: z.string().min(3, 'Название должно содержать минимум 3 символа'),
@@ -43,10 +46,20 @@ export function EditEventForm({
   eventId,
 }: { eventId: string }) {
   const { data: me } = useMe()
+  const queryClient = useQueryClient()
   const { data: event } = $api.useQuery('get', '/events/{id}', {
     params: { path: { id: eventId } },
   })
-  const { mutate: updateEvent, isPending } = $api.useMutation('put', '/events/{id}')
+  const { mutate: updateEvent, isPending } = $api.useMutation('put', '/events/{id}', {
+    onSettled: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: $api.queryOptions('get', '/events/{id}', { params: { path: { id: data?.id ?? '' } } }).queryKey,
+      })
+      queryClient.invalidateQueries({
+        queryKey: $api.queryOptions('get', '/events/').queryKey,
+      })
+    },
+  })
   const { toast } = useToast()
 
   const form = useForm<EditEventFormType>({
@@ -124,12 +137,51 @@ export function EditEventForm({
 
   const hasChanges = Object.keys(form.formState.dirtyFields).length > 0
 
+  const onDrop = async (acceptedFiles: File[]) => {
+    if (!event)
+      return
+
+    const fileNames: string[] = []
+    for (const file of acceptedFiles) {
+      const formData = new FormData()
+      formData.append('file', file)
+      const response = await apiFetch.POST('/file_worker/upload', {
+      // @ts-expect-error incorrect openapi type
+        body: formData,
+      })
+      const fileName = response.data
+      if (fileName) {
+        fileNames.push(fileName)
+      }
+    }
+
+    const newProtocols = fileNames.map(fileName => ({ by_file: fileName }))
+    updateEvent({
+      params: { path: { id: event.id } },
+      body: {
+        ...event,
+        results: {
+          team_places: event.results?.team_places ?? [],
+          protocols: [...(event.results?.protocols ?? []), ...newProtocols],
+        },
+      },
+    })
+  }
+
+  const { getRootProps, getInputProps, open: openDropzone } = useDropzone({
+    onDrop,
+    maxSize: 50 * 1024 * 1024, // 50 MB
+    multiple: true,
+  })
+
   return (
     <div className="container mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="mb-8 space-y-2">
-            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Мероприятие</h1>
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+              Мероприятие
+            </h1>
             <p className="text-sm text-muted-foreground sm:text-base">
               Редактирование данных мероприятия
             </p>
@@ -151,14 +203,22 @@ export function EditEventForm({
                   </div>
                   {event.accreditation_comment && (
                     <div className="flex flex-col gap-1.5">
-                      <span className="font-medium">Комментарий представительства:</span>
-                      <p className="text-sm text-muted-foreground">{event.accreditation_comment}</p>
+                      <span className="font-medium">
+                        Комментарий представительства:
+                      </span>
+                      <p className="text-sm text-muted-foreground">
+                        {event.accreditation_comment}
+                      </p>
                     </div>
                   )}
                   {event.status_comment && (
                     <div className="flex flex-col gap-1.5">
-                      <span className="font-medium">Комментарий к статусу:</span>
-                      <p className="text-sm text-muted-foreground">{event.status_comment}</p>
+                      <span className="font-medium">
+                        Комментарий к статусу:
+                      </span>
+                      <p className="text-sm text-muted-foreground">
+                        {event.status_comment}
+                      </p>
                     </div>
                   )}
                   {event.status === 'draft' && (
@@ -167,30 +227,26 @@ export function EditEventForm({
                         <Button
                           type="button"
                           variant="outline"
-                          onClick={() => updateEvent({
-                            params: { path: { id: event.id } },
-                            body: { ...event, status: 'on_consideration' },
-                          })}
+                          onClick={() =>
+                            updateEvent({
+                              params: { path: { id: event.id } },
+                              body: { ...event, status: 'on_consideration' },
+                            })}
                         >
                           Отправить на рассмотрение
                         </Button>
                       </div>
                     </div>
                   )}
-                  {me?.role === 'admin' && event.status === 'on_consideration' && (
+                  {me?.role === 'admin'
+                  && event.status === 'on_consideration' && (
                     <div className="flex flex-col gap-1.5">
                       <span className="font-medium">Рассмотреть:</span>
                       <div className="flex gap-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                        >
+                        <Button type="button" variant="outline">
                           Аккредитовать
                         </Button>
-                        <Button
-                          type="button"
-                          variant="outline"
-                        >
+                        <Button type="button" variant="outline">
                           Отклонить
                         </Button>
                       </div>
@@ -233,7 +289,9 @@ export function EditEventForm({
 
                 {/* Dates */}
                 <div className="flex flex-col gap-2">
-                  <Label className="text-base font-medium">Даты проведения</Label>
+                  <Label className="text-base font-medium">
+                    Даты проведения
+                  </Label>
                   <div className="flex items-center gap-2">
                     <FormField
                       control={form.control}
@@ -243,8 +301,15 @@ export function EditEventForm({
                           <FormControl>
                             <DatePicker
                               {...field}
-                              value={field.value ? Temporal.PlainDate.from(field.value.substring(0, 10)) : null}
-                              onChange={v => field.onChange(v ? v.toString() : null)}
+                              value={
+                                field.value
+                                  ? Temporal.PlainDate.from(
+                                    field.value.substring(0, 10),
+                                  )
+                                  : null
+                              }
+                              onChange={v =>
+                                field.onChange(v ? v.toString() : null)}
                               placeholder="Начало"
                               className="h-11 max-w-[150px] flex-1 basis-0"
                             />
@@ -262,8 +327,15 @@ export function EditEventForm({
                           <FormControl>
                             <DatePicker
                               {...field}
-                              value={field.value ? Temporal.PlainDate.from(field.value.substring(0, 10)) : null}
-                              onChange={v => field.onChange(v ? v.toString() : null)}
+                              value={
+                                field.value
+                                  ? Temporal.PlainDate.from(
+                                    field.value.substring(0, 10),
+                                  )
+                                  : null
+                              }
+                              onChange={v =>
+                                field.onChange(v ? v.toString() : null)}
                               placeholder="Конец"
                               className="h-11 max-w-[150px] flex-1 basis-0"
                             />
@@ -319,14 +391,19 @@ export function EditEventForm({
                 name="participant_count"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-base">Количество участников</FormLabel>
+                    <FormLabel className="text-base">
+                      Количество участников
+                    </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Введите количество участников"
                         type="number"
                         {...field}
                         value={field.value ?? ''}
-                        onChange={e => field.onChange(e.target.value ? Number(e.target.value) : null)}
+                        onChange={e =>
+                          field.onChange(
+                            e.target.value ? Number(e.target.value) : null,
+                          )}
                         className="h-11"
                       />
                     </FormControl>
@@ -369,7 +446,12 @@ export function EditEventForm({
                               type="number"
                               {...field}
                               value={field.value ?? ''}
-                              onChange={e => field.onChange(e.target.value ? Number(e.target.value) : null)}
+                              onChange={e =>
+                                field.onChange(
+                                  e.target.value
+                                    ? Number(e.target.value)
+                                    : null,
+                                )}
                               className="h-11 w-20"
                             />
                           </FormControl>
@@ -389,7 +471,12 @@ export function EditEventForm({
                               type="number"
                               {...field}
                               value={field.value ?? ''}
-                              onChange={e => field.onChange(e.target.value ? Number(e.target.value) : null)}
+                              onChange={e =>
+                                field.onChange(
+                                  e.target.value
+                                    ? Number(e.target.value)
+                                    : null,
+                                )}
                               className="h-11 w-20"
                             />
                           </FormControl>
@@ -414,7 +501,10 @@ export function EditEventForm({
                         type="number"
                         {...field}
                         value={field.value ?? ''}
-                        onChange={e => field.onChange(e.target.value ? Number(e.target.value) : null)}
+                        onChange={e =>
+                          field.onChange(
+                            e.target.value ? Number(e.target.value) : null,
+                          )}
                         className="h-11"
                       />
                     </FormControl>
@@ -423,37 +513,118 @@ export function EditEventForm({
                 )}
               />
 
-              {/* Location */}
+              {/* TODO: Location */}
+
+              <div className="mt-2 flex flex-col justify-end gap-3 sm:flex-row sm:gap-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCancel}
+                  disabled={isPending || !hasChanges}
+                  className="w-full sm:w-auto"
+                >
+                  Отмена
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isPending || !hasChanges}
+                  className="w-full sm:w-auto"
+                >
+                  {isPending
+                    ? (
+                        <>
+                          <Loader className="mr-2 size-4 animate-spin" />
+                          Сохранение...
+                        </>
+                      )
+                    : (
+                        'Сохранить изменения'
+                      )}
+                </Button>
+              </div>
             </CardContent>
           </Card>
 
-          <div className="flex flex-col justify-end gap-3 sm:flex-row sm:gap-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleCancel}
-              disabled={isPending || !hasChanges}
-              className="w-full sm:w-auto"
-            >
-              Отмена
-            </Button>
-            <Button
-              type="submit"
-              disabled={isPending || !hasChanges}
-              className="w-full sm:w-auto"
-            >
-              {isPending
-                ? (
-                    <>
-                      <Loader className="mr-2 size-4 animate-spin" />
-                      Сохранение...
-                    </>
-                  )
-                : (
-                    'Сохранить изменения'
-                  )}
-            </Button>
-          </div>
+          <Card className="w-full">
+            <CardHeader className="space-y-2">
+              <CardTitle className="text-center text-xl font-semibold sm:text-left">
+                Результаты соревнования
+              </CardTitle>
+              <CardDescription className="text-sm">
+                Загрузите протоколы с результатами прошедшего соревнования
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-6 sm:grid-cols-2">
+                <div className="flex flex-col gap-2">
+                  <Label className="text-base font-medium">Протоколы</Label>
+                  <ul className="mt-2 grid gap-2">
+                    {event?.results?.protocols.map((protocol, index) => (
+                      // eslint-disable-next-line react/no-array-index-key
+                      <li key={index} className="flex items-center gap-2">
+                        {protocol.by_url && (
+                          <Button asChild variant="outline">
+                            <a
+                              href={protocol.by_url}
+                              target="_blank"
+                              className="flex items-center gap-1"
+                            >
+                              Скачать
+                            </a>
+                          </Button>
+                        )}
+                        {protocol.by_file && (
+                          <Button asChild variant="outline">
+                            <a
+                              href={`/api/file_worker/download?url=${encodeURIComponent(protocol.by_file)}`}
+                              target="_blank"
+                              className="flex items-center gap-1"
+                            >
+                              {protocol.by_file.split('/').pop()}
+                            </a>
+                          </Button>
+                        )}
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          onClick={() =>
+                            updateEvent({
+                              params: { path: { id: event.id } },
+                              body: {
+                                ...event,
+                                results: {
+                                  team_places: event.results?.team_places ?? [],
+                                  protocols:
+                                    event.results?.protocols.filter(
+                                      (_, i) => i !== index,
+                                    ) ?? [],
+                                },
+                              },
+                            })}
+                        >
+                          <Trash />
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full"
+                      onClick={openDropzone}
+                    >
+                      Добавить файлы
+                    </Button>
+                    <div {...getRootProps()}>
+                      <Input {...getInputProps()} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </form>
       </Form>
     </div>
