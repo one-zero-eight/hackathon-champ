@@ -1,9 +1,7 @@
 import type { Federation } from '@/lib/types'
 import { $api } from '@/api'
 import { Button } from '@/components/ui/button'
-
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-
 import {
   Command,
   CommandEmpty,
@@ -13,6 +11,7 @@ import {
   CommandList,
 } from '@/components/ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Skeleton } from '@/components/ui/skeleton'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useMemo } from 'react'
 import Building from '~icons/lucide/building'
@@ -95,9 +94,9 @@ function RouteComponent() {
       {isPending
         ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {[...Array.from({ length: 6 })].map((_, i) => (
+              {Array.from({ length: 8 }).fill(null).map((_, i) => (
                 // eslint-disable-next-line react/no-array-index-key
-                <Card key={i} className="h-[200px] animate-pulse" />
+                <Skeleton key={i} className="h-[200px]" />
               ))}
             </div>
           )
