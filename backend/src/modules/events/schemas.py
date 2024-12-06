@@ -12,13 +12,6 @@ class DateFilter(BaseModel):
     "Не позже даты"
 
 
-class DisciplineFilter(BaseModel):
-    sport: str
-    "Название вида спорта"
-    discipline: str | None = None
-    "Название дисциплины"
-
-
 class LocationFilter(BaseModel):
     country: str
     "Название страны"
@@ -49,7 +42,7 @@ class Filters(BaseModel):
     "Текстовый запрос, чтобы фильтровать по любому полю"
     date: DateFilter | None = None
     "Фильтр по дате"
-    discipline: list[DisciplineFilter] | None = None
+    discipline: list[str] | None = None
     "Фильтр по спортивным дисциплинам (применяется через ИЛИ)"
     location: list[LocationFilter] | None = None
     "Фильтр по локации (применяется через ИЛИ)"

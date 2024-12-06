@@ -3,8 +3,7 @@ from fastapi import APIRouter, Request
 from src.api.dependencies import USER_AUTH
 from src.api.exceptions import IncorrectCredentialsException
 from src.modules.users.repository import user_repository
-from src.modules.users.schemas import ViewUser, UpdateFavoriteReq
-from beanie import PydanticObjectId
+from src.modules.users.schemas import ViewUser
 
 router = APIRouter(
     prefix="/users",
@@ -68,7 +67,3 @@ async def logout(request: Request) -> None:
     """
     request.session.clear()
     return None
-
-@router.put("/favorites")
-async def update_favorites(user: USER_AUTH, req: UpdateFavoriteReq) -> list[PydanticObjectId]:
-    return await user_repository.upsert_favorites(user_id=user.user_id, favorite_items=req.favorite_ids)

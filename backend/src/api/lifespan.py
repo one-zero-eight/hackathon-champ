@@ -67,9 +67,13 @@ async def push_notification():
                     outMsg: str
                     if notification.sport_id is not None:
                         if days_before == 1:
-                           outMsg = f'Через {days_before} день соревнование по виду спорта "{notification.sport_title}"' 
+                            outMsg = (
+                                f'Через {days_before} день соревнование по виду спорта "{notification.sport_title}"'
+                            )
                         else:
-                            outMsg = f'Через {days_before} дней соревнование по виду спорта "{notification.sport_title}"'
+                            outMsg = (
+                                f'Через {days_before} дней соревнование по виду спорта "{notification.sport_title}"'
+                            )
                     elif notification.event_id is not None:
                         if days_before == 1:
                             outMsg = f'Через {days_before} день соревнование "{notification.event_title}" по виду спорта "{notification.sport_title}"'

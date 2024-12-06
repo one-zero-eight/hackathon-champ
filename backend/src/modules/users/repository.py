@@ -4,7 +4,7 @@ from beanie import PydanticObjectId
 
 from src.modules.users.schemas import CreateUser
 from src.storages.mongo.users import User
-from fastapi import HTTPException
+
 
 # noinspection PyMethodMayBeStatic
 class UserRepository:
@@ -33,9 +33,5 @@ class UserRepository:
     async def is_banned(self, user_id: str | PydanticObjectId) -> bool:
         return False
 
-
-    async def upsert_favorites(self, user_id: PydanticObjectId, favorite_items: list[PydanticObjectId]) -> list[PydanticObjectId]: 
-        user = await User.find_one(User.id == user_id).update({"$set": {"favorites": list(set(favorite_items))}})
-        return favorite_items
 
 user_repository: UserRepository = UserRepository()

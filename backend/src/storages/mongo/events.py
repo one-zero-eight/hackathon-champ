@@ -3,6 +3,7 @@ __all__ = ["Event", "EventSchema"]
 import datetime
 
 import pymongo
+from beanie import PydanticObjectId
 from pymongo import IndexModel
 
 from src.modules.events.schemas import Gender
@@ -28,41 +29,34 @@ class EventLocation(BaseSchema):
 
 
 class EventSchema(BaseSchema):
-    ekp_id: int
-    "№ СМ в ЕКП"
-
+    host_federation: PydanticObjectId | None = None
+    "Федерация, организующая мероприятие (None - для парсинга со стороны разработчиков)"
     title: str
     "Наименование спортивного мероприятия"
-
     description: str | None = None
     "Описание"
-
     gender: Gender | None = None
     "Пол участников (None - любой)"
-
     age_min: int | None = None
     "Минимальный возраст участников"
     age_max: int | None = None
     "Максимальный возраст участников"
-
     sport: str
     "Название вида спорта"
     discipline: list[str]
     "Названия дисциплин"
-
     start_date: datetime.datetime
     "Дата начала"
     end_date: datetime.datetime
     "Дата конца"
-
     location: list[EventLocation]
     "Места проведения"
-
     participant_count: int | None = None
     "Количество участников"
-
+    ekp_id: int | None = None
+    "№ СМ в ЕКП"
     page: int | None = None
-    "Страница в календаре МинСпорта"
+    "Страница в ЕКП"
 
 
 class Event(EventSchema, CustomDocument):

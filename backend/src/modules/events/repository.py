@@ -28,13 +28,14 @@ class EventsRepository:
         if not res.acknowledged:
             return False
         return True
-    
-    async def get_random_event(self) -> Event | None:
-        random_docs = await Event.aggregate([
-        {"$sample": {"size": 1}}  # Randomly sample one document
-    ]).to_list(length=1)
-        return random_docs[0] if random_docs else None
 
+    async def get_random_event(self) -> Event | None:
+        random_docs = await Event.aggregate(
+            [
+                {"$sample": {"size": 1}}  # Randomly sample one document
+            ]
+        ).to_list(length=1)
+        return random_docs[0] if random_docs else None
 
     async def read_with_filters(
         self, filters: Filters, sort: Sort, pagination: Pagination, count: bool = False
@@ -80,10 +81,7 @@ class EventsRepository:
         if filters.date and filters.date.end_date is not None:
             query = query.find(Event.end_date <= filters.date.end_date)
         if filters.discipline:
-            # FIXME: Может работать неверно, если у указанных спортов есть одинаковые названия дисциплин
-            query = query.find(In(Event.sport, [discipline.sport for discipline in filters.discipline]))
-            if None not in [discipline.discipline for discipline in filters.discipline]:
-                query = query.find(In(Event.discipline, [discipline.discipline for discipline in filters.discipline]))
+            query = query.find(In(Event.discipline, filters.discipline))
 
         if filters.location:
             conditions = []

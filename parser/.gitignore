@@ -1,0 +1,7 @@
+events.csv
+events.json
+input.pdf
+debugged_output.pdf
+label_locations.csv
+postprocessed_label_locations.csv
+__pycache__
