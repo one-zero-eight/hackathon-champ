@@ -2,6 +2,7 @@ __all__ = ["Event", "EventSchema"]
 
 import datetime
 from enum import StrEnum
+from typing import Any
 
 import pymongo
 from beanie import PydanticObjectId
@@ -36,6 +37,31 @@ class EventStatusEnum(StrEnum):
     "Аккредитовано"
     REJECTED = "rejected"
     "Отклонено"
+
+
+class TeamPlace(BaseSchema):
+    place: str
+    "Место (1, 2, 3-5)"
+    team: str
+    "Название команды"
+    members: list[str]
+    "Состав команды"
+    score: Any | None = None
+    "Очки"
+
+
+class Protocol(BaseSchema):
+    by_url: str | None = None
+    "Ссылка на протокол"
+    by_file: str | None = None
+    "Путь к файлу в S3"
+
+
+class Results(BaseSchema):
+    protocols: list[Protocol] = []
+    "Протоколы зачёта, список ссылок"
+    team_places: list[TeamPlace] = []
+    "Места команд"
 
 
 class EventSchema(BaseSchema):
@@ -73,6 +99,8 @@ class EventSchema(BaseSchema):
     "№ СМ в ЕКП"
     page: int | None = None
     "Страница в ЕКП"
+    results: Results | None = None
+    "Результаты мероприятия"
 
 
 class Event(EventSchema, CustomDocument):
