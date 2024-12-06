@@ -1,6 +1,7 @@
 import type { Federation } from '@/lib/types'
 import { $api } from '@/api'
 import { FederationLogo } from '@/components/FederationLogo'
+import { FederationStatusIcon } from '@/components/FederationStatusIcon'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import {
@@ -16,19 +17,10 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useMemo } from 'react'
-import BadgeAlert from '~icons/lucide/badge-alert'
-import BadgeCheck from '~icons/lucide/badge-check'
-import BadgeX from '~icons/lucide/badge-x'
 import Mail from '~icons/lucide/mail'
 import Phone from '~icons/lucide/phone'
 import Search from '~icons/lucide/search'
 import User from '~icons/lucide/user-round'
-
-const STATUS_ICONS = {
-  on_consideration: BadgeAlert,
-  accredited: BadgeCheck,
-  rejected: BadgeX,
-}
 
 export const Route = createFileRoute('/federations/')({
   component: RouteComponent,
@@ -120,7 +112,14 @@ function RouteComponent() {
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
                             <h3 className="font-semibold">{federation.region}</h3>
-                            <StatusIcon status={federation.status} />
+                            <FederationStatusIcon
+                              status={federation.status}
+                              className={cn(
+                                federation.status === 'on_consideration' && 'text-yellow-500',
+                                federation.status === 'accredited' && 'text-green-500',
+                                federation.status === 'rejected' && 'text-red-500',
+                              )}
+                            />
                           </div>
                           {federation.district && (
                             <p className="text-sm text-muted-foreground">{federation.district}</p>
@@ -156,19 +155,5 @@ function RouteComponent() {
             </div>
           )}
     </div>
-  )
-}
-
-function StatusIcon({ status }: { status: keyof typeof STATUS_ICONS }) {
-  const Icon = STATUS_ICONS[status]
-  return (
-    <Icon
-      className={cn(
-        'size-4',
-        status === 'on_consideration' && 'text-yellow-500',
-        status === 'accredited' && 'text-green-500',
-        status === 'rejected' && 'text-red-500',
-      )}
-    />
   )
 }
