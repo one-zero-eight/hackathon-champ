@@ -1,4 +1,5 @@
 import { $api } from '@/api'
+import { ColoredBadge } from '@/components/ColoredBadge'
 import { FederationLogo } from '@/components/FederationLogo'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -12,16 +13,16 @@ import Trophy from '~icons/lucide/trophy'
 import Users from '~icons/lucide/users'
 import Telegram from '~icons/ph/telegram-logo'
 
-const STATUS_COLORS = {
-  on_consideration: 'bg-yellow-500 text-yellow-950',
-  accredited: 'bg-green-500 text-green-950',
-  rejected: 'bg-red-500 text-red-950',
-} as const
-
 const STATUS_LABELS = {
   on_consideration: 'На рассмотрении',
   accredited: 'Аккредитована',
   rejected: 'Отклонена',
+} as const
+
+const STATUS_COLORS = {
+  on_consideration: 'blue',
+  accredited: 'green',
+  rejected: 'red',
 } as const
 
 export const Route = createFileRoute('/federations/$federationId')({
@@ -65,9 +66,9 @@ function RouteComponent() {
         <div className="flex-1">
           <div className="flex items-center gap-4">
             <h1 className="text-3xl font-bold">{federation.region}</h1>
-            <div className={`rounded-full px-3 py-1 text-sm font-medium ${STATUS_COLORS[federation.status]}`}>
+            <ColoredBadge color={STATUS_COLORS[federation.status]}>
               {STATUS_LABELS[federation.status]}
-            </div>
+            </ColoredBadge>
           </div>
           {federation.district && (
             <p className="mt-1 text-lg text-muted-foreground">{federation.district}</p>

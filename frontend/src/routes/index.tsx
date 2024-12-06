@@ -127,12 +127,12 @@ function RouteComponent() {
               },
             ].map((feature, index) => (
               <motion.div
-                key={index}
+                key={feature.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.8 }}
-                className="group rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200 transition-all hover:shadow-md"
+                transition={{ delay: index * 0.15, duration: 0.8 }}
+                className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200 transition-all hover:translate-y-[-4px] hover:shadow-md"
               >
                 <div className="mb-4 inline-flex rounded-lg bg-purple-100 p-2.5 text-purple-600">
                   {feature.icon}
@@ -438,9 +438,9 @@ function EventSelection({
             <EventCard key={event.id} event={event} className="w-[900px]" />
           ))}
         </div>
-        <ScrollBar 
-          orientation="horizontal" 
-          className="scrollbar-thumb-rounded scrollbar-thumb-gray-400" 
+        <ScrollBar
+          orientation="horizontal"
+          className="scrollbar-thumb-rounded scrollbar-thumb-gray-400"
           style={{
             height: '12px',
             backgroundColor: 'var(--muted)',

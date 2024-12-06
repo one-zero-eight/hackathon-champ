@@ -1,6 +1,6 @@
 import { $api } from '@/api'
+import { ColoredBadge } from '@/components/ColoredBadge'
 import { EventCard } from '@/components/EventCard'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -154,27 +154,27 @@ function RouteComponent() {
                     <div className="size-2 rounded-full bg-blue-500"></div>
                     <span>Ожидают проверки</span>
                   </div>
-                  <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">
+                  <ColoredBadge color="blue">
                     2
-                  </Badge>
+                  </ColoredBadge>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="size-2 rounded-full bg-green-500"></div>
                     <span>Одобрены</span>
                   </div>
-                  <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
+                  <ColoredBadge color="green">
                     5
-                  </Badge>
+                  </ColoredBadge>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="size-2 rounded-full bg-red-500"></div>
                     <span>Отклонен</span>
                   </div>
-                  <Badge className="bg-red-100 text-red-700 hover:bg-red-100">
+                  <ColoredBadge color="red">
                     1
-                  </Badge>
+                  </ColoredBadge>
                 </div>
                 <Button variant="outline" className="mt-4 w-full">
                   Просмотреть все заявки

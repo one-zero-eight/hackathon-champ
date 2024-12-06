@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils'
 import ChevronLeft from '~icons/lucide/chevron-left'
 import ChevronRight from '~icons/lucide/chevron-right'
-import { Badge } from './ui/badge'
+import { ColoredBadge } from './ColoredBadge'
 import { Button } from './ui/button'
 
 const MONTH_NAMES: { [n in number]?: string } = {
@@ -90,16 +90,9 @@ export function Calendar({
             onClick={() => onMonthSelect(year, idx)}
           >
             <span className="text-xl">{MONTH_NAMES[idx]}</span>
-            <Badge
-              variant="secondary"
-              className={cn(
-                (countByMonth[idx] ?? 0) > 0
-                  ? 'bg-green-100 group-hover:bg-green-200'
-                  : 'bg-stone-100 group-hover:bg-stone-200',
-              )}
-            >
+            <ColoredBadge color={(countByMonth[idx] ?? 0) > 0 ? 'green' : 'gray'}>
               {`${countByMonth[idx] ?? '—'} мероприятий`}
-            </Badge>
+            </ColoredBadge>
           </Button>
         ))}
       </div>
