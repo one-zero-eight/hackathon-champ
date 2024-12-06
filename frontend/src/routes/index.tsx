@@ -325,7 +325,7 @@ function RouteComponent() {
               </h3>
               <ul className="space-y-2">
                 <li>
-                  <a href="#" className="text-sm hover:text-white">О платформе</a>
+                  <Link to="/about" className="text-sm hover:text-white">О платформе</Link>
                 </li>
                 <li>
                   <a href="#" className="text-sm hover:text-white">Соревнования</a>

@@ -3,7 +3,7 @@ import { Separator } from '@/components/ui/separator'
 import GraduationCap from '~icons/lucide/graduation-cap'
 import Calendar from '~icons/lucide/calendar'
 import { $api } from '@/api'
-import type { SchemaEventOutput } from '@/api/types'
+import type { SchemaEvent } from '@/api/types'
 import AlgorithmIcon from '@/icons/Algorithm_Icon.svg'
 import ProductIcon from '@/icons/Product_Icon.svg'
 import DroneIcon from '@/icons/Drone_Icon.svg'
@@ -112,7 +112,7 @@ function DisciplineEvents({ query }: { query: string }) {
       },
     },
   })
-  const events = (eventsData as { events: SchemaEventOutput[] } | undefined)?.events ?? []
+  const events = (eventsData as { events: SchemaEvent[] } | undefined)?.events ?? []
 
   if (events.length === 0) {
     return (

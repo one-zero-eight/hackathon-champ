@@ -14,8 +14,10 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as TermsImport } from './routes/terms'
 import { Route as SearchImport } from './routes/search'
 import { Route as PrivacyImport } from './routes/privacy'
+import { Route as FeedbackImport } from './routes/feedback'
 import { Route as DisciplinesImport } from './routes/disciplines'
 import { Route as CalendarImport } from './routes/calendar'
+import { Route as AboutImport } from './routes/about'
 import { Route as ManageRouteImport } from './routes/manage/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as ManageIndexImport } from './routes/manage/index'
@@ -51,6 +53,12 @@ const PrivacyRoute = PrivacyImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const FeedbackRoute = FeedbackImport.update({
+  id: '/feedback',
+  path: '/feedback',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const DisciplinesRoute = DisciplinesImport.update({
   id: '/disciplines',
   path: '/disciplines',
@@ -60,6 +68,12 @@ const DisciplinesRoute = DisciplinesImport.update({
 const CalendarRoute = CalendarImport.update({
   id: '/calendar',
   path: '/calendar',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AboutRoute = AboutImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -165,6 +179,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageRouteImport
       parentRoute: typeof rootRoute
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutImport
+      parentRoute: typeof rootRoute
+    }
     '/calendar': {
       id: '/calendar'
       path: '/calendar'
@@ -177,6 +198,13 @@ declare module '@tanstack/react-router' {
       path: '/disciplines'
       fullPath: '/disciplines'
       preLoaderRoute: typeof DisciplinesImport
+      parentRoute: typeof rootRoute
+    }
+    '/feedback': {
+      id: '/feedback'
+      path: '/feedback'
+      fullPath: '/feedback'
+      preLoaderRoute: typeof FeedbackImport
       parentRoute: typeof rootRoute
     }
     '/privacy': {
@@ -318,8 +346,10 @@ const ManageRouteRouteWithChildren = ManageRouteRoute._addFileChildren(
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/manage': typeof ManageRouteRouteWithChildren
+  '/about': typeof AboutRoute
   '/calendar': typeof CalendarRoute
   '/disciplines': typeof DisciplinesRoute
+  '/feedback': typeof FeedbackRoute
   '/privacy': typeof PrivacyRoute
   '/search': typeof SearchRoute
   '/terms': typeof TermsRoute
@@ -339,8 +369,10 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/calendar': typeof CalendarRoute
   '/disciplines': typeof DisciplinesRoute
+  '/feedback': typeof FeedbackRoute
   '/privacy': typeof PrivacyRoute
   '/search': typeof SearchRoute
   '/terms': typeof TermsRoute
@@ -362,8 +394,10 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/manage': typeof ManageRouteRouteWithChildren
+  '/about': typeof AboutRoute
   '/calendar': typeof CalendarRoute
   '/disciplines': typeof DisciplinesRoute
+  '/feedback': typeof FeedbackRoute
   '/privacy': typeof PrivacyRoute
   '/search': typeof SearchRoute
   '/terms': typeof TermsRoute
@@ -386,8 +420,10 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/manage'
+    | '/about'
     | '/calendar'
     | '/disciplines'
+    | '/feedback'
     | '/privacy'
     | '/search'
     | '/terms'
@@ -406,8 +442,10 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/calendar'
     | '/disciplines'
+    | '/feedback'
     | '/privacy'
     | '/search'
     | '/terms'
@@ -427,8 +465,10 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/manage'
+    | '/about'
     | '/calendar'
     | '/disciplines'
+    | '/feedback'
     | '/privacy'
     | '/search'
     | '/terms'
@@ -450,8 +490,10 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ManageRouteRoute: typeof ManageRouteRouteWithChildren
+  AboutRoute: typeof AboutRoute
   CalendarRoute: typeof CalendarRoute
   DisciplinesRoute: typeof DisciplinesRoute
+  FeedbackRoute: typeof FeedbackRoute
   PrivacyRoute: typeof PrivacyRoute
   SearchRoute: typeof SearchRoute
   TermsRoute: typeof TermsRoute
@@ -464,8 +506,10 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ManageRouteRoute: ManageRouteRouteWithChildren,
+  AboutRoute: AboutRoute,
   CalendarRoute: CalendarRoute,
   DisciplinesRoute: DisciplinesRoute,
+  FeedbackRoute: FeedbackRoute,
   PrivacyRoute: PrivacyRoute,
   SearchRoute: SearchRoute,
   TermsRoute: TermsRoute,
@@ -487,8 +531,10 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/manage",
+        "/about",
         "/calendar",
         "/disciplines",
+        "/feedback",
         "/privacy",
         "/search",
         "/terms",
@@ -514,11 +560,17 @@ export const routeTree = rootRoute
         "/manage/region/events/"
       ]
     },
+    "/about": {
+      "filePath": "about.tsx"
+    },
     "/calendar": {
       "filePath": "calendar.tsx"
     },
     "/disciplines": {
       "filePath": "disciplines.tsx"
+    },
+    "/feedback": {
+      "filePath": "feedback.tsx"
     },
     "/privacy": {
       "filePath": "privacy.tsx"

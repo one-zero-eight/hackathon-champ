@@ -3,6 +3,7 @@ import { useMe } from '@/api/me.ts'
 import { Button } from '@/components/ui/button.tsx'
 import { useQueryClient } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
+import HelpCircle from '~icons/lucide/help-circle'
 
 export function TopBar() {
   const { data: me } = useMe()
@@ -84,6 +85,14 @@ export function TopBar() {
               Выйти
             </Button>
           )}
+          <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+            <Link
+              to="/about"
+              activeProps={{ className: 'text-foreground' }}
+            >
+              <HelpCircle className="h-5 w-5" />
+            </Link>
+          </Button>
         </div>
       </div>
     </header>
