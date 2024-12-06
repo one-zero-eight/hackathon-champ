@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "gen:api": "npx openapi-typescript http://hack.innohassle.ru:8000/openapi.json -o ./src/api/types.ts --root-types"
+    "gen:api": "npx openapi-typescript http://champ.innohassle.ru:8000/openapi.json -o ./src/api/types.ts --root-types"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.2",
