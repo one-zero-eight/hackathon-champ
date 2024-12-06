@@ -291,7 +291,7 @@ function RouteComponent() {
                         </Badge>
                       </div>
                       <Button variant="outline" className="mt-4 w-full" asChild>
-                        <Link to="/manage/admin/federations">
+                        <Link to="/manage/federations">
                           Управление федерациями
                         </Link>
                       </Button>
