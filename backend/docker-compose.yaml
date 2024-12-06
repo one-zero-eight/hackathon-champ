@@ -9,6 +9,9 @@ services:
     restart: always
     ports:
       - "8000:8000"
+    environment:
+      TZ: "Europe/Moscow"
+      FORWARDED_ALLOW_IPS: "*"
 
   db:
     # See more: https://registry.hub.docker.com/_/mongo
