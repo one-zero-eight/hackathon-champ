@@ -65,7 +65,9 @@ function RouteComponent() {
   return (
     <div className="flex h-full flex-col items-center justify-center px-4 py-8">
       <form className="flex w-full max-w-[300px] flex-col gap-2" onSubmit={onSubmit}>
-        <h1 className="text-center text-2xl">Вход в систему</h1>
+        <h1 className="text-center text-2xl">
+          {register ? 'Регистрация' : 'Вход в систему'}
+        </h1>
         <Input
           value={login}
           onChange={e => setLogin(e.target.value)}
