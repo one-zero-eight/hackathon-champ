@@ -5,3 +5,6 @@ database_uri: "mongodb://mongoadmin:secret@db:27017/db?authSource=admin" # Datab
 session_secret_key: "very-secret-key" # use `openssl rand -hex 32` to generate a random key
 static_mount_path: /static
 static_directory: .
+minio:
+  access_key: "minioadmin"
+  secret_key: "password"

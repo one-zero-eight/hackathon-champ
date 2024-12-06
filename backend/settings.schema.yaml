@@ -1,0 +1,97 @@
+$schema: https://json-schema.org/draft-07/schema
+$defs:
+  Environment:
+    enum:
+    - development
+    - production
+    title: Environment
+    type: string
+  MinioSettings:
+    additionalProperties: false
+    properties:
+      endpoint:
+        default: 127.0.0.1:9000
+        description: URL of the target service.
+        title: Endpoint
+        type: string
+      secure:
+        default: false
+        description: Use https connection to the service.
+        title: Secure
+        type: boolean
+      access_key:
+        description: Access key (user ID) of a user account in the service.
+        examples:
+        - minioadmin
+        title: Access Key
+        type: string
+      secret_key:
+        description: Secret key (password) for the user account.
+        examples:
+        - password
+        format: password
+        title: Secret Key
+        type: string
+        writeOnly: true
+    required:
+    - access_key
+    - secret_key
+    title: MinioSettings
+    type: object
+additionalProperties: false
+description: Settings for the application.
+properties:
+  $schema:
+    default: null
+    title: $Schema
+    type: string
+  environment:
+    $ref: '#/$defs/Environment'
+    default: development
+    description: App environment flag
+  app_root_path:
+    default: ''
+    description: Prefix for the API path (e.g. "/api/v0")
+    title: App Root Path
+    type: string
+  database_uri:
+    description: MongoDB database settings
+    examples:
+    - mongodb://mongoadmin:secret@localhost:27017/db?authSource=admin
+    - mongodb://mongoadmin:secret@db:27017/db?authSource=admin
+    format: password
+    title: Database Uri
+    type: string
+    writeOnly: true
+  cors_allow_origin_regex:
+    default: .*
+    description: 'Allowed origins for CORS: from which domains requests to the API
+      are allowed. Specify as a regex: `https://.*.innohassle.ru`'
+    title: Cors Allow Origin Regex
+    type: string
+  session_secret_key:
+    description: Secret key for session middleware
+    format: password
+    title: Session Secret Key
+    type: string
+    writeOnly: true
+  static_mount_path:
+    default: /static
+    description: Path to mount static files
+    title: Static Mount Path
+    type: string
+  static_directory:
+    default: static
+    description: Path to the directory with static files
+    format: path
+    title: Static Directory
+    type: string
+  minio:
+    $ref: '#/$defs/MinioSettings'
+    description: Minio settings
+required:
+- database_uri
+- session_secret_key
+- minio
+title: Settings
+type: object

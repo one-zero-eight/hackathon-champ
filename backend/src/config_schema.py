@@ -14,6 +14,17 @@ class SettingBaseModel(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True, extra="forbid")
 
 
+class MinioSettings(SettingBaseModel):
+    endpoint: str = "127.0.0.1:9000"
+    "URL of the target service."
+    secure: bool = False
+    "Use https connection to the service."
+    access_key: str = Field(..., examples=["minioadmin"])
+    "Access key (user ID) of a user account in the service."
+    secret_key: SecretStr = Field(..., examples=["password"])
+    "Secret key (password) for the user account."
+
+
 class Settings(SettingBaseModel):
     """Settings for the application."""
 
@@ -37,6 +48,8 @@ class Settings(SettingBaseModel):
     "Path to mount static files"
     static_directory: Path = Path("static")
     "Path to the directory with static files"
+    minio: MinioSettings
+    "Minio settings"
 
     @classmethod
     def from_yaml(cls, path: Path) -> "Settings":

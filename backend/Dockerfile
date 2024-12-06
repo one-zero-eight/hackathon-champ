@@ -25,6 +25,7 @@ RUN apt-get update \
     && apt-get install --no-install-recommends -y \
         build-essential \
         curl \
+        libmagic1 \
         netcat \
         vim \
     && rm -rf /var/lib/apt/lists/*

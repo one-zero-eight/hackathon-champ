@@ -12,6 +12,7 @@ from pymongo.errors import ConnectionFailure
 
 from src.config import settings
 from src.logging_ import logger
+from src.modules.files.repository import file_worker_repository
 from src.storages.mongo import document_models
 
 
@@ -43,6 +44,7 @@ async def setup_database() -> AsyncIOMotorClient:
 async def lifespan(_app: FastAPI):
     # Application startup
     motor_client = await setup_database()
+    file_worker_repository.create_bucket()
     yield
 
     # -- Application shutdown --
