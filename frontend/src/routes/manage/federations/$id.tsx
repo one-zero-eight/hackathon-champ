@@ -1,6 +1,5 @@
 import type { SchemaFederationSchema, SchemaStatusEnum } from '@/api/types'
 import { $api } from '@/api'
-import { useMyFederation } from '@/api/me'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -30,7 +29,7 @@ import Loader from '~icons/lucide/loader'
 
 const statusLabels: Record<
   SchemaStatusEnum,
-  { label: string; variant: 'default' | 'secondary' | 'destructive' }
+  { label: string, variant: 'default' | 'secondary' | 'destructive' }
 > = {
   on_consideration: { label: 'На рассмотрении', variant: 'default' },
   accredited: { label: 'Аккредитована', variant: 'secondary' },
@@ -56,8 +55,11 @@ export const Route = createFileRoute('/manage/federations/$id')({
 })
 
 function RouteComponent() {
+  const { id: federationId } = Route.useParams()
   const [isLoading, setIsLoading] = useState(false)
-  const { data: federation, refetch } = useMyFederation()
+  const { data: federation, refetch } = $api.useQuery('get', '/federations/{id}', {
+    params: { path: { id: federationId } },
+  })
   const { mutate: updateFederation } = $api.useMutation(
     'put',
     '/federations/{id}/',
@@ -113,7 +115,8 @@ function RouteComponent() {
   }
 
   async function onSubmit(data: ProfileFormValues) {
-    if (!federation) return
+    if (!federation)
+      return
 
     setIsLoading(true)
     try {
@@ -130,7 +133,7 @@ function RouteComponent() {
         logo: data.logo,
       }
 
-      await updateFederation(
+      updateFederation(
         {
           params: { path: { id: federation.id } },
           body: updateData,
@@ -155,7 +158,8 @@ function RouteComponent() {
           },
         },
       )
-    } finally {
+    }
+    finally {
       setIsLoading(false)
     }
   }
@@ -248,9 +252,8 @@ function RouteComponent() {
                           placeholder="Название федерального округа"
                           {...field}
                           value={field.value || ''}
-                          onChange={(e) =>
-                            field.onChange(e.target.value || null)
-                          }
+                          onChange={e =>
+                            field.onChange(e.target.value || null)}
                         />
                       </FormControl>
                       <FormMessage />
@@ -270,7 +273,7 @@ function RouteComponent() {
                         className="min-h-[100px]"
                         {...field}
                         value={field.value || ''}
-                        onChange={(e) => field.onChange(e.target.value || null)}
+                        onChange={e => field.onChange(e.target.value || null)}
                       />
                     </FormControl>
                     <FormMessage />
@@ -300,9 +303,8 @@ function RouteComponent() {
                           placeholder="Иванов Иван Иванович"
                           {...field}
                           value={field.value || ''}
-                          onChange={(e) =>
-                            field.onChange(e.target.value || null)
-                          }
+                          onChange={e =>
+                            field.onChange(e.target.value || null)}
                         />
                       </FormControl>
                       <FormMessage />
@@ -321,9 +323,8 @@ function RouteComponent() {
                           placeholder="example@mail.ru"
                           {...field}
                           value={field.value || ''}
-                          onChange={(e) =>
-                            field.onChange(e.target.value || null)
-                          }
+                          onChange={e =>
+                            field.onChange(e.target.value || null)}
                         />
                       </FormControl>
                       <FormMessage />
@@ -344,9 +345,8 @@ function RouteComponent() {
                           placeholder="+7 (999) 123-45-67"
                           {...field}
                           value={field.value || ''}
-                          onChange={(e) =>
-                            field.onChange(e.target.value || null)
-                          }
+                          onChange={e =>
+                            field.onChange(e.target.value || null)}
                         />
                       </FormControl>
                       <FormMessage />
@@ -364,9 +364,8 @@ function RouteComponent() {
                           placeholder="https://example.com"
                           {...field}
                           value={field.value || ''}
-                          onChange={(e) =>
-                            field.onChange(e.target.value || null)
-                          }
+                          onChange={e =>
+                            field.onChange(e.target.value || null)}
                         />
                       </FormControl>
                       <FormMessage />
@@ -385,7 +384,7 @@ function RouteComponent() {
                         placeholder="ул. Примерная, д. 1, офис 123"
                         {...field}
                         value={field.value || ''}
-                        onChange={(e) => field.onChange(e.target.value || null)}
+                        onChange={e => field.onChange(e.target.value || null)}
                       />
                     </FormControl>
                     <FormMessage />
@@ -410,14 +409,16 @@ function RouteComponent() {
               disabled={isLoading || !hasChanges}
               className="w-full sm:w-auto"
             >
-              {isLoading ? (
-                <>
-                  <Loader className="mr-2 size-4 animate-spin" />
-                  Сохранение...
-                </>
-              ) : (
-                'Сохранить изменения'
-              )}
+              {isLoading
+                ? (
+                    <>
+                      <Loader className="mr-2 size-4 animate-spin" />
+                      Сохранение...
+                    </>
+                  )
+                : (
+                    'Сохранить изменения'
+                  )}
             </Button>
           </div>
         </form>
