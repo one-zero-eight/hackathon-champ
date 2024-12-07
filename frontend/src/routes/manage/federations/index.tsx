@@ -11,6 +11,17 @@ import {
   CommandList,
 } from '@/components/ui/command'
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -23,23 +34,87 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { createFileRoute, Link } from '@tanstack/react-router'
-
+import { useQueryClient } from '@tanstack/react-query'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useCallback, useMemo, useState } from 'react'
-
 import Download from '~icons/lucide/download'
+import Loader2 from '~icons/lucide/loader'
+import Plus from '~icons/lucide/plus'
 import Search from '~icons/lucide/search'
 
 export const Route = createFileRoute('/manage/federations/')({
   component: RouteComponent,
 })
 
+function CreateFederationDialog({ open, setOpen }: { open: boolean, setOpen: (open: boolean) => void }) {
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const [formData, setFormData] = useState({
+    region: '',
+    status: 'on_consideration' as const,
+    notified_about_interaction: false,
+  })
+
+  const { mutate: createFederation, isPending } = $api.useMutation('post', '/federations/', {
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: $api.queryOptions('get', '/federations/').queryKey,
+      })
+      setOpen(false)
+      navigate({ to: '/manage/federations/$id', params: { id: data.id } })
+    },
+  })
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    createFederation({
+      body: formData,
+    })
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Создать федерацию</DialogTitle>
+          <DialogDescription>
+            Укажите название региона. Остальные данные можно будет добавить позже.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={onSubmit}>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="region" className="text-right">
+                Регион
+              </Label>
+              <Input
+                id="region"
+                value={formData.region}
+                onChange={e => setFormData(prev => ({ ...prev, region: e.target.value }))}
+                className="col-span-3"
+                placeholder="Например: Москва"
+                required
+                autoFocus
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="submit" disabled={isPending}>
+              {isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
+              Создать
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
 function RouteComponent() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null)
-  const [selectedStatus, setSelectedStatus] = useState<SchemaStatusEnum | null>(
-    null,
-  )
+  const [selectedStatus, setSelectedStatus] = useState<SchemaStatusEnum | null>(null)
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const { data: federations, isPending } = $api.useQuery('get', '/federations/')
 
   const byDistrict = useMemo(() => {
@@ -209,6 +284,10 @@ function RouteComponent() {
           </p>
         </div>
         <div className="flex items-center gap-4">
+          <Button variant="default" onClick={() => setIsCreateDialogOpen(true)}>
+            <Plus className="mr-2 size-4" />
+            Создать федерацию
+          </Button>
           <Button variant="outline" onClick={onExportCSV}>
             <Download className="mr-2 size-4" />
             CSV
@@ -394,6 +473,11 @@ function RouteComponent() {
           </Table>
         </div>
       </div>
+
+      <CreateFederationDialog
+        open={isCreateDialogOpen}
+        setOpen={setIsCreateDialogOpen}
+      />
     </div>
   )
 }
