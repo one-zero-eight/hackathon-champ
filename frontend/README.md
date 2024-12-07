@@ -82,8 +82,6 @@ frontend/
 ├── tsconfig.app.json     # Конфигурация TypeScript для приложения
 ├── tsconfig.node.json    # Конфигурация TypeScript для Node.js
 ├── vite.config.ts        # Конфигурация Vite
-├── .env                  # Переменные окружения (по умолчанию)
-├── .env.local           # Локальные переменные окружения
 ├── Dockerfile           # Конфигурация Docker
 └── package.json         # Зависимости и скрипты проекта
 ```
