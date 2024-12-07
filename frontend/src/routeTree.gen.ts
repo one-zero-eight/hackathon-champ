@@ -25,7 +25,6 @@ import { Route as IndexImport } from './routes/index'
 import { Route as ParticipantsIndexImport } from './routes/participants/index'
 import { Route as ManageIndexImport } from './routes/manage/index'
 import { Route as FederationsIndexImport } from './routes/federations/index'
-import { Route as ParticipantsTeamsImport } from './routes/participants/teams'
 import { Route as ManageEmailImport } from './routes/manage/email'
 import { Route as FederationsFederationIdImport } from './routes/federations/$federationId'
 import { Route as EventsEventIdImport } from './routes/events/$eventId'
@@ -127,12 +126,6 @@ const ManageIndexRoute = ManageIndexImport.update({
 const FederationsIndexRoute = FederationsIndexImport.update({
   id: '/federations/',
   path: '/federations/',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const ParticipantsTeamsRoute = ParticipantsTeamsImport.update({
-  id: '/participants/teams',
-  path: '/participants/teams',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -358,13 +351,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageEmailImport
       parentRoute: typeof ManageRouteImport
     }
-    '/participants/teams': {
-      id: '/participants/teams'
-      path: '/participants/teams'
-      fullPath: '/participants/teams'
-      preLoaderRoute: typeof ParticipantsTeamsImport
-      parentRoute: typeof rootRoute
-    }
     '/federations/': {
       id: '/federations/'
       path: '/federations'
@@ -557,7 +543,6 @@ export interface FileRoutesByFullPath {
   '/events/$eventId': typeof EventsEventIdRoute
   '/federations/$federationId': typeof FederationsFederationIdRoute
   '/manage/email': typeof ManageEmailRoute
-  '/participants/teams': typeof ParticipantsTeamsRoute
   '/federations': typeof FederationsIndexRoute
   '/manage/': typeof ManageIndexRoute
   '/participants': typeof ParticipantsIndexRoute
@@ -591,7 +576,6 @@ export interface FileRoutesByTo {
   '/events/$eventId': typeof EventsEventIdRoute
   '/federations/$federationId': typeof FederationsFederationIdRoute
   '/manage/email': typeof ManageEmailRoute
-  '/participants/teams': typeof ParticipantsTeamsRoute
   '/federations': typeof FederationsIndexRoute
   '/manage': typeof ManageIndexRoute
   '/participants': typeof ParticipantsIndexRoute
@@ -627,7 +611,6 @@ export interface FileRoutesById {
   '/events/$eventId': typeof EventsEventIdRoute
   '/federations/$federationId': typeof FederationsFederationIdRoute
   '/manage/email': typeof ManageEmailRoute
-  '/participants/teams': typeof ParticipantsTeamsRoute
   '/federations/': typeof FederationsIndexRoute
   '/manage/': typeof ManageIndexRoute
   '/participants/': typeof ParticipantsIndexRoute
@@ -665,7 +648,6 @@ export interface FileRouteTypes {
     | '/events/$eventId'
     | '/federations/$federationId'
     | '/manage/email'
-    | '/participants/teams'
     | '/federations'
     | '/manage/'
     | '/participants'
@@ -698,7 +680,6 @@ export interface FileRouteTypes {
     | '/events/$eventId'
     | '/federations/$federationId'
     | '/manage/email'
-    | '/participants/teams'
     | '/federations'
     | '/manage'
     | '/participants'
@@ -732,7 +713,6 @@ export interface FileRouteTypes {
     | '/events/$eventId'
     | '/federations/$federationId'
     | '/manage/email'
-    | '/participants/teams'
     | '/federations/'
     | '/manage/'
     | '/participants/'
@@ -768,7 +748,6 @@ export interface RootRouteChildren {
   AuthStartResetPasswordRoute: typeof AuthStartResetPasswordRoute
   EventsEventIdRoute: typeof EventsEventIdRoute
   FederationsFederationIdRoute: typeof FederationsFederationIdRoute
-  ParticipantsTeamsRoute: typeof ParticipantsTeamsRoute
   FederationsIndexRoute: typeof FederationsIndexRoute
   ParticipantsIndexRoute: typeof ParticipantsIndexRoute
 }
@@ -788,7 +767,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthStartResetPasswordRoute: AuthStartResetPasswordRoute,
   EventsEventIdRoute: EventsEventIdRoute,
   FederationsFederationIdRoute: FederationsFederationIdRoute,
-  ParticipantsTeamsRoute: ParticipantsTeamsRoute,
   FederationsIndexRoute: FederationsIndexRoute,
   ParticipantsIndexRoute: ParticipantsIndexRoute,
 }
@@ -817,7 +795,6 @@ export const routeTree = rootRoute
         "/auth/start-reset-password",
         "/events/$eventId",
         "/federations/$federationId",
-        "/participants/teams",
         "/federations/",
         "/participants/"
       ]
@@ -881,9 +858,6 @@ export const routeTree = rootRoute
     "/manage/email": {
       "filePath": "manage/email.tsx",
       "parent": "/manage"
-    },
-    "/participants/teams": {
-      "filePath": "participants/teams.tsx"
     },
     "/federations/": {
       "filePath": "federations/index.tsx"
