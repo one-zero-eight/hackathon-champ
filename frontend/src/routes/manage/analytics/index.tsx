@@ -5,7 +5,7 @@ import { TrendAnalysis } from '@/components/analytics/TrendAnalysis'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { getStatusText } from '@/lib/utils'
+import { getStatusText, pluralize } from '@/lib/utils'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import {
@@ -23,12 +23,16 @@ import {
 import BarChart from '~icons/lucide/bar-chart-2'
 import Building from '~icons/lucide/building'
 import Calendar from '~icons/lucide/calendar'
-import CheckCircle from '~icons/lucide/check-circle'
-import Clock from '~icons/lucide/clock'
 import Map from '~icons/lucide/map'
-import XCircle from '~icons/lucide/x-circle'
 
 const COLORS = ['#0ea5e9', '#22c55e', '#eab308', '#ef4444']
+
+function eventFormatter(value: number) {
+  return [`${value} ${pluralize(value, 'мероприятие', 'мероприятия', 'мероприятий')}`, 'Количество']
+}
+function federationFormatter(value: number) {
+  return [`${value} ${pluralize(value, 'федерация', 'федерации', 'федераций')}`, 'Количество']
+}
 
 // Helper function to format month
 function formatMonth(date: string) {
@@ -294,51 +298,11 @@ function RouteComponent() {
                 <Building className="size-6" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Всего федерация</p>
+                <p className="text-sm text-muted-foreground">Всего федераций</p>
                 <p className="text-2xl font-bold">{stats.total}</p>
               </div>
             </CardContent>
           </Card>
-
-          <Card>
-            <CardContent className="flex items-center gap-4 pt-6">
-              <div className="rounded-full bg-green-500/10 p-3 text-green-500">
-                <CheckCircle className="size-6" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Аккредитовано</p>
-                <p className="text-2xl font-bold">{stats.byStatus.accredited ?? 0}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="flex items-center gap-4 pt-6">
-              <div className="rounded-full bg-yellow-500/10 p-3 text-yellow-500">
-                <Clock className="size-6" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">На рассмотрении</p>
-                <p className="text-2xl font-bold">{stats.byStatus.on_consideration ?? 0}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="flex items-center gap-4 pt-6">
-              <div className="rounded-full bg-red-500/10 p-3 text-red-500">
-                <XCircle className="size-6" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Отклонено</p>
-                <p className="text-2xl font-bold">{stats.byStatus.rejected ?? 0}</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Additional Summary Cards */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Card>
             <CardContent className="flex items-center gap-4 pt-6">
               <div className="rounded-full bg-blue-500/10 p-3 text-blue-500">
@@ -380,7 +344,7 @@ function RouteComponent() {
         <div className="grid gap-4 md:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle>Статус федерация</CardTitle>
+              <CardTitle>Статусы федераций</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-[300px]">
@@ -402,7 +366,7 @@ function RouteComponent() {
                       ))}
                     </Pie>
                     <Tooltip
-                      formatter={(value: number) => [`${value} федераций`, 'Количество']}
+                      formatter={federationFormatter}
                       labelFormatter={label => `${label}`}
                     />
                   </PieChart>
@@ -453,7 +417,7 @@ function RouteComponent() {
                       }}
                     />
                     <Tooltip
-                      formatter={(value: number) => [`${value} мероприятий`, 'Количество']}
+                      formatter={eventFormatter}
                       labelFormatter={label => `${label}`}
                     />
                     <Bar dataKey="value" fill="#0ea5e9" name="Мероприятия" />
@@ -465,14 +429,15 @@ function RouteComponent() {
         </div>
 
         {/* Add trend analysis */}
-        <div className="grid gap-4 md:grid-cols-2">
-          <TrendAnalysis
-            data={trendData}
-            title="Тренд мероприятий"
-            valueLabel="Количество мероприятий"
-            trendLabel="Изменение"
-          />
 
+        <TrendAnalysis
+          data={trendData}
+          title="Тренд мероприятий"
+          valueLabel="Количество мероприятий"
+          trendLabel="Изменение"
+        />
+
+        <div className="grid gap-4 md:grid-cols-2">
           <Card>
             <CardHeader>
               <CardTitle>По федеральным округам</CardTitle>
@@ -485,9 +450,7 @@ function RouteComponent() {
                       <div className="flex justify-between">
                         <span className="font-medium">{name}</span>
                         <span>
-                          {value}
-                          {' '}
-                          федераций
+                          {`${value} ${pluralize(value, 'федерация', 'федерации', 'федераций')}`}
                         </span>
                       </div>
                       <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-muted">
@@ -504,13 +467,9 @@ function RouteComponent() {
               </div>
             </CardContent>
           </Card>
-        </div>
-
-        {/* Detailed Stats */}
-        <div className="grid gap-4 md:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle>Топ федерация</CardTitle>
+              <CardTitle>Топ федераций</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4">
@@ -553,6 +512,7 @@ function RouteComponent() {
             </CardContent>
           </Card>
         </div>
+
       </div>
     </div>
   )
