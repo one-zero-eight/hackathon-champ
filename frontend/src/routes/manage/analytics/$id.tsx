@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import * as eventsLib from '@/lib/events'
-import { getStatusText } from '@/lib/utils'
+import { eventTooltipFormatter, getStatusText } from '@/lib/utils'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useCallback, useMemo, useState } from 'react'
 import {
@@ -217,220 +217,222 @@ function RouteComponent() {
           onExport={handleExport}
         />
 
-        {eventsLoading ? (
-          <div className="grid gap-6">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {Array.from({ length: 4 }).map((_, i) => (
-              // eslint-disable-next-line react/no-array-index-key
-                <Skeleton key={i} className="h-[120px] bg-neutral-200" />
-              ))}
-            </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              {Array.from({ length: 4 }).map((_, i) => (
-              // eslint-disable-next-line react/no-array-index-key
-                <Skeleton key={i} className="h-[300px] bg-neutral-200" />
-              ))}
-            </div>
-          </div>
-        ) : (
-          <>
-            {/* Summary Cards */}
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <Card>
-                <CardContent className="flex items-center gap-4 p-4 md:p-6">
-                  <div className="rounded-full bg-primary/10 p-2 md:p-3">
-                    <Calendar className="size-5 md:size-6" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground md:text-sm">Всего мероприятий</p>
-                    <p className="text-xl font-bold md:text-2xl">{stats.total}</p>
-                  </div>
-                </CardContent>
-              </Card>
+        {eventsLoading
+          ? (
+              <div className="grid gap-6">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    // eslint-disable-next-line react/no-array-index-key
+                    <Skeleton key={i} className="h-[120px] bg-neutral-200" />
+                  ))}
+                </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    // eslint-disable-next-line react/no-array-index-key
+                    <Skeleton key={i} className="h-[300px] bg-neutral-200" />
+                  ))}
+                </div>
+              </div>
+            )
+          : (
+              <>
+                {/* Summary Cards */}
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  <Card>
+                    <CardContent className="flex items-center gap-4 p-4 md:p-6">
+                      <div className="rounded-full bg-primary/10 p-2 md:p-3">
+                        <Calendar className="size-5 md:size-6" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground md:text-sm">Всего мероприятий</p>
+                        <p className="text-xl font-bold md:text-2xl">{stats.total}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
 
-              <Card>
-                <CardContent className="flex items-center gap-4 p-4 md:p-6">
-                  <div className="rounded-full bg-green-500/10 p-2 md:p-3">
-                    <CheckCircle className="size-5 md:size-6" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground md:text-sm">Завершено</p>
-                    <p className="text-xl font-bold md:text-2xl">{finishedEventsCount}</p>
-                  </div>
-                </CardContent>
-              </Card>
+                  <Card>
+                    <CardContent className="flex items-center gap-4 p-4 md:p-6">
+                      <div className="rounded-full bg-green-500/10 p-2 md:p-3">
+                        <CheckCircle className="size-5 md:size-6" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground md:text-sm">Завершено</p>
+                        <p className="text-xl font-bold md:text-2xl">{finishedEventsCount}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
 
-              <Card>
-                <CardContent className="flex items-center gap-4 p-4 md:p-6">
-                  <div className="rounded-full bg-yellow-500/10 p-2 md:p-3">
-                    <Clock className="size-5 md:size-6" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground md:text-sm">Сейчас идёт</p>
-                    <p className="text-xl font-bold md:text-2xl">{activeEventsCount}</p>
-                  </div>
-                </CardContent>
-              </Card>
+                  <Card>
+                    <CardContent className="flex items-center gap-4 p-4 md:p-6">
+                      <div className="rounded-full bg-yellow-500/10 p-2 md:p-3">
+                        <Clock className="size-5 md:size-6" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground md:text-sm">Сейчас идёт</p>
+                        <p className="text-xl font-bold md:text-2xl">{activeEventsCount}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
 
-              <Card>
-                <CardContent className="flex items-center gap-4 p-4 md:p-6">
-                  <div className="rounded-full bg-blue-500/10 p-2 md:p-3">
-                    <Map className="size-5 md:size-6" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground md:text-sm">Среднее число участников</p>
-                    <p className="text-xl font-bold md:text-2xl">
-                      {Number.isNaN(stats.averageParticipants) ? '—' : stats.averageParticipants}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                  <Card>
+                    <CardContent className="flex items-center gap-4 p-4 md:p-6">
+                      <div className="rounded-full bg-blue-500/10 p-2 md:p-3">
+                        <Map className="size-5 md:size-6" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground md:text-sm">Среднее число участников</p>
+                        <p className="text-xl font-bold md:text-2xl">
+                          {Number.isNaN(stats.averageParticipants) ? '—' : stats.averageParticipants}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
 
-            {events.length === 0
-              ? (
-                  <div className="mt-8 flex flex-col items-center justify-center gap-4">
-                    <h2 className="text-2xl font-semibold text-muted-foreground">
-                      Нет данных за выбранный период
-                    </h2>
-                  </div>
-                )
-              : (
-                  <>
-                    {/* Charts */}
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <Card className="md:col-span-1">
-                        <CardHeader>
-                          <CardTitle>Статус мероприятий</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="h-[250px] md:h-[300px]">
-                            <ResponsiveContainer width="100%" height="100%">
-                              <PieChart>
-                                <Pie
-                                  data={stats.statusData}
-                                  cx="50%"
-                                  cy="50%"
-                                  innerRadius={60}
-                                  outerRadius={80}
-                                  paddingAngle={5}
-                                  dataKey="value"
-                                  nameKey="name"
-                                  label={entry => entry.name}
-                                >
-                                  {stats.statusData.map(entry => (
-                                    <Cell key={entry.name} fill={COLORS[stats.statusData.indexOf(entry) % COLORS.length]} />
-                                  ))}
-                                </Pie>
-                                <Tooltip
-                                  formatter={(value: number) => [`${value} мероприятий`, 'Количество']}
-                                  labelFormatter={label => `${label}`}
-                                />
-                              </PieChart>
-                            </ResponsiveContainer>
-                          </div>
-                          <div className="mt-4 flex flex-wrap gap-2 md:gap-4">
-                            {stats.statusData.map((entry, index) => (
-                              <div key={entry.name} className="flex items-center gap-2">
-                                <div
-                                  className="size-2 rounded-full md:size-3"
-                                  style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                                />
-                                <span className="text-xs text-muted-foreground md:text-sm">
-                                  {entry.name}
-                                  {' '}
-                                  (
-                                  {entry.value}
-                                  )
-                                </span>
+                {events.length === 0
+                  ? (
+                      <div className="mt-8 flex flex-col items-center justify-center gap-4">
+                        <h2 className="text-2xl font-semibold text-muted-foreground">
+                          Нет данных за выбранный период
+                        </h2>
+                      </div>
+                    )
+                  : (
+                      <>
+                        {/* Charts */}
+                        <div className="grid gap-4 md:grid-cols-2">
+                          <Card className="md:col-span-1">
+                            <CardHeader>
+                              <CardTitle>Статус мероприятий</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="h-[250px] md:h-[300px]">
+                                <ResponsiveContainer width="100%" height="100%">
+                                  <PieChart>
+                                    <Pie
+                                      data={stats.statusData}
+                                      cx="50%"
+                                      cy="50%"
+                                      innerRadius={60}
+                                      outerRadius={80}
+                                      paddingAngle={5}
+                                      dataKey="value"
+                                      nameKey="name"
+                                      label={entry => entry.name}
+                                    >
+                                      {stats.statusData.map(entry => (
+                                        <Cell key={entry.name} fill={COLORS[stats.statusData.indexOf(entry) % COLORS.length]} />
+                                      ))}
+                                    </Pie>
+                                    <Tooltip
+                                      formatter={eventTooltipFormatter}
+                                      labelFormatter={label => `${label}`}
+                                    />
+                                  </PieChart>
+                                </ResponsiveContainer>
                               </div>
-                            ))}
-                          </div>
-                        </CardContent>
-                      </Card>
-
-                      <Card className="md:col-span-1">
-                        <CardHeader>
-                          <CardTitle>Мероприятия по месяцам</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="h-[250px] md:h-[300px]">
-                            <ResponsiveContainer width="100%" height="100%">
-                              <RechartsBarChart data={stats.monthlyData}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis
-                                  dataKey="name"
-                                  angle={-45}
-                                  textAnchor="end"
-                                  height={60}
-                                  tick={{ fontSize: 10 }}
-                                  interval={0}
-                                />
-                                <YAxis
-                                  label={{
-                                    value: 'Количество мероприятий',
-                                    angle: -90,
-                                    position: 'insideLeft',
-                                    style: { textAnchor: 'middle', fontSize: 12 },
-                                  }}
-                                />
-                                <Tooltip
-                                  formatter={(value: number) => [`${value} мероприятий`, 'Количество']}
-                                  labelFormatter={label => `${label}`}
-                                />
-                                <Bar dataKey="value" fill="#0ea5e9" name="Мероприятия" />
-                              </RechartsBarChart>
-                            </ResponsiveContainer>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-
-                    {/* Trend Analysis */}
-                    <TrendAnalysis
-                      data={trendData}
-                      title="Тренд мероприятий"
-                      valueLabel="Количество мероприятий"
-                      trendLabel="Изменение"
-                    />
-
-                    {/* Recent Events */}
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Последние мероприятия</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-4">
-                          {events
-                            .sort((a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime())
-                            .slice(0, 5)
-                            .map(event => (
-                              <div key={event.id} className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                                <div>
-                                  <p className="text-sm font-medium md:text-base">{event.title}</p>
-                                  <p className="text-xs text-muted-foreground md:text-sm">
-                                    {new Date(event.start_date).toLocaleDateString('ru')}
-                                  </p>
-                                </div>
-                                <div className="text-right">
-                                  <p className="text-sm font-medium md:text-base">
-                                    {event.participant_count ?? 0}
-                                    {' '}
-                                    участников
-                                  </p>
-                                  <p className="text-xs text-muted-foreground md:text-sm">
-                                    {getStatusText(event.status)}
-                                  </p>
-                                </div>
+                              <div className="mt-4 flex flex-wrap gap-2 md:gap-4">
+                                {stats.statusData.map((entry, index) => (
+                                  <div key={entry.name} className="flex items-center gap-2">
+                                    <div
+                                      className="size-2 rounded-full md:size-3"
+                                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                                    />
+                                    <span className="text-xs text-muted-foreground md:text-sm">
+                                      {entry.name}
+                                      {' '}
+                                      (
+                                      {entry.value}
+                                      )
+                                    </span>
+                                  </div>
+                                ))}
                               </div>
-                            ))}
+                            </CardContent>
+                          </Card>
+
+                          <Card className="md:col-span-1">
+                            <CardHeader>
+                              <CardTitle>Мероприятия по месяцам</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="h-[250px] md:h-[300px]">
+                                <ResponsiveContainer width="100%" height="100%">
+                                  <RechartsBarChart data={stats.monthlyData}>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis
+                                      dataKey="name"
+                                      angle={-45}
+                                      textAnchor="end"
+                                      height={60}
+                                      tick={{ fontSize: 10 }}
+                                      interval={0}
+                                    />
+                                    <YAxis
+                                      label={{
+                                        value: 'Количество мероприятий',
+                                        angle: -90,
+                                        position: 'insideLeft',
+                                        style: { textAnchor: 'middle', fontSize: 12 },
+                                      }}
+                                    />
+                                    <Tooltip
+                                      formatter={eventTooltipFormatter}
+                                      labelFormatter={label => `${label}`}
+                                    />
+                                    <Bar dataKey="value" fill="#0ea5e9" name="Мероприятия" />
+                                  </RechartsBarChart>
+                                </ResponsiveContainer>
+                              </div>
+                            </CardContent>
+                          </Card>
                         </div>
-                      </CardContent>
-                    </Card>
-                  </>
-                )}
-          </>
-        )}
+
+                        {/* Trend Analysis */}
+                        <TrendAnalysis
+                          data={trendData}
+                          title="Тренд мероприятий"
+                          valueLabel="Количество мероприятий"
+                          trendLabel="Изменение"
+                        />
+
+                        {/* Recent Events */}
+                        <Card>
+                          <CardHeader>
+                            <CardTitle>Последние мероприятия</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-4">
+                              {events
+                                .sort((a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime())
+                                .slice(0, 5)
+                                .map(event => (
+                                  <div key={event.id} className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                    <div>
+                                      <p className="text-sm font-medium md:text-base">{event.title}</p>
+                                      <p className="text-xs text-muted-foreground md:text-sm">
+                                        {new Date(event.start_date).toLocaleDateString('ru')}
+                                      </p>
+                                    </div>
+                                    <div className="text-right">
+                                      <p className="text-sm font-medium md:text-base">
+                                        {event.participant_count ?? 0}
+                                        {' '}
+                                        участников
+                                      </p>
+                                      <p className="text-xs text-muted-foreground md:text-sm">
+                                        {getStatusText(event.status)}
+                                      </p>
+                                    </div>
+                                  </div>
+                                ))}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </>
+                    )}
+              </>
+            )}
       </div>
     </div>
   )

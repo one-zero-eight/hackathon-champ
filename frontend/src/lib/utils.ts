@@ -196,3 +196,10 @@ const MONTH_NAMES: Record<number, string> = {
 export function plainDateStr(d: Temporal.PlainDate) {
   return `${d.day} ${MONTH_NAMES[d.month]}`
 }
+
+export function eventTooltipFormatter(value: number) {
+  return [`${value} ${pluralize(value, 'мероприятие', 'мероприятия', 'мероприятий')}`, 'Количество']
+}
+export function federationTooltipFormatter(value: number) {
+  return [`${value} ${pluralize(value, 'федерация', 'федерации', 'федераций')}`, 'Количество']
+}

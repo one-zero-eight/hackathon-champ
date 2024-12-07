@@ -5,7 +5,7 @@ import { TrendAnalysis } from '@/components/analytics/TrendAnalysis'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { getStatusText, pluralize } from '@/lib/utils'
+import { eventTooltipFormatter, federationTooltipFormatter, getStatusText, pluralize } from '@/lib/utils'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import {
@@ -26,13 +26,6 @@ import Calendar from '~icons/lucide/calendar'
 import Map from '~icons/lucide/map'
 
 const COLORS = ['#0ea5e9', '#22c55e', '#eab308', '#ef4444']
-
-function eventFormatter(value: number) {
-  return [`${value} ${pluralize(value, 'мероприятие', 'мероприятия', 'мероприятий')}`, 'Количество']
-}
-function federationFormatter(value: number) {
-  return [`${value} ${pluralize(value, 'федерация', 'федерации', 'федераций')}`, 'Количество']
-}
 
 // Helper function to format month
 function formatMonth(date: string) {
@@ -366,7 +359,7 @@ function RouteComponent() {
                       ))}
                     </Pie>
                     <Tooltip
-                      formatter={federationFormatter}
+                      formatter={federationTooltipFormatter}
                       labelFormatter={label => `${label}`}
                     />
                   </PieChart>
@@ -417,7 +410,7 @@ function RouteComponent() {
                       }}
                     />
                     <Tooltip
-                      formatter={eventFormatter}
+                      formatter={eventTooltipFormatter}
                       labelFormatter={label => `${label}`}
                     />
                     <Bar dataKey="value" fill="#0ea5e9" name="Мероприятия" />
