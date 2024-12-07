@@ -102,7 +102,7 @@ async def get_all_participants(limit: int = 100) -> list[ParticipantStats]:
                     Participation(event_id=event.id, event_title=event.title, team_place=team)
                 )
 
-    return [
+    participants = [
         ParticipantStats(
             name=name,
             participations=participations[name],
@@ -111,8 +111,12 @@ async def get_all_participants(limit: int = 100) -> list[ParticipantStats]:
             silvers=silvers[name],
             bronzes=bronzes[name],
         )
-        for name in list(total.keys())[:limit]
+        for name in total
     ]
+
+    participants.sort(key=lambda p: (p.golds, p.silvers, p.bronzes, p.total, p.name), reverse=True)
+
+    return participants[:limit]
 
 
 class TeamStats(BaseSchema):
@@ -181,7 +185,7 @@ async def get_all_teams() -> list[TeamStats]:
                 bronzes[team.team] += 1
             participations[team.team].append(Participation(event_id=event.id, event_title=event.title, team_place=team))
 
-    return [
+    teams = [
         TeamStats(
             name=team,
             participations=participations[team],
@@ -192,3 +196,7 @@ async def get_all_teams() -> list[TeamStats]:
         )
         for team in total
     ]
+
+    teams.sort(key=lambda t: (t.golds, t.silvers, t.bronzes, t.total, t.name), reverse=True)
+
+    return teams
