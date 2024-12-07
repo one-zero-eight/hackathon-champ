@@ -238,21 +238,7 @@ function StatisticsCard({ participant }: { participant: any }) {
         <div className="p-4">
           <p className="text-3xl font-bold tracking-tight">{medalsCount}</p>
           <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1">
-              <span className="text-yellow-500">🥇</span>
-              {' '}
-              {participant.golds}
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="text-stone-400">🥈</span>
-              {' '}
-              {participant.silvers}
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="text-amber-500">🥉</span>
-              {' '}
-              {participant.bronzes}
-            </span>
+            по данным платформы
           </div>
         </div>
       </Card>
