@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn, pluralize } from '@/lib/utils'
 import ChevronLeft from '~icons/lucide/chevron-left'
 import ChevronRight from '~icons/lucide/chevron-right'
 import { ColoredBadge } from './ColoredBadge'
@@ -91,7 +91,7 @@ export function Calendar({
           >
             <span className="text-xl">{MONTH_NAMES[idx]}</span>
             <ColoredBadge color={(countByMonth[idx] ?? 0) > 0 ? 'green' : 'gray'}>
-              {`${countByMonth[idx] ?? '—'} мероприятий`}
+              {`${countByMonth[idx] ?? '—'} ${pluralize(countByMonth[idx] ?? 0, 'мероприятие', 'мероприятия', 'мероприятий')}`}
             </ColoredBadge>
           </Button>
         ))}
