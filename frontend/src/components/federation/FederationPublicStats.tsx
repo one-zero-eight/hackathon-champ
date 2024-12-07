@@ -1,5 +1,5 @@
 import { $api } from '@/api'
-import { formatStatus } from '@/routes/manage/analytics/$id.tsx'
+import { getStatusText } from '@/lib/utils'
 import { useMemo } from 'react'
 import Trophy from '~icons/lucide/trophy'
 import Users from '~icons/lucide/users'
@@ -61,7 +61,7 @@ export function FederationPublicStats({ federationId }: { federationId: string }
       }))
 
     const statusData = Object.entries(eventsByStatus).map(([name, value]) => ({
-      name: formatStatus(name as any),
+      name: getStatusText(name),
       value,
     }))
 
