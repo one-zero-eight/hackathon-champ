@@ -167,10 +167,10 @@ function NotificationItem({
   }
 
   return (
-    <div className="flex items-center gap-4 py-3 [&:not(:last-child)]:border-b">
+    <div className="flex items-start gap-4 py-3 [&:not(:last-child)]:border-b">
       <NotificationIcon
         notification={notification}
-        className="size-10"
+        className="size-10 shrink-0"
         withDot={!isRead}
       />
 
@@ -187,7 +187,12 @@ function NotificationItem({
       </div>
 
       {!isRead && (
-        <Button variant="outline" size="icon" onClick={() => onRead(notification.id)}>
+        <Button
+          variant="outline"
+          size="icon"
+          className="shrink-0"
+          onClick={() => onRead(notification.id)}
+        >
           <Check />
         </Button>
       )}
