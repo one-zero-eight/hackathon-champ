@@ -1,14 +1,14 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { Separator } from '@/components/ui/separator'
-import GraduationCap from '~icons/lucide/graduation-cap'
-import Calendar from '~icons/lucide/calendar'
-import { $api } from '@/api'
 import type { SchemaEvent } from '@/api/types'
+import { $api } from '@/api'
+import { Separator } from '@/components/ui/separator'
 import AlgorithmIcon from '@/icons/Algorithm_Icon.svg'
-import ProductIcon from '@/icons/Product_Icon.svg'
 import DroneIcon from '@/icons/Drone_Icon.svg'
+import ProductIcon from '@/icons/Product_Icon.svg'
 import RobotIcon from '@/icons/Robot_Icon.svg'
 import SecurityIcon from '@/icons/Security_Icon.svg'
+import { createFileRoute } from '@tanstack/react-router'
+import Calendar from '~icons/lucide/calendar'
+import GraduationCap from '~icons/lucide/graduation-cap'
 
 export const Route = createFileRoute('/disciplines')({
   component: RouteComponent,
@@ -125,15 +125,18 @@ function DisciplineEvents({ query }: { query: string }) {
   return (
     <div className="space-y-4">
       {events.map(event => (
-        <div key={event.id} className="flex items-start gap-3 p-4 rounded-lg border">
-          <Calendar className="h-5 w-5 mt-0.5 shrink-0 text-purple-500" />
+        <div key={event.id} className="flex items-start gap-3 rounded-lg border p-4">
+          <Calendar className="mt-0.5 size-5 shrink-0 text-purple-500" />
           <div className="min-w-0 flex-1">
-            <h3 className="font-medium truncate">{event.title}</h3>
+            <h3 className="truncate font-medium">{event.title}</h3>
             <div className="mt-1 text-sm text-muted-foreground">
-              {new Date(event.start_date).toLocaleDateString('ru')} - {new Date(event.end_date).toLocaleDateString('ru')}
+              {new Date(event.start_date).toLocaleDateString('ru')}
+              {' '}
+              -
+              {new Date(event.end_date).toLocaleDateString('ru')}
             </div>
             {event.description && (
-              <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{event.description}</p>
+              <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{event.description}</p>
             )}
           </div>
         </div>
@@ -144,10 +147,10 @@ function DisciplineEvents({ query }: { query: string }) {
 
 function RouteComponent() {
   return (
-    <div className="container mx-auto py-8 space-y-6">
+    <div className="container mx-auto space-y-6 py-8">
       <div>
         <h1 className="text-3xl font-bold">Дисциплины</h1>
-        <p className="text-muted-foreground mt-2">
+        <p className="mt-2 text-muted-foreground">
           Ознакомьтесь с направлениями в спортивном программировании, представленными на платформе.
         </p>
       </div>
@@ -157,15 +160,15 @@ function RouteComponent() {
           return (
             <div key={discipline.id}>
               {index > 0 && <Separator className="mb-12" />}
-              <div className="grid gap-8 md:grid-cols-2 items-start">
+              <div className="grid items-start gap-8 md:grid-cols-2">
                 <div>
                   <div className="flex items-start gap-4">
-                    <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl bg-white border flex items-center justify-center">
-                      <img src={discipline.icon} alt={discipline.name} className="h-8 w-8 sm:h-10 sm:w-10" />
+                    <div className="flex size-16 items-center justify-center rounded-2xl border bg-white sm:size-20">
+                      <img src={discipline.icon} alt={discipline.name} className="size-8 sm:size-10" />
                     </div>
                     <div className="flex-1">
                       <h2 className="text-2xl font-semibold">{discipline.name}</h2>
-                      <p className="text-lg text-muted-foreground mt-2">
+                      <p className="mt-2 text-lg text-muted-foreground">
                         {discipline.description}
                       </p>
                     </div>
@@ -173,13 +176,13 @@ function RouteComponent() {
 
                   <div className="mt-6">
                     <div>
-                      <div className="text-sm font-medium mb-3 flex items-center gap-2">
-                        <GraduationCap className="h-4 w-4 text-purple-500" />
+                      <div className="mb-3 flex items-center gap-2 text-sm font-medium">
+                        <GraduationCap className="size-4 text-purple-500" />
                         Навыки
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {discipline.skills.map(skill => (
-                          <div key={skill} className="text-sm px-3 py-1 rounded-full bg-muted">
+                          <div key={skill} className="rounded-full bg-muted px-3 py-1 text-sm">
                             {skill}
                           </div>
                         ))}
@@ -189,8 +192,8 @@ function RouteComponent() {
                 </div>
 
                 <div>
-                  <div className="text-sm font-medium mb-3 flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-purple-500" />
+                  <div className="mb-3 flex items-center gap-2 text-sm font-medium">
+                    <Calendar className="size-4 text-purple-500" />
                     Ближайшие мероприятия
                   </div>
                   <DisciplineEvents query={discipline.query} />

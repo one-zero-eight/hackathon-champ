@@ -136,92 +136,101 @@ function RouteComponent() {
   const loading = dataLoading || filtersChanging || sharedLoading
 
   return (
-    <div className="container mx-auto flex flex-col gap-4 px-4 py-6 md:gap-6 md:py-8 lg:flex-row">
-      <Card className="order-2 w-full md:sticky md:top-[calc(var(--header-height)+2rem)] md:order-1 md:h-fit md:w-[280px] md:shrink-0">
-        <CardHeader className="flex flex-row items-center justify-between md:flex-col md:items-start">
-          <CardTitle>Фильтры</CardTitle>
-          <Button size="sm" variant="ghost" onClick={handleResetFilters} className="shrink-0">
-            Сбросить
-          </Button>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <AllFilters
-            filters={actualFilters || {}}
-            onChange={handleFiltersChange}
-            className="w-full"
-          />
-          <Separator />
-          <ExportFiltersToCalButton filters={debouncedFilters} />
-        </CardContent>
-      </Card>
+    <div className="container mx-auto space-y-6 py-8">
+      <div>
+        <h1 className="text-3xl font-bold">Поиск мероприятий</h1>
+        <p className="mt-2 text-muted-foreground">
+          Найдите интересующие вас мероприятия, используя фильтры и поиск по названию.
+        </p>
+      </div>
 
-      <main className="order-1 flex-1 space-y-4 md:order-2 md:space-y-6">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  className="pl-9"
-                  value={query}
-                  onChange={e => handleQueryChange(e.target.value)}
-                  placeholder="Название, вид спорта, город..."
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <SortAsc className="size-4 text-muted-foreground" />
-                <Select value={sortPreset} onValueChange={setSortPreset as any}>
-                  <SelectTrigger className="w-[180px] min-w-[180px] md:w-[200px] md:min-w-[200px]">
-                    <SelectValue placeholder="Сортировка" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {Object.keys(SORT_PRESETS).map(preset => (
-                        <SelectItem key={preset} value={preset}>
-                          {preset}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+      <div className="flex flex-col gap-4 lg:flex-row">
+        <Card className="order-2 w-full md:sticky md:top-[calc(var(--header-height)+2rem)] md:order-1 md:h-fit md:w-[280px] md:shrink-0">
+          <CardHeader className="flex flex-row items-center justify-between md:flex-col md:items-start">
+            <CardTitle>Фильтры</CardTitle>
+            <Button size="sm" variant="ghost" onClick={handleResetFilters} className="shrink-0">
+              Сбросить
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <AllFilters
+              filters={actualFilters || {}}
+              onChange={handleFiltersChange}
+              className="w-full"
+            />
+            <Separator />
+            <ExportFiltersToCalButton filters={debouncedFilters} />
           </CardContent>
         </Card>
 
-        <div className="grid gap-3 md:gap-4">
-          {loading
-            ? (
-                <>
-                  {Array.from({ length: 3 }).map((_, i) => (
-                    <Card key={i} className="w-full overflow-hidden">
-                      <Skeleton className="h-[180px] w-full md:h-[200px]" />
-                    </Card>
-                  ))}
-                </>
-              )
-            : data?.events.length
+        <main className="order-1 flex-1 space-y-4 md:order-2 md:space-y-6">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    className="pl-9"
+                    value={query}
+                    onChange={e => handleQueryChange(e.target.value)}
+                    placeholder="Название, вид спорта, город..."
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <SortAsc className="size-4 text-muted-foreground" />
+                  <Select value={sortPreset} onValueChange={setSortPreset as any}>
+                    <SelectTrigger className="w-[180px] min-w-[180px] md:w-[200px] md:min-w-[200px]">
+                      <SelectValue placeholder="Сортировка" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {Object.keys(SORT_PRESETS).map(preset => (
+                          <SelectItem key={preset} value={preset}>
+                            {preset}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid gap-3 md:gap-4">
+            {loading
               ? (
-                  data.events.map(event => (
-                    <Card key={event.id} className="w-full overflow-hidden">
-                      <div className="w-full">
-                        <EventCard event={event} />
+                  <>
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <Card key={i} className="w-full overflow-hidden">
+                        <Skeleton className="h-[180px] w-full md:h-[200px]" />
+                      </Card>
+                    ))}
+                  </>
+                )
+              : data?.events.length
+                ? (
+                    data.events.map(event => (
+                      <Card key={event.id} className="w-full overflow-hidden">
+                        <div className="w-full">
+                          <EventCard event={event} />
+                        </div>
+                      </Card>
+                    ))
+                  )
+                : (
+                    <Card className="py-8 md:py-12">
+                      <div className="text-center">
+                        <p className="text-lg font-medium">Ничего не найдено</p>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          Попробуйте изменить параметры поиска
+                        </p>
                       </div>
                     </Card>
-                  ))
-                )
-              : (
-                  <Card className="py-8 md:py-12">
-                    <div className="text-center">
-                      <p className="text-lg font-medium">Ничего не найдено</p>
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        Попробуйте изменить параметры поиска
-                      </p>
-                    </div>
-                  </Card>
-                )}
-        </div>
-      </main>
+                  )}
+          </div>
+        </main>
+      </div>
     </div>
   )
 }

@@ -2,16 +2,20 @@ import { $api } from '@/api'
 import { useMe } from '@/api/me.ts'
 import { Button } from '@/components/ui/button.tsx'
 import { useQueryClient } from '@tanstack/react-query'
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import HelpCircle from '~icons/lucide/help-circle'
 import { NavLink } from './NavLink'
 
 export function TopBar() {
+  const navigate = useNavigate()
   const { data: me, isLoading } = useMe()
 
   const queryClient = useQueryClient()
   const { mutate: performLogout } = $api.useMutation('post', '/users/logout', {
-    onSettled: () => queryClient.resetQueries(),
+    onSettled: () => {
+      queryClient.resetQueries()
+      navigate({ to: '/auth/login' })
+    },
   })
 
   return (
@@ -42,7 +46,12 @@ export function TopBar() {
                     <NavLink to="/auth/login">Войти</NavLink>
                   )}
                   {me && (
-                    <Button variant="ghost" onClick={() => performLogout({})}>
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        performLogout({})
+                      }}
+                    >
                       Выйти
                     </Button>
                   )}

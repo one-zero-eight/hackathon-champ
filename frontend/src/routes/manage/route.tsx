@@ -1,6 +1,7 @@
 import { useMe, useMyFederation } from '@/api/me.ts'
 import { NavLink } from '@/components/NavLink'
 import { Separator } from '@/components/ui/separator.tsx'
+import { Skeleton } from '@/components/ui/skeleton'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import Award from '~icons/lucide/award'
 import BarChart from '~icons/lucide/bar-chart-2'
@@ -15,23 +16,30 @@ export const Route = createFileRoute('/manage')({
 })
 
 function RouteComponent() {
-  const { data: me } = useMe()
+  const { data: me, isLoading } = useMe()
 
   return (
     <div className="mt-[calc(var(--header-height)*-1)] flex-grow bg-gray-50">
-      <aside className="fixed bottom-0 left-0 top-[var(--header-height)] w-[var(--manage-sidebar-width)] overflow-y-auto border-r bg-white">
-        <div className="flex min-h-full flex-col">
-          {me?.role === 'admin' && <AdminNav />}
-          {me?.role === 'admin' && me?.federation && <Separator />}
-          {me?.federation && <FederationNav />}
-
-          <div className="grow" />
-
-          <nav className="flex flex-col gap-1 p-2">
-            <NavLink to="/manage/email" icon={Mail}>
-              Настройки email
-            </NavLink>
-          </nav>
+      <aside
+        className="fixed bottom-0 left-0 top-[var(--header-height)] w-[var(--manage-sidebar-width)] overflow-y-auto border-r bg-white"
+      >
+        <div>
+          {isLoading
+            ? (
+                <SidebarSkeleton />
+              )
+            : (
+                <>
+                  {me?.role === 'admin' && <AdminNav />}
+                  {me?.role === 'admin' && me?.federation && <Separator />}
+                  {me?.federation && <FederationNav />}
+                  <nav className="flex flex-col gap-1 p-2">
+                    <NavLink to="/manage/email" icon={Mail}>
+                      Настройки email
+                    </NavLink>
+                  </nav>
+                </>
+              )}
         </div>
       </aside>
 
@@ -71,7 +79,11 @@ function AdminNav() {
 }
 
 function FederationNav() {
-  const { data: myFederation } = useMyFederation()
+  const { data: myFederation, isLoading } = useMyFederation()
+
+  if (isLoading) {
+    return <FederationNavSkeleton />
+  }
 
   return (
     <>
@@ -86,23 +98,62 @@ function FederationNav() {
         <NavLink to="/manage/region/home" icon={Home}>
           Самое важное
         </NavLink>
-
         <NavLink to="/manage/events/region" icon={Award}>
           Мероприятия
         </NavLink>
-
-        <NavLink to="/manage/analytics/$id" params={{ id: myFederation?.id }} icon={BarChart}>
+        <NavLink
+          to="/manage/analytics/$id"
+          params={{ id: myFederation?.id }}
+          icon={BarChart}
+        >
           Аналитика
         </NavLink>
-
         <NavLink to="/manage/region/feedback" icon={MessageSquare}>
           Связь с федерацией
         </NavLink>
-
-        <NavLink to="/manage/federations/$id" params={{ id: myFederation?.id }} icon={User}>
+        <NavLink
+          to="/manage/federations/$id"
+          params={{ id: myFederation?.id }}
+          icon={User}
+        >
           Настройки профиля
         </NavLink>
       </nav>
+    </>
+  )
+}
+
+function SidebarSkeleton() {
+  return (
+    <div className="space-y-4 p-4">
+      <div>
+        <Skeleton className="h-7 w-32" />
+        <Skeleton className="mt-1 h-5 w-48" />
+      </div>
+      <div className="space-y-2">
+        <Skeleton className="h-9 w-full" />
+        <Skeleton className="h-9 w-full" />
+        <Skeleton className="h-9 w-full" />
+        <Skeleton className="h-9 w-full" />
+      </div>
+    </div>
+  )
+}
+
+function FederationNavSkeleton() {
+  return (
+    <>
+      <div className="border-b p-4">
+        <Skeleton className="h-7 w-32" />
+        <Skeleton className="mt-1 h-5 w-48" />
+      </div>
+      <div className="space-y-2 p-2">
+        <Skeleton className="h-9 w-full" />
+        <Skeleton className="h-9 w-full" />
+        <Skeleton className="h-9 w-full" />
+        <Skeleton className="h-9 w-full" />
+        <Skeleton className="h-9 w-full" />
+      </div>
     </>
   )
 }
