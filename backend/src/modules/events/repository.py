@@ -169,6 +169,22 @@ class EventsRepository:
     async def read_for_team(self, name: str) -> list[Event]:
         return await Event.find({"results.team_places.team": name}).to_list()
 
+    async def get_participant_count(self) -> int:
+        q = Event.find({"results": {"$ne": None}}).aggregate(
+            [
+                {"$project": {"results": 1}},
+            ]
+        )
+        results = await q.to_list()
+        unique_participants = set()
+        for result in results:
+            for solo_place in result["results"]["solo_places"] or []:
+                unique_participants.add(solo_place["participant"])
+            for team_place in result["results"]["team_places"] or []:
+                for member in team_place["members"]:
+                    unique_participants.add(member)
+        return len(unique_participants)
+
     async def create_selection(self, filters: Filters, sort: Sort):
         selection = Selection(filters=filters, sort=sort)
         await selection.insert()

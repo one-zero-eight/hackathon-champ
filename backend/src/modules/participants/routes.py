@@ -32,6 +32,11 @@ class ParticipantStats(BaseSchema):
     "Общее количество бронзовых медалей"
 
 
+@router.get("/person/count")
+async def get_participant_count() -> int:
+    return await events_repository.get_participant_count()
+
+
 @router.get("/person/")
 async def get_participant(name: str) -> ParticipantStats:
     if not name:
