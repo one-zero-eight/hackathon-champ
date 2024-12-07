@@ -3,6 +3,9 @@ import type { DropzoneOptions } from 'react-dropzone'
 import type { UseFormReturn } from 'react-hook-form'
 import { $api, apiFetch } from '@/api'
 import { useMe } from '@/api/me.ts'
+import { AccrediteDialog } from '@/components/event/AccrediteDialog.tsx'
+import { OnConsiderationDialog } from '@/components/event/OnConsiderationDialog.tsx'
+import { RejectDialog } from '@/components/event/RejectDialog.tsx'
 import { EventStatusBadge } from '@/components/EventStatusBadge.tsx'
 import { Button } from '@/components/ui/button.tsx'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.tsx'
@@ -152,19 +155,6 @@ export function EditEventForm({
     }
   }
 
-  const onSendToConsideration = () => {
-    if (!event)
-      return
-
-    updateEvent({
-      params: { path: { id: event.id } },
-      body: {
-        ...event,
-        status: 'on_consideration',
-      },
-    })
-  }
-
   const onDrop = async (acceptedFiles: File[]) => {
     if (!event)
       return
@@ -249,7 +239,6 @@ export function EditEventForm({
           <StatusCard
             event={event}
             me={me}
-            onSendToConsideration={onSendToConsideration}
           />
 
           <GeneralInfoCard
@@ -286,11 +275,9 @@ function PageHeader() {
 function StatusCard({
   event,
   me,
-  onSendToConsideration,
 }: {
   event: SchemaEvent
   me: SchemaViewUser
-  onSendToConsideration: () => void
 }) {
   return (
     <Card className="mb-6">
@@ -329,30 +316,20 @@ function StatusCard({
             </div>
           )}
 
-          {event.status === 'draft' && (
+          {(event.status === 'draft' || event.status === 'rejected') && (
             <div className="flex flex-col gap-1.5">
               <div className="flex gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={onSendToConsideration}
-                >
-                  Отправить на рассмотрение
-                </Button>
+                <OnConsiderationDialog event={event} />
               </div>
             </div>
           )}
 
-          {me?.role === 'admin' && event.status === 'on_consideration' && (
+          {me?.role === 'admin' && (event.status === 'on_consideration' || event.status === 'accredited' || event.status === 'rejected') && (
             <div className="flex flex-col gap-1.5">
               <span className="font-medium">Рассмотреть:</span>
               <div className="flex gap-2">
-                <Button type="button" variant="outline" onClick={() => alert('TODO')}>
-                  Аккредитовать
-                </Button>
-                <Button type="button" variant="outline" onClick={() => alert('TODO')}>
-                  Отклонить
-                </Button>
+                <AccrediteDialog eventId={event.id} />
+                <RejectDialog eventId={event.id} />
               </div>
             </div>
           )}

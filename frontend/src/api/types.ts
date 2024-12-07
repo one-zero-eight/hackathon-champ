@@ -206,7 +206,8 @@ export interface paths {
          * @description Update event.
          */
         put: operations["events_update_event"];
-        post?: never;
+        /** Hint Results */
+        post: operations["events_hint_results"];
         delete?: never;
         options?: never;
         head?: never;
@@ -766,6 +767,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/email/start-reset-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Start Reset Password Flow */
+        post: operations["email_start_reset_password_flow"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/email/set-new-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Set New Password */
+        post: operations["email_set_new_password"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -858,16 +893,6 @@ export interface components {
              */
             status_comment: string | null;
         };
-        /** Body_email_end_email_flow */
-        Body_email_end_email_flow: {
-            /**
-             * Email Flow Id
-             * @example 5eb7cf5a86d9755df3a6c593
-             */
-            email_flow_id: string;
-            /** Verification Code */
-            verification_code: string;
-        };
         /** Body_email_start_email_flow */
         Body_email_start_email_flow: {
             /**
@@ -875,6 +900,14 @@ export interface components {
              * Format: email
              */
             email: string;
+        };
+        /** Body_events_hint_results */
+        Body_events_hint_results: {
+            /**
+             * File
+             * Format: binary
+             */
+            file: string;
         };
         /** Body_events_search_events */
         Body_events_search_events: {
@@ -1653,8 +1686,8 @@ export type SchemaAccreditationRequestEvent = components['schemas']['Accreditati
 export type SchemaAccreditationRequestFederation = components['schemas']['AccreditationRequestFederation'];
 export type SchemaAccreditedEvent = components['schemas']['AccreditedEvent'];
 export type SchemaAccreditedFederation = components['schemas']['AccreditedFederation'];
-export type SchemaBodyEmailEndEmailFlow = components['schemas']['Body_email_end_email_flow'];
 export type SchemaBodyEmailStartEmailFlow = components['schemas']['Body_email_start_email_flow'];
+export type SchemaBodyEventsHintResults = components['schemas']['Body_events_hint_results'];
 export type SchemaBodyEventsSearchEvents = components['schemas']['Body_events_search_events'];
 export type SchemaBodyEventsShareSelection = components['schemas']['Body_events_share_selection'];
 export type SchemaBodyFileworkerUploadFile = components['schemas']['Body_fileworker_upload_file'];
@@ -2114,6 +2147,46 @@ export interface operations {
             };
             /** @description Event not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    events_hint_results: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_events_hint_results"];
+            };
+        };
+        responses: {
+            /** @description Hint for event results */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Results"];
+                };
+            };
+            /** @description Cannot parse file */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3088,18 +3161,95 @@ export interface operations {
     };
     email_end_email_flow: {
         parameters: {
-            query?: never;
+            query: {
+                email_flow_id: string;
+                verification_code: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["Body_email_end_email_flow"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description End email flow */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmailFlowResult"];
+                };
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    email_start_reset_password_flow: {
+        parameters: {
+            query: {
+                email_or_login: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Start reset password flow */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmailFlowReference"];
+                };
+            };
+            /** @description User not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    email_set_new_password: {
+        parameters: {
+            query: {
+                email_flow_id: string;
+                verification_code: string;
+                new_password: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Set new password */
             200: {
                 headers: {
                     [name: string]: unknown;
