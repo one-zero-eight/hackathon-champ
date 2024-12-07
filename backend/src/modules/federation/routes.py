@@ -37,7 +37,6 @@ async def get_all_federations_as_csv() -> Response:
 
     with StringIO() as f:
         fieldnames = list(FederationSchema.__pydantic_fields__.keys())
-        print(fieldnames)
         for exclude in ["id", "last_interaction_at", "notified_about_interaction", "status", "status_comment"]:
             try:
                 fieldnames.remove(exclude)
