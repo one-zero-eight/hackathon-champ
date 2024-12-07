@@ -1,6 +1,5 @@
 import type { SchemaEvent } from '@/api/types'
 import { $api } from '@/api'
-import { useMe } from '@/api/me'
 import { Separator } from '@/components/ui/separator'
 import AlgorithmIcon from '@/icons/Algorithm_Icon.svg'
 import DroneIcon from '@/icons/Drone_Icon.svg'
