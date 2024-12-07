@@ -68,6 +68,9 @@ function AdminNav() {
         <NavLink to="/manage/federations" icon={Users}>
           Федерации
         </NavLink>
+        <NavLink to="/manage/admin/users" icon={Users}>
+          Пользователи
+        </NavLink>
         <NavLink to="/manage/events/all" icon={Award}>
           Мероприятия
         </NavLink>

@@ -43,6 +43,7 @@ import { Route as ManageEventsAllImport } from './routes/manage/events/all'
 import { Route as ManageEventsLayoutImport } from './routes/manage/events/_layout'
 import { Route as ManageEventsIdImport } from './routes/manage/events/$id'
 import { Route as ManageAnalyticsIdImport } from './routes/manage/analytics/$id'
+import { Route as ManageAdminUsersImport } from './routes/manage/admin/users'
 import { Route as ManageAdminHomeImport } from './routes/manage/admin/home'
 
 // Create Virtual Routes
@@ -236,6 +237,12 @@ const ManageAnalyticsIdRoute = ManageAnalyticsIdImport.update({
   getParentRoute: () => ManageRouteRoute,
 } as any)
 
+const ManageAdminUsersRoute = ManageAdminUsersImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => ManageRouteRoute,
+} as any)
+
 const ManageAdminHomeRoute = ManageAdminHomeImport.update({
   id: '/admin/home',
   path: '/admin/home',
@@ -379,6 +386,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageAdminHomeImport
       parentRoute: typeof ManageRouteImport
     }
+    '/manage/admin/users': {
+      id: '/manage/admin/users'
+      path: '/admin/users'
+      fullPath: '/manage/admin/users'
+      preLoaderRoute: typeof ManageAdminUsersImport
+      parentRoute: typeof ManageRouteImport
+    }
     '/manage/analytics/$id': {
       id: '/manage/analytics/$id'
       path: '/analytics/$id'
@@ -497,6 +511,7 @@ interface ManageRouteRouteChildren {
   ManageEmailRoute: typeof ManageEmailRoute
   ManageIndexRoute: typeof ManageIndexRoute
   ManageAdminHomeRoute: typeof ManageAdminHomeRoute
+  ManageAdminUsersRoute: typeof ManageAdminUsersRoute
   ManageAnalyticsIdRoute: typeof ManageAnalyticsIdRoute
   ManageEventsIdRoute: typeof ManageEventsIdRoute
   ManageEventsRoute: typeof ManageEventsRouteWithChildren
@@ -512,6 +527,7 @@ const ManageRouteRouteChildren: ManageRouteRouteChildren = {
   ManageEmailRoute: ManageEmailRoute,
   ManageIndexRoute: ManageIndexRoute,
   ManageAdminHomeRoute: ManageAdminHomeRoute,
+  ManageAdminUsersRoute: ManageAdminUsersRoute,
   ManageAnalyticsIdRoute: ManageAnalyticsIdRoute,
   ManageEventsIdRoute: ManageEventsIdRoute,
   ManageEventsRoute: ManageEventsRouteWithChildren,
@@ -547,6 +563,7 @@ export interface FileRoutesByFullPath {
   '/manage/': typeof ManageIndexRoute
   '/participants': typeof ParticipantsIndexRoute
   '/manage/admin/home': typeof ManageAdminHomeRoute
+  '/manage/admin/users': typeof ManageAdminUsersRoute
   '/manage/analytics/$id': typeof ManageAnalyticsIdRoute
   '/manage/events/$id': typeof ManageEventsIdRoute
   '/manage/events': typeof ManageEventsLayoutRoute
@@ -580,6 +597,7 @@ export interface FileRoutesByTo {
   '/manage': typeof ManageIndexRoute
   '/participants': typeof ParticipantsIndexRoute
   '/manage/admin/home': typeof ManageAdminHomeRoute
+  '/manage/admin/users': typeof ManageAdminUsersRoute
   '/manage/analytics/$id': typeof ManageAnalyticsIdRoute
   '/manage/events/$id': typeof ManageEventsIdRoute
   '/manage/events': typeof ManageEventsLayoutRoute
@@ -615,6 +633,7 @@ export interface FileRoutesById {
   '/manage/': typeof ManageIndexRoute
   '/participants/': typeof ParticipantsIndexRoute
   '/manage/admin/home': typeof ManageAdminHomeRoute
+  '/manage/admin/users': typeof ManageAdminUsersRoute
   '/manage/analytics/$id': typeof ManageAnalyticsIdRoute
   '/manage/events/$id': typeof ManageEventsIdRoute
   '/manage/events': typeof ManageEventsRouteWithChildren
@@ -652,6 +671,7 @@ export interface FileRouteTypes {
     | '/manage/'
     | '/participants'
     | '/manage/admin/home'
+    | '/manage/admin/users'
     | '/manage/analytics/$id'
     | '/manage/events/$id'
     | '/manage/events'
@@ -684,6 +704,7 @@ export interface FileRouteTypes {
     | '/manage'
     | '/participants'
     | '/manage/admin/home'
+    | '/manage/admin/users'
     | '/manage/analytics/$id'
     | '/manage/events/$id'
     | '/manage/events'
@@ -717,6 +738,7 @@ export interface FileRouteTypes {
     | '/manage/'
     | '/participants/'
     | '/manage/admin/home'
+    | '/manage/admin/users'
     | '/manage/analytics/$id'
     | '/manage/events/$id'
     | '/manage/events'
@@ -808,6 +830,7 @@ export const routeTree = rootRoute
         "/manage/email",
         "/manage/",
         "/manage/admin/home",
+        "/manage/admin/users",
         "/manage/analytics/$id",
         "/manage/events/$id",
         "/manage/events",
@@ -871,6 +894,10 @@ export const routeTree = rootRoute
     },
     "/manage/admin/home": {
       "filePath": "manage/admin/home.tsx",
+      "parent": "/manage"
+    },
+    "/manage/admin/users": {
+      "filePath": "manage/admin/users.tsx",
       "parent": "/manage"
     },
     "/manage/analytics/$id": {
