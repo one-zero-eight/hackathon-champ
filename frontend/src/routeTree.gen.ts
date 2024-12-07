@@ -22,6 +22,7 @@ import { Route as ManageRouteImport } from './routes/manage/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as ManageIndexImport } from './routes/manage/index'
 import { Route as FederationsIndexImport } from './routes/federations/index'
+import { Route as ManageEmailImport } from './routes/manage/email'
 import { Route as FederationsFederationIdImport } from './routes/federations/$federationId'
 import { Route as EventsEventIdImport } from './routes/events/$eventId'
 import { Route as AuthLoginImport } from './routes/auth/login'
@@ -103,6 +104,12 @@ const FederationsIndexRoute = FederationsIndexImport.update({
   id: '/federations/',
   path: '/federations/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const ManageEmailRoute = ManageEmailImport.update({
+  id: '/email',
+  path: '/email',
+  getParentRoute: () => ManageRouteRoute,
 } as any)
 
 const FederationsFederationIdRoute = FederationsFederationIdImport.update({
@@ -277,6 +284,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FederationsFederationIdImport
       parentRoute: typeof rootRoute
     }
+    '/manage/email': {
+      id: '/manage/email'
+      path: '/email'
+      fullPath: '/manage/email'
+      preLoaderRoute: typeof ManageEmailImport
+      parentRoute: typeof ManageRouteImport
+    }
     '/federations/': {
       id: '/federations/'
       path: '/federations'
@@ -374,6 +388,7 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface ManageRouteRouteChildren {
+  ManageEmailRoute: typeof ManageEmailRoute
   ManageIndexRoute: typeof ManageIndexRoute
   ManageAdminHomeRoute: typeof ManageAdminHomeRoute
   ManageAnalyticsIdRoute: typeof ManageAnalyticsIdRoute
@@ -389,6 +404,7 @@ interface ManageRouteRouteChildren {
 }
 
 const ManageRouteRouteChildren: ManageRouteRouteChildren = {
+  ManageEmailRoute: ManageEmailRoute,
   ManageIndexRoute: ManageIndexRoute,
   ManageAdminHomeRoute: ManageAdminHomeRoute,
   ManageAnalyticsIdRoute: ManageAnalyticsIdRoute,
@@ -420,6 +436,7 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/federations/$federationId': typeof FederationsFederationIdRoute
+  '/manage/email': typeof ManageEmailRoute
   '/federations': typeof FederationsIndexRoute
   '/manage/': typeof ManageIndexRoute
   '/manage/admin/home': typeof ManageAdminHomeRoute
@@ -447,6 +464,7 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/federations/$federationId': typeof FederationsFederationIdRoute
+  '/manage/email': typeof ManageEmailRoute
   '/federations': typeof FederationsIndexRoute
   '/manage': typeof ManageIndexRoute
   '/manage/admin/home': typeof ManageAdminHomeRoute
@@ -476,6 +494,7 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/federations/$federationId': typeof FederationsFederationIdRoute
+  '/manage/email': typeof ManageEmailRoute
   '/federations/': typeof FederationsIndexRoute
   '/manage/': typeof ManageIndexRoute
   '/manage/admin/home': typeof ManageAdminHomeRoute
@@ -506,6 +525,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/events/$eventId'
     | '/federations/$federationId'
+    | '/manage/email'
     | '/federations'
     | '/manage/'
     | '/manage/admin/home'
@@ -532,6 +552,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/events/$eventId'
     | '/federations/$federationId'
+    | '/manage/email'
     | '/federations'
     | '/manage'
     | '/manage/admin/home'
@@ -559,6 +580,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/events/$eventId'
     | '/federations/$federationId'
+    | '/manage/email'
     | '/federations/'
     | '/manage/'
     | '/manage/admin/home'
@@ -638,6 +660,7 @@ export const routeTree = rootRoute
     "/manage": {
       "filePath": "manage/route.tsx",
       "children": [
+        "/manage/email",
         "/manage/",
         "/manage/admin/home",
         "/manage/analytics/$id",
@@ -681,6 +704,10 @@ export const routeTree = rootRoute
     },
     "/federations/$federationId": {
       "filePath": "federations/$federationId.tsx"
+    },
+    "/manage/email": {
+      "filePath": "manage/email.tsx",
+      "parent": "/manage"
     },
     "/federations/": {
       "filePath": "federations/index.tsx"

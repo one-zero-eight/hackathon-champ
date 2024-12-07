@@ -5,6 +5,7 @@ import { createFileRoute, Outlet } from '@tanstack/react-router'
 import Award from '~icons/lucide/award'
 import BarChart from '~icons/lucide/bar-chart-2'
 import Home from '~icons/lucide/home'
+import Mail from '~icons/lucide/mail'
 import MessageSquare from '~icons/lucide/message-square'
 import User from '~icons/lucide/user'
 import Users from '~icons/lucide/users'
@@ -18,13 +19,19 @@ function RouteComponent() {
 
   return (
     <div className="mt-[calc(var(--header-height)*-1)] flex-grow bg-gray-50">
-      <aside
-        className="fixed bottom-0 left-0 top-[var(--header-height)] w-[var(--manage-sidebar-width)] overflow-y-auto border-r bg-white"
-      >
-        <div>
+      <aside className="fixed bottom-0 left-0 top-[var(--header-height)] w-[var(--manage-sidebar-width)] overflow-y-auto border-r bg-white">
+        <div className="flex min-h-full flex-col">
           {me?.role === 'admin' && <AdminNav />}
           {me?.role === 'admin' && me?.federation && <Separator />}
           {me?.federation && <FederationNav />}
+
+          <div className="grow" />
+
+          <nav className="flex flex-col gap-1 p-2">
+            <NavLink to="/manage/email" icon={Mail}>
+              Настройки email
+            </NavLink>
+          </nav>
         </div>
       </aside>
 
