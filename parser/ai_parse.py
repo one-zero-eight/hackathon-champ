@@ -938,7 +938,7 @@ def main():
             {"events": all_events},
             f,
             ensure_ascii=False,
-            indent=6,
+            indent=2,
             default=lambda x: x.__dict__,
         )
 
