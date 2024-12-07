@@ -178,7 +178,7 @@ function RouteComponent() {
               папку "Входящие" или "Спам".
             </DialogDescription>
 
-            <form>
+            <form onSubmit={handleOtpSubmit}>
               <div className="flex flex-col gap-4 pt-4">
                 <div className="space-y-2">
                   <label
@@ -224,7 +224,6 @@ function RouteComponent() {
                     className="w-full"
                     disabled={verifyIsPending}
                     size="lg"
-                    onClick={handleOtpSubmit}
                   >
                     {verifyIsPending && (
                       <Loader2 className="mr-2 size-4 animate-spin" />
