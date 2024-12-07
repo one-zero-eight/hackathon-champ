@@ -21,6 +21,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -182,54 +183,80 @@ function RouteComponent() {
         </p>
       </div>
 
-      {federation && (
-        <Card className="mb-6">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-xl">Текущий статус</CardTitle>
-            <CardDescription className="text-sm">
-              Информация о статусе аккредитации федерации
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex flex-col gap-3">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="font-medium">Статус:</span>
-                <Badge variant={statusLabels[federation.status].variant}>
-                  {statusLabels[federation.status].label}
-                </Badge>
-              </div>
-              {federation.status_comment && (
-                <div className="flex flex-col gap-1.5">
-                  <span className="font-medium">Комментарий к статусу:</span>
-                  <p className="text-sm text-muted-foreground">
-                    {federation.status_comment}
-                  </p>
-                </div>
-              )}
-              {federation.accreditation_comment && (
-                <div className="flex flex-col gap-1.5">
-                  <span className="font-medium">
-                    Комментарий к аккредитации:
-                  </span>
-                  <p className="text-sm text-muted-foreground">
-                    {federation.accreditation_comment}
-                  </p>
-                </div>
-              )}
-
-              {me?.role === 'admin' && (
-                <div className="flex flex-col gap-1.5">
-                  <span className="font-medium">Сменить статус:</span>
-                  <div className="flex gap-2">
-                    <AccrediteFederationDialog federationId={federationId} />
-                    <RejectFederationDialog federationId={federationId} />
+      <Card className="mb-6">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-xl">Текущий статус</CardTitle>
+          <CardDescription className="text-sm">
+            Информация о статусе аккредитации федерации
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {federation
+            ? (
+                <div className="flex flex-col gap-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-medium">Статус:</span>
+                    <Badge variant={statusLabels[federation.status].variant}>
+                      {statusLabels[federation.status].label}
+                    </Badge>
                   </div>
+                  {federation.status_comment && (
+                    <div className="flex flex-col gap-1.5">
+                      <span className="font-medium">Комментарий к статусу:</span>
+                      <p className="text-sm text-muted-foreground">
+                        {federation.status_comment}
+                      </p>
+                    </div>
+                  )}
+                  {federation.accreditation_comment && (
+                    <div className="flex flex-col gap-1.5">
+                      <span className="font-medium">
+                        Комментарий к аккредитации:
+                      </span>
+                      <p className="text-sm text-muted-foreground">
+                        {federation.accreditation_comment}
+                      </p>
+                    </div>
+                  )}
+
+                  {me?.role === 'admin' && (
+                    <div className="flex flex-col gap-1.5">
+                      <span className="font-medium">Сменить статус:</span>
+                      <div className="flex gap-2">
+                        <AccrediteFederationDialog federationId={federationId} />
+                        <RejectFederationDialog federationId={federationId} />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            : (
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">Статус:</span>
+                    <Skeleton className="h-6 w-24" />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <span className="font-medium">Комментарий к статусу:</span>
+                    <Skeleton className="h-16 w-full" />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <span className="font-medium">Комментарий к аккредитации:</span>
+                    <Skeleton className="h-16 w-full" />
+                  </div>
+                  {me?.role === 'admin' && (
+                    <div className="flex flex-col gap-1.5">
+                      <span className="font-medium">Сменить статус:</span>
+                      <div className="flex gap-2">
+                        <Skeleton className="h-10 w-32" />
+                        <Skeleton className="h-10 w-32" />
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+        </CardContent>
+      </Card>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
