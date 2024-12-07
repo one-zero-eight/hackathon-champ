@@ -1,9 +1,11 @@
 import type { FormEvent } from 'react'
 import { $api } from '@/api'
+import { useMe } from '@/api/me'
 import { Button } from '@/components/ui/button.tsx'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { useQueryClient } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import Loader2 from '~icons/lucide/loader'
 
@@ -20,6 +22,15 @@ export const Route = createFileRoute('/auth/login')({
 
 function RouteComponent() {
   const { redirectTo } = Route.useSearch()
+  const navigate = useNavigate()
+  const { data: me, isLoading: isLoadingMe } = useMe()
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (me && !isLoadingMe) {
+      navigate({ to: '/manage/region/home' })
+    }
+  }, [me, isLoadingMe, navigate])
 
   const [login, setLogin] = useState('')
   const [password, setPassword] = useState('')
@@ -62,46 +73,104 @@ function RouteComponent() {
     }
   }
 
+  // Show loading state while checking authentication
+  if (isLoadingMe) {
+    return (
+      <main className="fixed inset-0 overflow-hidden bg-gradient-to-b from-white to-gray-50/50">
+        <div className="flex h-full items-center justify-center">
+          <Loader2 className="size-8 animate-spin text-purple-500" />
+        </div>
+      </main>
+    )
+  }
+
+  // Don't render the form if user is authenticated
+  if (me)
+    return null
+
   return (
-    <div className="flex h-full flex-col items-center justify-center px-4 py-8">
-      <form className="flex w-full max-w-[300px] flex-col gap-2" onSubmit={onSubmit}>
-        <h1 className="text-center text-2xl">
-          {register ? 'Регистрация' : 'Вход в систему'}
-        </h1>
-        <Input
-          value={login}
-          onChange={e => setLogin(e.target.value)}
-          placeholder="Логин"
-          type="text"
-        />
-        <Input
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          placeholder="Пароль"
-          type="password"
-        />
-        {errorLogin && <p className="text-sm text-red-500">{(errorLogin.detail || errorLogin).toString()}</p>}
-        {errorRegister && <p className="text-sm text-red-500">{(errorRegister.detail || errorRegister).toString()}</p>}
-        <Button type="submit">
-          {register ? 'Зарегистрироваться' : 'Войти'}
-          {(isPendingLogin || isPendingRegister) && (
-            <Loader2 className="mr-2 size-4 animate-spin" />
-          )}
-        </Button>
-        <Button
-          type="button"
-          variant="link"
-          onClick={() => {
-            setRegister(v => !v)
-            resetLogin()
-            resetRegister()
-          }}
-        >
-          {!register
-            ? 'Нет аккаунта? Зарегистрируйтесь'
-            : 'Уже есть аккаунт? Войдите'}
-        </Button>
-      </form>
-    </div>
+    <main className="fixed inset-0 overflow-hidden bg-gradient-to-b from-white to-gray-50/50">
+      <div className="flex h-full items-center justify-center p-4 sm:p-8">
+        <Card className="w-full max-w-[min(400px,calc(100vw-2rem))] transition-all duration-200 sm:shadow-lg">
+          <CardHeader className="space-y-2 px-6 pb-4 pt-6 sm:px-8 sm:pb-6 sm:pt-8">
+            <CardTitle className="text-center text-2xl font-bold tracking-tight sm:text-3xl">
+              {register ? 'Регистрация' : 'Вход в систему'}
+            </CardTitle>
+            <CardDescription className="text-center text-sm text-muted-foreground sm:text-base">
+              {register
+                ? 'Создайте аккаунт для доступа к платформе'
+                : 'Войдите в свой аккаунт для продолжения'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="px-6 pb-6 sm:px-8 sm:pb-8">
+            <form className="flex flex-col gap-4 sm:gap-6" onSubmit={onSubmit}>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Input
+                    value={login}
+                    onChange={e => setLogin(e.target.value)}
+                    placeholder="Логин"
+                    type="text"
+                    className="h-11 text-base sm:h-12"
+                    autoComplete="username"
+                    autoFocus
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Input
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    placeholder="Пароль"
+                    type="password"
+                    className="h-11 text-base sm:h-12"
+                    autoComplete={register ? 'new-password' : 'current-password'}
+                  />
+                </div>
+              </div>
+
+              {(errorLogin || errorRegister) && (
+                <div className="rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive sm:text-base">
+                  {((errorLogin?.detail || errorLogin || '') || (errorRegister?.detail || errorRegister || '')).toString()}
+                </div>
+              )}
+
+              <div className="space-y-3 sm:space-y-4">
+                <Button
+                  type="submit"
+                  className="h-11 w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-base font-semibold hover:from-purple-600 hover:to-indigo-600 sm:h-12"
+                  disabled={isPendingLogin || isPendingRegister}
+                >
+                  {isPendingLogin || isPendingRegister
+                    ? (
+                        <>
+                          <Loader2 className="mr-2 size-4 animate-spin sm:size-5" />
+                          {register ? 'Регистрация...' : 'Вход...'}
+                        </>
+                      )
+                    : (
+                        register ? 'Зарегистрироваться' : 'Войти'
+                      )}
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="link"
+                  onClick={() => {
+                    setRegister(v => !v)
+                    resetLogin()
+                    resetRegister()
+                  }}
+                  className="h-11 w-full text-base font-normal hover:text-purple-600 sm:h-12"
+                >
+                  {!register
+                    ? 'Нет аккаунта? Зарегистрируйтесь'
+                    : 'Уже есть аккаунт? Войдите'}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </main>
   )
 }

@@ -84,6 +84,10 @@ function FederationNav() {
           Мероприятия
         </NavLink>
 
+        <NavLink to="/manage/analytics/$id" params={{ id: myFederation?.id }} icon={BarChart}>
+          Аналитика
+        </NavLink>
+
         <NavLink to="/manage/region/feedback" icon={MessageSquare}>
           Связь с федерацией
         </NavLink>

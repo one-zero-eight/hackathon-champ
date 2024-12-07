@@ -166,6 +166,7 @@ function RouteComponent() {
   const { data: eventsTotal } = $api.useQuery('post', '/events/search/count', {
     body: {},
   })
+  const navigate = useNavigate()
 
   const calendarRef = useRef<HTMLDivElement>(null)
 
@@ -352,6 +353,7 @@ function RouteComponent() {
             <Button
               size="lg"
               className="bg-purple-600 px-8 hover:bg-purple-700"
+              onClick={() => navigate({ to: '/auth/login' })}
             >
               Начать сейчас
               <ChevronRight className="ml-2 size-4" />
