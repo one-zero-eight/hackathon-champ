@@ -82,7 +82,7 @@ function RouteComponent() {
         <div>
           <h1 className="text-2xl font-bold">Панель управления</h1>
           <p className="text-gray-500">
-            Общероссийская федерация спортиного программирования
+            Общероссийская федерация спортивного программирования
           </p>
         </div>
         <div className="flex gap-2">
