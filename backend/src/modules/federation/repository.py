@@ -1,5 +1,7 @@
 __all__ = ["federation_repository"]
 
+import datetime
+
 from beanie import PydanticObjectId
 
 from src.storages.mongo.federation import Federation, FederationSchema
@@ -31,6 +33,19 @@ class FederationRepository:
         f.status_comment = status_comment
         await f.save()
         return f
+
+    async def touch(self, id: PydanticObjectId) -> None:
+        await Federation.find_one(Federation.id == id).update(
+            {"$set": {"last_interaction_at": datetime.datetime.now(datetime.UTC), "notified_about_interaction": False}}
+        )
+
+    async def read_last_interacted_at(self, older_than: datetime.datetime) -> list[Federation]:
+        return await Federation.find(
+            {"last_interaction_at": {"$lt": older_than}, "notified_about_interaction": False}
+        ).to_list()
+
+    async def set_notified_about_interaction(self, id: PydanticObjectId) -> None:
+        await Federation.find_one({"_id": id}).update({"$set": {"notified_about_interaction": True}})
 
 
 federation_repository: FederationRepository = FederationRepository()

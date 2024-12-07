@@ -1,3 +1,5 @@
+import datetime
+
 from beanie import PydanticObjectId
 from fastapi import APIRouter, HTTPException
 
@@ -101,6 +103,24 @@ async def accredite_federation(
         raise HTTPException(status_code=403, detail="Only admin can accredit federation")
 
 
+@router.post(
+    "/{id}/touch",
+    responses={
+        200: {"description": "Touch federation"},
+        403: {"description": "Only admin or federation owner can update federation"},
+    },
+)
+async def touch_federation(id: PydanticObjectId, auth: USER_AUTH) -> None:
+    """
+    Touch federation to update last_interaction_at.
+    """
+    user = await user_repository.read(auth.user_id)
+    if user.role == UserRole.ADMIN or user.federation == id:
+        await federation_repository.touch(id)
+    else:
+        raise HTTPException(status_code=403, detail="Only admin or federation owner can update federation")
+
+
 @router.put(
     "/{id}/",
     responses={
@@ -114,6 +134,9 @@ async def update_federation(id: PydanticObjectId, data: FederationSchema, auth: 
     """
     user = await user_repository.read(auth.user_id)
     if user.role == UserRole.ADMIN or user.federation == id:
+        if user.federation == id:
+            data.last_interaction_at = datetime.datetime.now(datetime.UTC)
+            data.notified_about_interaction = False
         return await federation_repository.update(id, data)
     else:
         raise HTTPException(status_code=403, detail="Only admin or federation owner can update federation")

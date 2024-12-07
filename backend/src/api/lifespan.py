@@ -1,6 +1,7 @@
 __all__ = ["lifespan"]
 
 import asyncio
+import datetime
 import json
 from contextlib import asynccontextmanager
 
@@ -14,6 +15,38 @@ from src.config import settings
 from src.logging_ import logger
 from src.modules.files.repository import file_worker_repository
 from src.storages.mongo import document_models
+
+
+async def notification_loop():
+    from src.modules.email.smtp_repository import smtp_repository
+    from src.modules.federation.repository import federation_repository
+    from src.modules.users.repository import user_repository
+
+    if not smtp_repository:
+        return
+
+    while True:
+        try:
+            current_date = datetime.datetime.now(datetime.UTC)
+            # older_than = current_date - datetime.timedelta(days=30)
+            older_than = current_date - datetime.timedelta(minutes=1)
+
+            federation_obsolete = await federation_repository.read_last_interacted_at(older_than)
+
+            for federation in federation_obsolete:
+                related_users = await user_repository.read_for_federation(federation.id)
+                emails = [user.email for user in related_users if user.email]
+                if emails:
+                    href = f"https://champ.innohassle.ru/manage/federations/{federation.id}"
+                    msg = f'Данные Федерации Спортивного Программирования `{federation.region}` не обновлялись более 30 дней. Пожалуйста, <a href="{href}">обновите их</a>.'
+                    smtp_repository.render_notify_message(msg)
+                    smtp_repository.send(msg, emails)
+                await federation_repository.set_notified_about_interaction(federation.id)
+
+            await asyncio.sleep(60 * 15)
+        except Exception:
+            logger.error("Notification loop error", exc_info=True)
+            await asyncio.sleep(60)
 
 
 async def setup_database() -> AsyncIOMotorClient:
@@ -45,6 +78,7 @@ async def lifespan(_app: FastAPI):
     # Application startup
     motor_client = await setup_database()
     file_worker_repository.create_bucket()
+    asyncio.create_task(notification_loop())
     yield
 
     # -- Application shutdown --

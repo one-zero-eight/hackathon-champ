@@ -1,3 +1,4 @@
+import datetime
 from enum import StrEnum
 
 from pydantic import Field
@@ -57,6 +58,10 @@ class FederationSchema(BaseSchema):
     "Ссылка на логотип (полный URL)"
     telegram: str | None = Field(None, examples=["https://t.me/fsprussia"])
     "Ссылка на канал в Telegram"
+    last_interaction_at: datetime.datetime | None = Field(None, examples=[None])
+    "Дата последнего взаимодействия с федерацией от представителя"
+    notified_about_interaction: bool = Field(False, examples=[False])
+    "Было ли уведомление о взаимодействии"
 
 
 class Federation(FederationSchema, CustomDocument):
