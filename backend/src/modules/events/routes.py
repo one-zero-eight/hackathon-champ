@@ -1,6 +1,11 @@
+import re
 from datetime import datetime, timedelta
+from io import BytesIO
 
 import icalendar
+import magic
+import pandas as pd
+import pdfplumber
 from beanie import PydanticObjectId
 from fastapi import APIRouter, HTTPException, UploadFile
 from pydantic import BaseModel
@@ -13,7 +18,7 @@ from src.modules.events.schemas import DateFilter, Filters, Pagination, Sort
 from src.modules.federation.repository import federation_repository
 from src.modules.notify.repository import notify_repository
 from src.modules.users.repository import user_repository
-from src.storages.mongo.events import Event, EventSchema, EventStatusEnum, Results, SoloPlace
+from src.storages.mongo.events import Event, EventSchema, EventStatusEnum, Results, TeamPlace
 from src.storages.mongo.notify import AccreditationRequestEvent, AccreditedEvent, NotifySchema
 from src.storages.mongo.selection import Selection
 from src.storages.mongo.users import UserRole
@@ -42,25 +47,80 @@ async def get_all_events() -> list[Event]:
     },
 )
 async def hint_results(file: UploadFile) -> Results:
-    return Results(
-        solo_places=[
-            SoloPlace(
-                place=1,
-                participant="Иванов Иван Иванович",
-                score=100,
-            ),
-            SoloPlace(
-                place=2,
-                participant="Петров Петр Петрович",
-                score=90,
-            ),
-            SoloPlace(
-                place=3,
-                participant="Сидоров Сидор Сидорович",
-                score=80,
-            ),
-        ]
-    )
+    bytes_ = await file.read()
+    mime_type = magic.from_buffer(bytes_, mime=True)
+
+    # CSV
+    if mime_type == "text/csv":
+        df = pd.read_csv(BytesIO(bytes_))
+
+    # XLSX
+    elif mime_type in (
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.ms-excel",
+        "application/vnd.oasis.opendocument.spreadsheet",
+    ):
+        df = pd.read_excel(BytesIO(bytes_))
+
+    # PDF using pdfplumber
+    elif mime_type == "application/pdf":
+        with pdfplumber.open(BytesIO(bytes_)) as pdf:
+            tables = []
+            for page in pdf.pages:
+                table = page.extract_table()
+                if table:
+                    tables.append(table)
+
+        if not tables:
+            raise HTTPException(status_code=400, detail="Cannot parse file (no tables found)")
+
+        header = tables[0][0]
+
+        for t in tables:
+            if t[0] == header:
+                t.pop(0)
+
+        # concat all tables if there are multiple
+        df = pd.concat([pd.DataFrame(t, columns=header) for t in tables])
+        # replace empty strings with NaN
+        df.replace("", None, inplace=True)
+    else:
+        raise HTTPException(status_code=400, detail="Cannot parse file (unsupported format)")
+
+    def is_place_column(column):
+        return "место" in column.lower()
+
+    def is_score_column(column):
+        return "балл" in column.lower()
+
+    def is_team_column(column):
+        return "команда" in column.lower()
+
+    place_column = next((c for c in df.columns if is_place_column(c)), None)
+    score_column = next((c for c in df.columns[::-1] if is_score_column(c)), None)
+    team_column = next((c for c in df.columns if is_team_column(c)), None)
+
+    if team_column:
+        team_places = []
+        for i, row in df.iterrows():
+            team: str = row[team_column]  # one-zero-eight (Булгаков, Авхадеев, Бельков, Дерябкин, Полин)
+            member_sub = re.search(r"\((.*?)\)", team)
+            if member_sub:
+                team = team.replace(member_sub.group(0), "")
+                members = member_sub.group(1).split(", ")
+            else:
+                members = []
+
+            team_places.append(
+                TeamPlace(
+                    place=row[place_column] if place_column else len(team_places) + 1,
+                    team=team.strip(),
+                    members=[m.strip() for m in members],
+                    score=row[score_column] if score_column else None,
+                )
+            )
+
+        return Results(team_places=team_places)
 
 
 @router.post(
