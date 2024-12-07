@@ -109,7 +109,9 @@ async def hint_results(file: UploadFile) -> Results:
             member_sub = re.search(r"\((.*?)\)", team)
             if member_sub:
                 team = team.replace(member_sub.group(0), "")
-                members = member_sub.group(1).split(", ")
+                members = member_sub.group(1).split(",")
+                members = [m.strip() for m in members]
+                members = [m for m in members if m]
             else:
                 members = []
 
@@ -117,7 +119,7 @@ async def hint_results(file: UploadFile) -> Results:
                 TeamPlace(
                     place=row[place_column] if place_column else len(team_places) + 1,
                     team=team.strip(),
-                    members=[m.strip() for m in members],
+                    members=members,
                     score=row[score_column] if score_column else None,
                 )
             )
