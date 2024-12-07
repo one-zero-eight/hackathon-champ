@@ -1,5 +1,5 @@
 import type { SchemaFederation, SchemaStatusEnum } from '../../../api/types'
-import { $api } from '@/api'
+import { $api, apiFetch } from '@/api'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -10,7 +10,6 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
-
 import {
   Popover,
   PopoverContent,
@@ -25,7 +24,10 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useMemo, useState } from 'react'
+
+import { useCallback, useMemo, useState } from 'react'
+
+import Download from '~icons/lucide/download'
 import Search from '~icons/lucide/search'
 
 export const Route = createFileRoute('/manage/federations/')({
@@ -73,6 +75,38 @@ function RouteComponent() {
       return matchesSearch && matchesDistrict && matchesStatus
     })
   }, [federations, searchQuery, selectedDistrict, selectedStatus])
+
+  const onExport = useCallback(() => {
+    if (!federations)
+      return
+
+    const blob = new Blob([JSON.stringify(federations, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `federations.json`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }, [federations])
+
+  const onExportCSV = useCallback(() => {
+    apiFetch.GET('/federations/.csv', { parseAs: 'blob' }).then((response) => {
+      if (!response.data)
+        return
+
+      const blob = new Blob([response.data as any], { type: 'text/csv' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `federations.csv`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    })
+  }, [federations])
 
   const getStatusBadgeVariant = (
     status: SchemaStatusEnum,
@@ -167,11 +201,23 @@ function RouteComponent() {
 
   return (
     <div className="container mx-auto space-y-6 p-6">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold">Управление федерациями</h1>
-        <p className="text-muted-foreground">
-          Просмотр и управление статусами федераций
-        </p>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Управление федерациями</h1>
+          <p className="text-muted-foreground">
+            Просмотр и управление статусами федераций
+          </p>
+        </div>
+        <div className="flex items-center gap-4">
+          <Button variant="outline" onClick={onExportCSV}>
+            <Download className="mr-2 size-4" />
+            CSV
+          </Button>
+          <Button variant="outline" onClick={onExport}>
+            <Download className="mr-2 size-4" />
+            JSON
+          </Button>
+        </div>
       </div>
 
       <div className="flex gap-4">

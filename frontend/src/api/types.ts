@@ -451,6 +451,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/federations/.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get All Federations As Csv
+         * @description Get info about all events.
+         */
+        get: operations["federations_get_all_federations_as_csv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/federations/{id}/stats": {
         parameters: {
             query?: never;
@@ -1074,6 +1094,8 @@ export interface components {
             password: string;
             /** Federation */
             federation?: string | null;
+            /** Email */
+            email?: string | null;
         };
         /** DateFilter */
         DateFilter: {
@@ -1935,6 +1957,8 @@ export interface components {
             password?: string | null;
             /** Federation */
             federation?: string | null;
+            /** Email */
+            email?: string | null;
         };
         /**
          * UserRole
@@ -2862,6 +2886,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    federations_get_all_federations_as_csv: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Info about all federations */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
         };
