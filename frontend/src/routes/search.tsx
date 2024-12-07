@@ -4,7 +4,6 @@ import { EventCard } from '@/components/EventCard.tsx'
 import { ExportFiltersToCalButton } from '@/components/ExportFiltersToCalButton'
 import { AllFilters } from '@/components/filters/AllFilters'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -21,8 +20,6 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { useDebounce } from 'react-use'
 import { Temporal } from 'temporal-polyfill'
-import Search from '~icons/lucide/search'
-import SortAsc from '~icons/lucide/sort-asc'
 
 export const Route = createFileRoute('/search')({
   component: RouteComponent,
@@ -136,92 +133,75 @@ function RouteComponent() {
   const loading = dataLoading || filtersChanging || sharedLoading
 
   return (
-    <div className="container mx-auto space-y-6 px-4 py-8">
-      <div>
-        <h1 className="text-3xl font-bold">Поиск мероприятий</h1>
-        <p className="mt-2 text-muted-foreground">
-          Найдите интересующие вас мероприятия, используя фильтры и поиск по названию.
-        </p>
-      </div>
-
-      <div className="flex flex-col gap-4 lg:flex-row">
-        <Card className="order-2 w-full md:sticky md:top-[calc(var(--header-height)+2rem)] md:order-1 md:h-fit md:w-[280px] md:shrink-0">
-          <CardHeader className="flex flex-row items-center justify-between md:flex-col md:items-start">
-            <CardTitle>
-              <div className="flex items-center justify-between">
-                <span>Фильтры</span>
-                <Button size="sm" variant="secondary" onClick={handleResetFilters} className="shrink-0">
-                  Сбросить
-                </Button>
-              </div>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <AllFilters
-              filters={actualFilters || {}}
-              onChange={handleFiltersChange}
-              className="w-full"
-            />
-            <Separator />
-            <ExportFiltersToCalButton filters={debouncedFilters} />
-          </CardContent>
-        </Card>
-
-        <main className="order-1 flex-1 space-y-4 md:order-2 md:space-y-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                className="pl-9"
-                value={query}
-                onChange={e => handleQueryChange(e.target.value)}
-                placeholder="Название, вид спорта, город..."
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <SortAsc className="size-4 text-muted-foreground" />
-              <Select value={sortPreset} onValueChange={setSortPreset as any}>
-                <SelectTrigger className="w-[180px] min-w-[180px] md:w-[200px] md:min-w-[200px]">
-                  <SelectValue placeholder="Сортировка" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {Object.keys(SORT_PRESETS).map(preset => (
-                      <SelectItem key={preset} value={preset}>
-                        {preset}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
+    <div className="flex flex-grow flex-col pl-[var(--search-sidebar-width)]">
+      <aside className="fixed left-0 h-[calc(100vh-var(--header-height))] w-[var(--search-sidebar-width)] shrink-0 grow-0 overflow-auto border-r p-4">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-medium">Фильтры</h3>
+            <Button size="sm" variant="secondary" onClick={handleResetFilters}>
+              Сбросить
+            </Button>
           </div>
+          <Separator />
+          <AllFilters
+            filters={actualFilters || {}}
+            onChange={handleFiltersChange}
+            className="w-full"
+          />
+          <Separator />
+          <ExportFiltersToCalButton filters={debouncedFilters} />
+        </div>
+      </aside>
 
-          <div className="grid gap-3 md:gap-4">
-            {loading
+      <main className="flex w-full flex-grow flex-col">
+        <div className="sticky top-[var(--header-height)] z-[1] border-b bg-white bg-opacity-90 p-4 backdrop-blur">
+          <Input
+            className="rounded-md border border-gray-300 px-2 py-1"
+            value={query}
+            onChange={e => handleQueryChange(e.target.value)}
+            placeholder="Название, вид спорта, город..."
+          />
+          <div className="mt-2 ">
+            <Select value={sortPreset} onValueChange={setSortPreset as any}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Сортировка" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {Object.keys(SORT_PRESETS).map(preset => (
+                    <SelectItem key={preset} value={preset}>
+                      {preset}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div className="flex flex-grow flex-col gap-4 bg-stone-100 p-4">
+          {loading
+            ? (
+                <>
+                  <Skeleton className="h-[200px] bg-stone-200" />
+                  <Skeleton className="h-[200px] bg-stone-200" />
+                  <Skeleton className="h-[200px] bg-stone-200" />
+                  <Skeleton className="h-[200px] bg-stone-200" />
+                  <Skeleton className="h-[200px] bg-stone-200" />
+                </>
+              )
+            : data?.events.length
               ? (
-                  <>
-                    {Array.from({ length: 3 }).map((_, index) => (
-                      // eslint-disable-next-line react/no-array-index-key
-                      <Skeleton key={index} className="h-[180px] w-full md:h-[200px]" />
-                    ))}
-                  </>
+                  data.events.map(event => (
+                    <EventCard key={event.id} event={event} />
+                  ))
                 )
-              : data?.events.length
-                ? data.events.map(event => (<EventCard key={event.id} event={event} />))
-                : (
-                    <Card className="py-8 md:py-12">
-                      <div className="text-center">
-                        <p className="text-lg font-medium">Ничего не найдено</p>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                          Попробуйте изменить параметры поиска
-                        </p>
-                      </div>
-                    </Card>
-                  )}
-          </div>
-        </main>
-      </div>
+              : (
+                  <div className="flex h-[200px] w-full items-center justify-center">
+                    Ничего не найдено
+                  </div>
+                )}
+        </div>
+      </main>
     </div>
   )
 }
