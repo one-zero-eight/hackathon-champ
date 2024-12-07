@@ -3,7 +3,7 @@ import { $api, apiFetch } from '@/api'
 import { useMe } from '@/api/me'
 import { cn, labelForDateDiff } from '@/lib/utils'
 import { useNavigate } from '@tanstack/react-router'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import Building from '~icons/lucide/building'
 import Calendar from '~icons/lucide/calendar'
 import Check from '~icons/lucide/check'
@@ -74,7 +74,14 @@ export function Notifications({
   )
 
   const someError = meError ?? (adminEnabled && adminNotificationsError) ?? (myFederationEnabled && myFederationNotificationsError)
-  const actualNotifications = (adminEnabled ? adminNotifications : myFederationNotifications) ?? []
+  const actualNotifications = useMemo(() => (
+    (adminEnabled ? adminNotifications : myFederationNotifications) ?? []
+  ), [adminEnabled, adminNotifications, myFederationNotifications])
+
+  // Sort notifications by created_at in descending order (most recent first)
+  const sortedNotifications = useMemo(() => [...actualNotifications].sort((a, b) =>
+    new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+  ), [actualNotifications])
 
   const handleRead = useCallback((notificationId: string) => {
     apiFetch
@@ -96,9 +103,9 @@ export function Notifications({
             ))
           )
         : (
-            actualNotifications.length > 0
+            sortedNotifications.length > 0
               ? (
-                  actualNotifications.map(notification => (
+                  sortedNotifications.map(notification => (
                     <NotificationItem
                       key={notification.id}
                       notification={notification}
