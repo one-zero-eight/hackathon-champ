@@ -65,11 +65,11 @@ function RouteComponent() {
 
             <div className="space-y-6">
               <h1 className="text-4xl font-bold tracking-tight text-gray-900">
-                Платформа управления регионами
+                Платформа ФСП Линк
               </h1>
               <div className="space-y-4">
                 <p className="mx-auto max-w-sm text-gray-600">
-                  Современное решение для эффективного управления и мониторинга региональных данных
+                  Современное решение для эффективного управления и мониторинга федераций спортивного программирования
                 </p>
                 <p className="mx-auto max-w-sm text-sm text-gray-500">
                   Аналитика • Мониторинг • Управление
