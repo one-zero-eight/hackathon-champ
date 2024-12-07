@@ -113,7 +113,7 @@ async def update_federation(id: PydanticObjectId, data: FederationSchema, auth: 
     Update one federation.
     """
     user = await user_repository.read(auth.user_id)
-    if user.role == UserRole.ADMIN or user.federation_id == id:
+    if user.role == UserRole.ADMIN or user.federation == id:
         return await federation_repository.update(id, data)
     else:
         raise HTTPException(status_code=403, detail="Only admin or federation owner can update federation")

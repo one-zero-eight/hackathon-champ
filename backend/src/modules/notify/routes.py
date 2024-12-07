@@ -62,7 +62,7 @@ async def get_notifications_for_federation(federation_id: PydanticObjectId, auth
     """
     user = await user_repository.read(auth.user_id)
 
-    if user.role != UserRole.ADMIN and user.federation_id != federation_id:
+    if user.role != UserRole.ADMIN and user.federation != federation_id:
         raise HTTPException(status_code=403, detail="Only admins or federation owners can access this resource")
 
     return await notify_repository.get_for_federation(federation_id)
@@ -81,7 +81,7 @@ async def get_unread_notifications_for_federation(federation_id: PydanticObjectI
     """
 
     user = await user_repository.read(auth.user_id)
-    if user.role != UserRole.ADMIN and user.federation_id != federation_id:
+    if user.role != UserRole.ADMIN and user.federation != federation_id:
         raise HTTPException(status_code=403, detail="Only admins or federation owners can access this resource")
 
     return await notify_repository.read_unread_for_federation(federation_id, auth.user_id)

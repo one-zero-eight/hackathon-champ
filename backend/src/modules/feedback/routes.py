@@ -53,7 +53,7 @@ async def get_all_feedback_for_federation(id: PydanticObjectId, auth: USER_AUTH)
     """
     user = await user_repository.read(auth.user_id)
 
-    if user.role == UserRole.ADMIN or user.federation_id == id:
+    if user.role == UserRole.ADMIN or user.federation == id:
         return await feedback_repository.get_all_for_federation(id)
     else:
         raise HTTPException(status_code=403, detail="Only admin and related federation can get feedback")
