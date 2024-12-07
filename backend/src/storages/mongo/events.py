@@ -70,6 +70,15 @@ class TeamPlace(BaseSchema):
     "Очки"
 
 
+class SoloPlace(BaseSchema):
+    place: str
+    "Место (1, 2, 3-5)"
+    participant: str
+    "ФИО участника"
+    score: Any | None = None
+    "Очки"
+
+
 class Protocol(BaseSchema):
     by_url: str | None = None
     "Ссылка на протокол"
@@ -78,10 +87,12 @@ class Protocol(BaseSchema):
 
 
 class Results(BaseSchema):
-    protocols: list[Protocol] = []
+    protocols: list[Protocol] | None = None
     "Протоколы зачёта, список ссылок"
-    team_places: list[TeamPlace] = []
+    team_places: list[TeamPlace] | None = None
     "Места команд"
+    solo_places: list[SoloPlace] | None = None
+    "Места участников"
 
 
 class EventSchema(BaseSchema):
