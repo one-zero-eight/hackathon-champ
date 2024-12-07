@@ -136,7 +136,7 @@ function RouteComponent() {
   const loading = dataLoading || filtersChanging || sharedLoading
 
   return (
-    <div className="container mx-auto space-y-6 py-8">
+    <div className="container mx-auto space-y-6 px-4 py-8">
       <div>
         <h1 className="text-3xl font-bold">Поиск мероприятий</h1>
         <p className="mt-2 text-muted-foreground">
@@ -147,10 +147,14 @@ function RouteComponent() {
       <div className="flex flex-col gap-4 lg:flex-row">
         <Card className="order-2 w-full md:sticky md:top-[calc(var(--header-height)+2rem)] md:order-1 md:h-fit md:w-[280px] md:shrink-0">
           <CardHeader className="flex flex-row items-center justify-between md:flex-col md:items-start">
-            <CardTitle>Фильтры</CardTitle>
-            <Button size="sm" variant="ghost" onClick={handleResetFilters} className="shrink-0">
-              Сбросить
-            </Button>
+            <CardTitle>
+              <div className="flex items-center justify-between">
+                <span>Фильтры</span>
+                <Button size="sm" variant="secondary" onClick={handleResetFilters} className="shrink-0">
+                  Сбросить
+                </Button>
+              </div>
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <AllFilters

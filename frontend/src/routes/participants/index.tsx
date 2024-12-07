@@ -1,6 +1,5 @@
 import { $api } from '@/api'
 import { Badge } from '@/components/ui/badge'
-
 import { Card } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
@@ -199,7 +198,7 @@ function RouteComponent() {
   const filteredTeams = filterParticipants(sortedTeams, search)
 
   return (
-    <div className="container mx-auto space-y-6 py-8">
+    <div className="container mx-auto space-y-6 px-4 py-8">
       <div>
         <h1 className="text-3xl font-bold">Рейтинг участников</h1>
         <p className="mt-2 text-lg text-muted-foreground">

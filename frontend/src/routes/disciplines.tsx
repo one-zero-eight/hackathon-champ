@@ -147,7 +147,7 @@ function DisciplineEvents({ query }: { query: string }) {
 
 function RouteComponent() {
   return (
-    <div className="container mx-auto space-y-6 py-8">
+    <div className="container mx-auto space-y-6 px-4 py-8">
       <div>
         <h1 className="text-3xl font-bold">Дисциплины</h1>
         <p className="mt-2 text-muted-foreground">

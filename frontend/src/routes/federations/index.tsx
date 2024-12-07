@@ -50,7 +50,7 @@ function RouteComponent() {
   }
 
   return (
-    <div className="container mx-auto space-y-6 py-8">
+    <div className="container mx-auto space-y-6 px-4 py-8">
       <div>
         <h1 className="text-3xl font-bold">Региональные федерации</h1>
         <p className="mt-2 text-muted-foreground">
@@ -93,6 +93,7 @@ function RouteComponent() {
           ? (
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {Array.from({ length: 8 }).fill(null).map((_, i) => (
+                  // eslint-disable-next-line react/no-array-index-key
                   <Skeleton key={i} className="h-[200px]" />
                 ))}
               </div>
