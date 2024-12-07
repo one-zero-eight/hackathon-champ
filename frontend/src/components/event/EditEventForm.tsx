@@ -4,7 +4,9 @@ import { useMe } from '@/api/me.ts'
 import { AccrediteDialog } from '@/components/event/AccrediteDialog.tsx'
 import { EditEventFormLevelField } from '@/components/event/EditEventFormLevelField.tsx'
 import { OnConsiderationDialog } from '@/components/event/OnConsiderationDialog.tsx'
+import { PublishDialog } from '@/components/event/PublishDialog.tsx'
 import { RejectDialog } from '@/components/event/RejectDialog.tsx'
+import { UnpublishDialog } from '@/components/event/UnpublishDialog.tsx'
 import { EventStatusBadge } from '@/components/EventStatusBadge.tsx'
 import { Button } from '@/components/ui/button.tsx'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card.tsx'
@@ -203,7 +205,9 @@ function StatusCard({
             </div>
           )}
 
-          {(event.status === 'draft' || event.status === 'rejected') && (
+          {(event.level === 'interregional' || event.level === 'federal' || event.level === 'international')
+          && (event.status === 'draft' || event.status === 'rejected')
+          && (
             <div className="flex flex-col gap-1.5">
               <div className="flex gap-2">
                 <OnConsiderationDialog event={event} />
@@ -211,12 +215,37 @@ function StatusCard({
             </div>
           )}
 
-          {me?.role === 'admin' && (event.status === 'on_consideration' || event.status === 'accredited' || event.status === 'rejected') && (
+          {me?.role === 'admin'
+          && (event.level === 'interregional' || event.level === 'federal' || event.level === 'international')
+          && (event.status === 'on_consideration' || event.status === 'accredited' || event.status === 'rejected')
+          && (
             <div className="flex flex-col gap-1.5">
               <span className="font-medium">Рассмотреть:</span>
               <div className="flex gap-2">
-                <AccrediteDialog eventId={event.id} />
-                <RejectDialog eventId={event.id} />
+                {event.status !== 'accredited' && <AccrediteDialog eventId={event.id} />}
+                {event.status !== 'rejected' && <RejectDialog eventId={event.id} />}
+              </div>
+            </div>
+          )}
+
+          {(event.level !== 'interregional' && event.level !== 'federal' && event.level !== 'international')
+          && (event.status === 'draft' || event.status === 'on_consideration' || event.status === 'rejected')
+          && (
+            <div className="flex flex-col gap-1.5">
+              <span className="font-medium">Сменить статус:</span>
+              <div className="flex gap-2">
+                <PublishDialog eventId={event.id} />
+              </div>
+            </div>
+          )}
+
+          {(event.level !== 'interregional' && event.level !== 'federal' && event.level !== 'international')
+          && event.status === 'accredited'
+          && (
+            <div className="flex flex-col gap-1.5">
+              <span className="font-medium">Сменить статус:</span>
+              <div className="flex gap-2">
+                <UnpublishDialog eventId={event.id} />
               </div>
             </div>
           )}
