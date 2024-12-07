@@ -256,7 +256,7 @@ function ParticipantDialog({ participant, rank }: { participant: any, rank: numb
           <ParticipantCard participant={participant} onClick={() => setOpen(true)} rank={rank} />
         </div>
       </DialogTrigger>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="max-h-full max-w-3xl overflow-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold">
             #
