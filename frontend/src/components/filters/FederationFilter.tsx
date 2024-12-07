@@ -45,9 +45,11 @@ export function FederationFilter(props: FilterBaseProps<Filters['host_federation
       <div className="flex items-center gap-2">
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="w-full justify-start">
+            <Button variant="outline" className="w-full justify-start overflow-hidden">
               <Search className="size-4" />
-              <span>{federationName ?? 'Выберите федерацию...'}</span>
+              <span className="truncate">
+                {federationName ?? 'Выберите федерацию...'}
+              </span>
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-full p-0" align="start">
