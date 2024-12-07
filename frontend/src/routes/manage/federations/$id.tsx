@@ -1,9 +1,9 @@
-import type { SchemaFederationSchema, SchemaStatusEnum } from '@/api/types'
+import type { SchemaFederationSchema } from '@/api/types'
 import { $api } from '@/api'
 import { useMe } from '@/api/me.ts'
+import { EventStatusBadge } from '@/components/EventStatusBadge'
 import { AccrediteFederationDialog } from '@/components/federation/AccrediteDialog.tsx'
 import { RejectFederationDialog } from '@/components/federation/RejectDialog'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -30,15 +30,6 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import Loader from '~icons/lucide/loader'
-
-const statusLabels: Record<
-  SchemaStatusEnum,
-  { label: string, variant: 'default' | 'secondary' | 'destructive' }
-> = {
-  on_consideration: { label: 'На рассмотрении', variant: 'default' },
-  accredited: { label: 'Аккредитована', variant: 'secondary' },
-  rejected: { label: 'Отклонена', variant: 'destructive' },
-}
 
 const profileFormSchema = z.object({
   region: z.string().min(1, 'Введите название региона'),
@@ -196,9 +187,7 @@ function RouteComponent() {
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-medium">Статус:</span>
-                    <Badge variant={statusLabels[federation.status].variant}>
-                      {statusLabels[federation.status].label}
-                    </Badge>
+                    <EventStatusBadge status={federation.status} />
                   </div>
                   {federation.status_comment && (
                     <div className="flex flex-col gap-1.5">
