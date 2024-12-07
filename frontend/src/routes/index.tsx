@@ -89,7 +89,7 @@ function HeroSection({ onParticipantClick }: { onParticipantClick: () => void })
 function BackgroundEffects() {
   return (
     <div className="absolute inset-0">
-      <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-5 mix-blend-overlay" />
+      <div className="absolute inset-0 bg-center opacity-5 mix-blend-overlay" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
       <div className="absolute inset-0 animate-[pulse_8s_ease-in-out_infinite] bg-gradient-to-br from-purple-400/5 via-blue-400/5 to-indigo-400/5" />
     </div>
@@ -248,7 +248,7 @@ function RouteComponent() {
 
       {/* Statistics Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-purple-950 via-indigo-950 to-purple-950 py-12 sm:py-16 lg:py-24">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-5" />
+        <div className="absolute inset-0 bg-center opacity-5" />
         <div className="container relative mx-auto px-4">
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {[
