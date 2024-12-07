@@ -1,4 +1,4 @@
-import type { SchemaFeedback, SchemaFeedbackSchema } from '@/api/types'
+import type { SchemaFeedbackSchema } from '@/api/types'
 import { $api } from '@/api'
 import { useMe, useMyFederation } from '@/api/me'
 import { Button } from '@/components/ui/button'
@@ -13,12 +13,6 @@ import MessageSquare from '~icons/lucide/message-square'
 export const Route = createFileRoute('/manage/region/feedback')({
   component: FederationFeedbackPage,
 })
-
-// Extend the SchemaFeedback type with additional properties
-type FeedbackWithMeta = SchemaFeedback & {
-  created_at?: string
-  status?: 'new' | 'in_progress' | 'answered'
-}
 
 function FederationFeedbackPage() {
   const { toast } = useToast()
@@ -115,7 +109,7 @@ function FederationFeedbackPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4 sm:gap-6">
-            {feedbackList.map((feedback: FeedbackWithMeta) => (
+            {feedbackList.map(feedback => (
               <div
                 key={feedback.id}
                 className="relative rounded-lg border bg-card p-4 text-card-foreground shadow-sm transition-colors hover:bg-muted/50"
@@ -125,17 +119,6 @@ function FederationFeedbackPage() {
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div className="space-y-1">
                       <h3 className="font-semibold">{feedback.subject}</h3>
-                      {feedback.created_at && (
-                        <p className="text-sm text-muted-foreground">
-                          {new Date(feedback.created_at).toLocaleString('ru-RU', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </p>
-                      )}
                     </div>
                     {feedback.email && (
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -160,20 +143,9 @@ function FederationFeedbackPage() {
 
                   {/* Status indicator */}
                   <div className="flex items-center gap-2">
-                    <div className={`size-2 rounded-full ${
-                      feedback.status === 'answered'
-                        ? 'bg-green-500'
-                        : feedback.status === 'in_progress'
-                          ? 'bg-yellow-500'
-                          : 'bg-blue-500'
-                    }`}
-                    />
+                    <div className="size-2 rounded-full bg-blue-500" />
                     <span className="text-sm text-muted-foreground">
-                      {feedback.status === 'answered'
-                        ? 'Отвечено'
-                        : feedback.status === 'in_progress'
-                          ? 'В обработке'
-                          : 'Новый запрос'}
+                      Запрос отправлен
                     </span>
                   </div>
                 </div>
