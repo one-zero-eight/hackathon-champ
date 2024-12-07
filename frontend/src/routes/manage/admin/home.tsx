@@ -1,4 +1,5 @@
 import { $api } from '@/api'
+import { useMe } from '@/api/me.ts'
 import { QuickStatsCard } from '@/components/analytics/QuickStatsCard'
 import { EventCard } from '@/components/EventCard'
 import { Notifications } from '@/components/Notifications'
@@ -14,7 +15,8 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
 import { plainDatesForFilter } from '@/lib/utils'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { useEffect } from 'react'
 import { Temporal } from 'temporal-polyfill'
 import Award from '~icons/lucide/award'
 import Building from '~icons/lucide/building'
@@ -28,6 +30,18 @@ export const Route = createFileRoute('/manage/admin/home')({
 })
 
 function RouteComponent() {
+  const navigate = useNavigate()
+  const { data: me, isError: meError } = useMe()
+
+  useEffect(() => {
+    if (meError) {
+      navigate({ to: '/auth/login' })
+    }
+    else if (me && me.role !== 'admin') {
+      navigate({ to: me.federation ? '/manage/region/home' : '/' })
+    }
+  }, [me, meError, navigate])
+
   // Fetch all federations
   const { data: federations, isPending: federationsLoading } = $api.useQuery(
     'get',

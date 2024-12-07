@@ -26,7 +26,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -51,9 +51,17 @@ export const Route = createFileRoute('/manage/federations/$id')({
 })
 
 function RouteComponent() {
+  const navigate = useNavigate()
+  const { data: me, isError: meError } = useMe()
+
+  useEffect(() => {
+    if (meError) {
+      navigate({ to: '/auth/login' })
+    }
+  }, [meError, navigate])
+
   const { id: federationId } = Route.useParams()
   const [isLoading, setIsLoading] = useState(false)
-  const { data: me } = useMe()
   const queryClient = useQueryClient()
   const { data: federation, refetch } = $api.useQuery('get', '/federations/{id}', {
     params: { path: { id: federationId } },

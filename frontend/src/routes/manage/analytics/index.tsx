@@ -1,5 +1,6 @@
 import type { DateRange } from 'react-day-picker'
 import { $api } from '@/api'
+import { useMe } from '@/api/me.ts'
 import { AnalyticsFilters } from '@/components/analytics/AnalyticsFilters'
 import { QuickStatsCard } from '@/components/analytics/QuickStatsCard'
 import { TrendAnalysis } from '@/components/analytics/TrendAnalysis'
@@ -7,8 +8,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { eventTooltipFormatter, federationTooltipFormatter, getStatusText, pluralize } from '@/lib/utils'
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { useMemo, useState } from 'react'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Bar,
   CartesianGrid,
@@ -38,6 +39,23 @@ export const Route = createFileRoute('/manage/analytics/')({
 })
 
 function RouteComponent() {
+  const navigate = useNavigate()
+  const { data: me, isError: meError } = useMe()
+
+  useEffect(() => {
+    if (meError) {
+      navigate({ to: '/auth/login' })
+    }
+    else if (me && me.role !== 'admin') {
+      if (me.federation) {
+        navigate({ to: '/manage/analytics/$id', params: { id: me.federation } })
+      }
+      else {
+        navigate({ to: '/' })
+      }
+    }
+  }, [me, meError, navigate])
+
   const { data: federationsData, isLoading: federationsLoading } = $api.useQuery('get', '/federations/')
   const { data: eventsData, isLoading: eventsLoading } = $api.useQuery('get', '/events/')
 

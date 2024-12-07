@@ -15,8 +15,8 @@ import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '@/comp
 import { Input } from '@/components/ui/input.tsx'
 import { Separator } from '@/components/ui/separator.tsx'
 import { useQueryClient } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
 import Loader2 from '~icons/lucide/loader'
 
 export const Route = createFileRoute('/manage/email')({
@@ -24,7 +24,15 @@ export const Route = createFileRoute('/manage/email')({
 })
 
 function RouteComponent() {
-  const { data: me } = useMe()
+  const navigate = useNavigate()
+  const { data: me, isError: meError } = useMe()
+
+  useEffect(() => {
+    if (meError) {
+      navigate({ to: '/auth/login' })
+    }
+  }, [meError, navigate])
+
   const [email, setEmail] = useState('')
   const [verification_code, setVerification_code] = useState('')
 

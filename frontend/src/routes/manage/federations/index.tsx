@@ -1,5 +1,6 @@
 import type { SchemaFederation, SchemaStatusEnum } from '../../../api/types'
 import { $api, apiFetch } from '@/api'
+import { useMe } from '@/api/me.ts'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -17,7 +18,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -36,7 +36,7 @@ import {
 } from '@/components/ui/table'
 import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import Download from '~icons/lucide/download'
 import Loader2 from '~icons/lucide/loader'
 import Plus from '~icons/lucide/plus'
@@ -111,6 +111,15 @@ function CreateFederationDialog({ open, setOpen }: { open: boolean, setOpen: (op
 }
 
 function RouteComponent() {
+  const navigate = useNavigate()
+  const { data: me, isError: meError } = useMe()
+
+  useEffect(() => {
+    if (meError) {
+      navigate({ to: '/auth/login' })
+    }
+  }, [meError, navigate])
+
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null)
   const [selectedStatus, setSelectedStatus] = useState<SchemaStatusEnum | null>(null)

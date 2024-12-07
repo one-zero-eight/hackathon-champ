@@ -1,9 +1,9 @@
 import { $api } from '@/api'
-import { useMyFederation } from '@/api/me'
+import { useMe, useMyFederation } from '@/api/me'
 import { EventCard } from '@/components/EventCard'
 import { Skeleton } from '@/components/ui/skeleton'
-import { createFileRoute } from '@tanstack/react-router'
-import { useMemo, useState } from 'react'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useEffect, useMemo, useState } from 'react'
 import { type Event, EventsLayout, type EventSort, transformApiEvent } from './_layout'
 
 export const Route = createFileRoute('/manage/events/region')({
@@ -41,6 +41,18 @@ function sortEvents(events: Array<Event>, sort: EventSort) {
 }
 
 function RouteComponent() {
+  const navigate = useNavigate()
+  const { data: me, isError: meError } = useMe()
+
+  useEffect(() => {
+    if (meError) {
+      navigate({ to: '/auth/login' })
+    }
+    else if (me && !me.federation) {
+      navigate({ to: me.role === 'admin' ? '/manage/admin/home' : '/' })
+    }
+  }, [me, meError, navigate])
+
   const [sort, setSort] = useState<EventSort>({ type: 'date', direction: 'desc' })
   const { data: myFederation, isLoading: myFederationLoading } = useMyFederation()
   const { data: eventsData, isLoading: eventsLoading } = $api.useQuery(

@@ -1,5 +1,6 @@
-import type { SchemaCreateUser, SchemaViewUser } from '@/api/types'
+import type { SchemaViewUser } from '@/api/types'
 import { $api } from '@/api'
+import { useMe } from '@/api/me.ts'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -14,8 +15,8 @@ import { useToast } from '@/components/ui/use-toast'
 import { cn } from '@/lib/utils'
 
 import { useQueryClient } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
 import Check from '~icons/lucide/check'
 import Edit from '~icons/lucide/pencil'
 import Plus from '~icons/lucide/plus'
@@ -31,6 +32,18 @@ export const Route = createFileRoute('/manage/admin/users')({
 })
 
 function RouteComponent() {
+  const navigate = useNavigate()
+  const { data: me, isError: meError } = useMe()
+
+  useEffect(() => {
+    if (meError) {
+      navigate({ to: '/auth/login' })
+    }
+    else if (me && me.role !== 'admin') {
+      navigate({ to: me.federation ? '/manage/region/home' : '/' })
+    }
+  }, [me, meError, navigate])
+
   const [selectedUser, setSelectedUser] = useState<SchemaViewUser | null>(null)
   const [newPassword, setNewPassword] = useState('')
   const { toast } = useToast()

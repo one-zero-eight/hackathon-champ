@@ -17,8 +17,8 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
 import * as eventsLib from '@/lib/events'
 import { cn, plainDatesForFilter } from '@/lib/utils'
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { useMemo } from 'react'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { useEffect, useMemo } from 'react'
 import { Temporal } from 'temporal-polyfill'
 import Award from '~icons/lucide/award'
 import CalendarIcon from '~icons/lucide/calendar'
@@ -32,7 +32,17 @@ export const Route = createFileRoute('/manage/region/home')({
 })
 
 function RouteComponent() {
-  const { data: me, isPending: meLoading } = useMe()
+  const navigate = useNavigate()
+  const { data: me, isPending: meLoading, isError: meError } = useMe()
+
+  useEffect(() => {
+    if (meError) {
+      navigate({ to: '/auth/login' })
+    }
+    else if (me && !me.federation) {
+      navigate({ to: me.role === 'admin' ? '/manage/admin/home' : '/' })
+    }
+  }, [me, meError, navigate])
 
   const {
     data: upcomingEvents,

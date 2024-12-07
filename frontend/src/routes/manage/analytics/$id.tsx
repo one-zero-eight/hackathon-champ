@@ -10,8 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import * as eventsLib from '@/lib/events'
 import { eventTooltipFormatter, getStatusText } from '@/lib/utils'
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { useCallback, useMemo, useState } from 'react'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   Bar,
   CartesianGrid,
@@ -45,7 +45,15 @@ export const Route = createFileRoute('/manage/analytics/$id')({
 
 function RouteComponent() {
   const { id } = Route.useParams()
-  const { data: me } = useMe()
+  const navigate = useNavigate()
+  const { data: me, isError: meError } = useMe()
+
+  useEffect(() => {
+    if (meError) {
+      navigate({ to: '/auth/login' })
+    }
+  }, [meError, navigate])
+
   const isAdmin = me?.role === 'admin'
 
   const [dateRange, setDateRange] = useState<DateRange>()

@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import Loader2 from '~icons/lucide/loader-2'
 import MessageSquare from '~icons/lucide/message-square'
@@ -21,9 +21,20 @@ export const Route = createFileRoute('/manage/feedback/region')({
 })
 
 function FederationFeedbackPage() {
+  const navigate = useNavigate()
+  const { data: me, isError: meError } = useMe()
+
+  useEffect(() => {
+    if (meError) {
+      navigate({ to: '/auth/login' })
+    }
+    else if (me && !me.federation) {
+      navigate({ to: me.role === 'admin' ? '/manage/admin/home' : '/' })
+    }
+  }, [me, meError, navigate])
+
   const { toast } = useToast()
   const { data: federation } = useMyFederation()
-  const { data: me } = useMe()
   const { mutate: createFeedback } = $api.useMutation('post', '/feedback/')
 
   // Get feedback for current federation
