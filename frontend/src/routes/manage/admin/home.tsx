@@ -270,7 +270,7 @@ function RouteComponent() {
                               <CalendarIcon className="mx-auto mb-2 size-8 text-gray-400" />
                               <p>Нет предстоящих мероприятий</p>
                               <Button variant="link" asChild className="mt-2">
-                                <Link to="/calendar">
+                                <Link to="/manage/events/suggest">
                                   Создать мероприятие
                                 </Link>
                               </Button>

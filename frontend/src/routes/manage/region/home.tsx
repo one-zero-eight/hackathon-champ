@@ -265,8 +265,10 @@ function RouteComponent() {
                           <div className="text-center">
                             <CalendarIcon className="mx-auto mb-2 size-8 text-gray-400" />
                             <p>Нет предстоящих мероприятий</p>
-                            <Button variant="link" className="mt-2">
-                              Создать мероприятие
+                            <Button variant="link" className="mt-2" asChild>
+                              <Link to="/manage/events/suggest">
+                                Создать мероприятие
+                              </Link>
                             </Button>
                           </div>
                         </div>
