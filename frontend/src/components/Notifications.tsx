@@ -142,6 +142,7 @@ function NotificationItem({
   const navigate = useNavigate()
 
   const handleClick = () => {
+    onRead(notification.id)
     switch (notification.inner.notify_type) {
       case 'new_federation':
       case 'accredited_federation':
