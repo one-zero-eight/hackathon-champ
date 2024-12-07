@@ -53,19 +53,6 @@ export function EditEventForm({ eventId }: { eventId: string }) {
     },
   })
 
-  const onSendToConsideration = () => {
-    if (!event)
-      return
-
-    updateEvent({
-      params: { path: { id: event.id } },
-      body: {
-        ...event,
-        status: 'on_consideration',
-      },
-    })
-  }
-
   const handleGeneralInfoSubmit = async (data: EventGeneralInfoType) => {
     if (!event)
       return
@@ -138,7 +125,6 @@ export function EditEventForm({ eventId }: { eventId: string }) {
         <StatusCard
           event={event}
           me={me}
-          onSendToConsideration={onSendToConsideration}
         />
 
         <GeneralInfoCard
