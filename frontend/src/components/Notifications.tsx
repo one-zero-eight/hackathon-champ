@@ -173,9 +173,11 @@ function NotificationItem({
           className="group-hover:underline"
         />
         <span className="text-sm text-muted-foreground">
-          {labelForDateDiff(new Date(), new Date(notification.created_at))}
+          <span className="inline group-hover:hidden">{labelForDateDiff(new Date(), new Date(notification.created_at))}</span>
+          <span className="hidden group-hover:inline">{new Date(notification.created_at).toLocaleString()}</span>
         </span>
       </div>
+
       {!isRead && (
         <Button variant="outline" size="icon" onClick={() => onRead(notification.id)}>
           <Check />
