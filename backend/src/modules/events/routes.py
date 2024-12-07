@@ -12,6 +12,7 @@ from pydantic import BaseModel
 from starlette.responses import Response
 
 from src.api.dependencies import USER_AUTH
+from src.logging_ import logger
 from src.modules.events.ics_utils import get_base_calendar
 from src.modules.events.repository import events_repository
 from src.modules.events.schemas import DateFilter, Filters, Pagination, Sort
@@ -85,6 +86,7 @@ async def hint_results(file: UploadFile) -> Results:
         # replace empty strings with NaN
         df.replace("", None, inplace=True)
     else:
+        logger.warning(f"Cannot parse file with mime type {mime_type}")
         raise HTTPException(status_code=400, detail="Cannot parse file (unsupported format)")
 
     def is_place_column(column):
