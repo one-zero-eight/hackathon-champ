@@ -135,6 +135,39 @@ function RouteComponent() {
       return acc
     }, {} as Record<string, number>)
 
+    const parseRussianMonth = (monthYear: string) => {
+      const [month, year] = monthYear.split(' ')
+      const russianMonths = [
+        'январь',
+        'февраль',
+        'март',
+        'апрель',
+        'май',
+        'июнь',
+        'июль',
+        'август',
+        'сентябрь',
+        'октябрь',
+        'ноябрь',
+        'декабрь',
+      ]
+      const monthIndex = russianMonths.findIndex(m =>
+        month.toLowerCase().startsWith(m.toLowerCase()),
+      )
+      return new Date(Number.parseInt(year), monthIndex)
+    }
+
+    const monthlyData = Object.entries(eventsByMonth)
+      .sort(([a], [b]) => {
+        const dateA = parseRussianMonth(a)
+        const dateB = parseRussianMonth(b)
+        return dateA.getTime() - dateB.getTime()
+      })
+      .map(([name, value]) => ({
+        name,
+        value,
+      }))
+
     const avgEventsPerFederation = Object.keys(eventsByFederation).length > 0
       ? Object.values(eventsByFederation).reduce((a, b) => a + b, 0) / Object.keys(eventsByFederation).length
       : 0
@@ -146,17 +179,6 @@ function RouteComponent() {
 
     const districtData = Object.entries(federationsByDistrict)
       .sort(([, a], [, b]) => b - a)
-      .map(([name, value]) => ({
-        name,
-        value,
-      }))
-
-    const monthlyData = Object.entries(eventsByMonth)
-      .sort((a, b) => {
-        const dateA = new Date(a[0].split(' ')[0])
-        const dateB = new Date(b[0].split(' ')[0])
-        return dateA.getTime() - dateB.getTime()
-      })
       .map(([name, value]) => ({
         name,
         value,
