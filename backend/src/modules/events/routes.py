@@ -108,7 +108,7 @@ async def hint_results(file: UploadFile) -> Results:
             team: str = row[team_column]  # one-zero-eight (Булгаков, Авхадеев, Бельков, Дерябкин, Полин)
             member_sub = re.findall(r"\((.*?)\)", team)
             if member_sub:
-                team = team.replace(member_sub[-1], "")
+                team = team.replace(member_sub[-1], "").replace("(", "").replace(")", "").strip()
                 print(team, member_sub)
                 members = member_sub[-1].replace("(", "").replace(")", "").split(",")
                 members = [m.strip() for m in members]
