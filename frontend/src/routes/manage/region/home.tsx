@@ -1,3 +1,4 @@
+import type { components } from '@/api/types'
 import { $api } from '@/api'
 import { useMe } from '@/api/me'
 import { QuickStatsCard } from '@/components/analytics/QuickStatsCard'
@@ -22,6 +23,7 @@ import { Temporal } from 'temporal-polyfill'
 import Award from '~icons/lucide/award'
 import CalendarIcon from '~icons/lucide/calendar'
 import ChevronRight from '~icons/lucide/chevron-right'
+import FileText from '~icons/lucide/file-text'
 import Plus from '~icons/lucide/plus'
 import Users from '~icons/lucide/users'
 
@@ -74,6 +76,36 @@ function RouteComponent() {
     { params: { path: { id: me?.federation ?? '' } } },
     { enabled: !!me?.federation },
   )
+  const { data: federationProfile } = $api.useQuery(
+    'get',
+    '/federations/{id}',
+    { params: { path: { id: me?.federation ?? '' } } },
+    { enabled: !!me?.federation },
+  )
+
+  const profileCompletionPercentage = useMemo(() => {
+    if (!federationProfile)
+      return 0
+
+    const requiredFields = [
+      'description',
+      'head',
+      'email',
+      'phone',
+      'site',
+      'address',
+      'logo',
+      'telegram',
+    ] as const
+
+    type FederationField = keyof components['schemas']['Federation']
+    const filledFields = requiredFields.filter((field) => {
+      const value = federationProfile[field as FederationField]
+      return value != null && value !== ''
+    })
+
+    return Math.round((filledFields.length / requiredFields.length) * 100)
+  }, [federationProfile])
 
   const upcomingEventsLoading = meLoading || upcomingEventsLoading_
 
@@ -128,6 +160,12 @@ function RouteComponent() {
             secondaryValue={federationStats?.teams_for_last_month ?? null}
             secondaryText="за последний месяц"
             color="purple"
+          />
+          <QuickStatsCard
+            title="Заполненность профиля"
+            icon={FileText}
+            value={`${profileCompletionPercentage}%`}
+            color="green"
           />
         </div>
 
