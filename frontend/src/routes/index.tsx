@@ -375,45 +375,48 @@ function RouteComponent() {
                 <span className="text-lg font-semibold text-white">ФСП Линк</span>
               </div>
               <p className="text-sm">
-                Единая платформа для организации и проведения соревнований по спортивному программированию
+                Инновационная платформа для организации соревнований по спортивному программированию. Объединяем регионы, развиваем таланты.
               </p>
             </div>
 
-            {/* Quick Links */}
+            {/* Navigation Links */}
             <div>
               <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">
-                Быстрые ссылки
+                Навигация
+              </h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link to="/search" className="text-sm hover:text-white">Поиск соревнований</Link>
+                </li>
+                <li>
+                  <Link to="/calendar" className="text-sm hover:text-white">Календарь</Link>
+                </li>
+                <li>
+                  <Link to="/disciplines" className="text-sm hover:text-white">Дисциплины</Link>
+                </li>
+                <li>
+                  <Link to="/feedback" className="text-sm hover:text-white">Обратная связь</Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Information */}
+            <div>
+              <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">
+                Информация
               </h3>
               <ul className="space-y-2">
                 <li>
                   <Link to="/about" className="text-sm hover:text-white">О платформе</Link>
                 </li>
                 <li>
-                  <a href="#" className="text-sm hover:text-white">Соревнования</a>
+                  <Link to="/federations" className="text-sm hover:text-white">Федерации</Link>
                 </li>
                 <li>
-                  <a href="#" className="text-sm hover:text-white">Регистрация</a>
+                  <Link to="/participants" className="text-sm hover:text-white">Участники</Link>
                 </li>
                 <li>
-                  <a href="#" className="text-sm hover:text-white">Помощь</a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Resources */}
-            <div>
-              <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">
-                Ресурсы
-              </h3>
-              <ul className="space-y-2">
-                <li>
-                  <a href="#" className="text-sm hover:text-white">Документация</a>
-                </li>
-                <li>
-                  <a href="#" className="text-sm hover:text-white">Правила</a>
-                </li>
-                <li>
-                  <a href="#" className="text-sm hover:text-white">FAQ</a>
+                  <Link to="/auth/login" className="text-sm hover:text-white">Вход в систему</Link>
                 </li>
               </ul>
             </div>
@@ -421,7 +424,7 @@ function RouteComponent() {
             {/* Contact */}
             <div>
               <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">
-                Контакты
+                Связаться с нами
               </h3>
               <ul className="space-y-2">
                 <li>
@@ -431,7 +434,12 @@ function RouteComponent() {
                 </li>
                 <li>
                   <a href="https://t.me/fsplink" className="text-sm hover:text-white">
-                    Telegram
+                    Telegram-канал
+                  </a>
+                </li>
+                <li>
+                  <a href="https://vk.com/fsplink" className="text-sm hover:text-white">
+                    Группа ВКонтакте
                   </a>
                 </li>
               </ul>
@@ -442,11 +450,15 @@ function RouteComponent() {
           <div className="mt-8 border-t border-gray-800 pt-6 sm:mt-12 sm:pt-8">
             <div className="flex flex-col items-center justify-between space-y-4 sm:flex-row sm:space-y-0">
               <p className="text-center text-xs sm:text-left">
-                © 2024 ФСП Линк. Все права защищены.
+                ©
+                {' '}
+                {new Date().getFullYear()}
+                {' '}
+                ФСП Линк. Все права защищены.
               </p>
               <div className="flex flex-col space-y-2 text-center sm:flex-row sm:space-x-6 sm:space-y-0 sm:text-left">
                 <Link to="/terms" className="text-xs hover:text-white">
-                  Условия использования
+                  Пользовательское соглашение
                 </Link>
                 <Link to="/privacy" className="text-xs hover:text-white">
                   Политика конфиденциальности
