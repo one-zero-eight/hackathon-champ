@@ -36,6 +36,7 @@ interface AnalyticsFiltersProps {
   selectedDistricts: string[]
   onDistrictsChange: (districts: string[]) => void
   onExport: () => void
+  showDistrictsFilter?: boolean
 }
 
 export function AnalyticsFilters({
@@ -45,12 +46,15 @@ export function AnalyticsFilters({
   selectedDistricts,
   onDistrictsChange,
   onExport,
+  showDistrictsFilter = true,
 }: AnalyticsFiltersProps) {
-  const hasFilters = dateRange || selectedDistricts.length > 0
+  const hasFilters = dateRange || (showDistrictsFilter && selectedDistricts.length > 0)
 
   const clearFilters = () => {
     onDateRangeChange(undefined)
-    onDistrictsChange([])
+    if (showDistrictsFilter) {
+      onDistrictsChange([])
+    }
   }
 
   const toggleDistrict = (district: string) => {
@@ -89,7 +93,7 @@ export function AnalyticsFilters({
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className={cn('grid gap-4', showDistrictsFilter ? 'sm:grid-cols-2' : 'sm:grid-cols-1')}>
             <div className="space-y-2">
               <span className="text-sm font-medium">Период</span>
               <DateRangePicker
@@ -97,50 +101,52 @@ export function AnalyticsFilters({
                 onChange={onDateRangeChange}
               />
             </div>
-            <div className="space-y-2">
-              <span className="text-sm font-medium">Федеральные округа</span>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    className="w-full justify-between"
-                  >
-                    {selectedDistricts.length === 0
-                      ? 'Выберите округа'
-                      : `Выбрано: ${selectedDistricts.length}`}
-                    <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-0">
-                  <Command>
-                    <CommandInput placeholder="Поиск округа..." />
-                    <CommandList>
-                      <CommandEmpty>Ничего не найдено.</CommandEmpty>
-                      <CommandGroup>
-                        {availableDistricts.map(district => (
-                          <CommandItem
-                            key={district}
-                            value={district}
-                            onSelect={() => toggleDistrict(district)}
-                          >
-                            <Check
-                              className={cn(
-                                'mr-2 size-4',
-                                selectedDistricts.includes(district)
-                                  ? 'opacity-100'
-                                  : 'opacity-0',
-                              )}
-                            />
-                            {district}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            </div>
+            {showDistrictsFilter && (
+              <div className="space-y-2">
+                <span className="text-sm font-medium">Федеральные округа</span>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      className="w-full justify-between"
+                    >
+                      {selectedDistricts.length === 0
+                        ? 'Выберите округа'
+                        : `Выбрано: ${selectedDistricts.length}`}
+                      <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0">
+                    <Command>
+                      <CommandInput placeholder="Поиск округа..." />
+                      <CommandList>
+                        <CommandEmpty>Ничего не найдено.</CommandEmpty>
+                        <CommandGroup>
+                          {availableDistricts.map(district => (
+                            <CommandItem
+                              key={district}
+                              value={district}
+                              onSelect={() => toggleDistrict(district)}
+                            >
+                              <Check
+                                className={cn(
+                                  'mr-2 size-4',
+                                  selectedDistricts.includes(district)
+                                    ? 'opacity-100'
+                                    : 'opacity-0',
+                                )}
+                              />
+                              {district}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              </div>
+            )}
           </div>
 
           {hasFilters && (
@@ -162,7 +168,7 @@ export function AnalyticsFilters({
                   </Button>
                 </Badge>
               )}
-              {selectedDistricts.map(district => (
+              {showDistrictsFilter && selectedDistricts.map(district => (
                 <Badge key={district} variant="secondary" className="gap-2">
                   <span>{district}</span>
                   <Button

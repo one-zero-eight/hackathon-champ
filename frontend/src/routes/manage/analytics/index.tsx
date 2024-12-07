@@ -38,9 +38,20 @@ function formatStatus(status: string) {
       return 'На рассмотрении'
     case 'rejected':
       return 'Отклонена'
+    case 'completed':
+      return 'Завершено'
+    case 'in_progress':
+      return 'В процессе'
+    case 'draft':
+      return 'Черновик'
     default:
       return status
   }
+}
+
+// Helper function to format month
+function formatMonth(date: string) {
+  return new Date(date).toLocaleString('ru', { month: 'long', year: 'numeric' })
 }
 
 export const Route = createFileRoute('/manage/analytics/')({
@@ -209,7 +220,7 @@ function RouteComponent() {
     return Object.entries(monthlyTrend)
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([name, value], index, array) => ({
-        name,
+        name: formatMonth(name),
         value,
         trend: index > 0 ? value - array[index - 1][1] : 0,
       }))
@@ -402,12 +413,17 @@ function RouteComponent() {
                       outerRadius={80}
                       paddingAngle={5}
                       dataKey="value"
+                      nameKey="name"
+                      label={entry => entry.name}
                     >
                       {stats.statusData.map((_, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip
+                      formatter={(value: number) => [`${value} федераций`, 'Количество']}
+                      labelFormatter={label => `${label}`}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
@@ -440,10 +456,26 @@ function RouteComponent() {
                 <ResponsiveContainer width="100%" height="100%">
                   <RechartsBarChart data={stats.monthlyData}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="value" fill="#0ea5e9" />
+                    <XAxis
+                      dataKey="name"
+                      angle={-45}
+                      textAnchor="end"
+                      height={80}
+                      tick={{ fontSize: 12 }}
+                    />
+                    <YAxis
+                      label={{
+                        value: 'Количество мероприятий',
+                        angle: -90,
+                        position: 'insideLeft',
+                        style: { textAnchor: 'middle' },
+                      }}
+                    />
+                    <Tooltip
+                      formatter={(value: number) => [`${value} мероприятий`, 'Количество']}
+                      labelFormatter={label => `${label}`}
+                    />
+                    <Bar dataKey="value" fill="#0ea5e9" name="Мероприятия" />
                   </RechartsBarChart>
                 </ResponsiveContainer>
               </div>
@@ -456,12 +488,10 @@ function RouteComponent() {
           <TrendAnalysis
             data={trendData}
             title="Тренд мероприятий"
+            valueLabel="Количество мероприятий"
+            trendLabel="Изменение"
           />
-          {/* ... existing pie chart ... */}
-        </div>
 
-        {/* Detailed Stats */}
-        <div className="grid gap-4 md:grid-cols-2">
           <Card>
             <CardHeader>
               <CardTitle>По федеральным округам</CardTitle>
@@ -473,7 +503,11 @@ function RouteComponent() {
                     <div className="flex-1">
                       <div className="flex justify-between">
                         <span className="font-medium">{name}</span>
-                        <span>{value}</span>
+                        <span>
+                          {value}
+                          {' '}
+                          федераций
+                        </span>
                       </div>
                       <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-muted">
                         <div
@@ -489,7 +523,10 @@ function RouteComponent() {
               </div>
             </CardContent>
           </Card>
+        </div>
 
+        {/* Detailed Stats */}
+        <div className="grid gap-4 md:grid-cols-2">
           <Card>
             <CardHeader>
               <CardTitle>Топ федерация</CardTitle>
