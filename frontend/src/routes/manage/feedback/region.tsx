@@ -2,7 +2,13 @@ import type { SchemaFeedbackSchema } from '@/api/types'
 import { $api } from '@/api'
 import { useMe, useMyFederation } from '@/api/me'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
 import { createFileRoute } from '@tanstack/react-router'
@@ -10,7 +16,7 @@ import { useEffect, useState } from 'react'
 import Loader2 from '~icons/lucide/loader-2'
 import MessageSquare from '~icons/lucide/message-square'
 
-export const Route = createFileRoute('/manage/region/feedback')({
+export const Route = createFileRoute('/manage/feedback/region')({
   component: FederationFeedbackPage,
 })
 
@@ -55,28 +61,31 @@ function FederationFeedbackPage() {
     setIsSubmitting(true)
 
     try {
-      createFeedback({
-        body: {
-          ...request,
-          federation: federation?.id ?? null,
-          email: request.email || me?.email || null,
-        },
-      }, {
-        onSuccess: () => {
-          setSubmitSuccess(true)
-          setRequest({
-            subject: '',
-            text: '',
-            email: me?.email ?? null,
+      createFeedback(
+        {
+          body: {
+            ...request,
             federation: federation?.id ?? null,
-          })
-
-          toast({
-            title: 'Успешно отправлено',
-            description: 'Ваш запрос был отправлен',
-          })
+            email: request.email || me?.email || null,
+          },
         },
-      })
+        {
+          onSuccess: () => {
+            setSubmitSuccess(true)
+            setRequest({
+              subject: '',
+              text: '',
+              email: me?.email ?? null,
+              federation: federation?.id ?? null,
+            })
+
+            toast({
+              title: 'Успешно отправлено',
+              description: 'Ваш запрос был отправлен',
+            })
+          },
+        },
+      )
     }
     catch {
       toast({
@@ -93,7 +102,9 @@ function FederationFeedbackPage() {
   return (
     <div className="container mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
       <div className="mb-8 space-y-2">
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Запросы федерации</h1>
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+          Запросы федерации
+        </h1>
         <p className="text-sm text-muted-foreground sm:text-base">
           Просмотр и отправка запросов в общероссийскую федерацию
         </p>
@@ -138,7 +149,9 @@ function FederationFeedbackPage() {
 
                   {/* Message content */}
                   <div className="rounded-md bg-muted/50 p-3">
-                    <p className="whitespace-pre-wrap text-sm">{feedback.text}</p>
+                    <p className="whitespace-pre-wrap text-sm">
+                      {feedback.text}
+                    </p>
                   </div>
 
                   {/* Status indicator */}
@@ -161,7 +174,9 @@ function FederationFeedbackPage() {
               <CardContent className="grid gap-4 pt-6 sm:gap-6">
                 <div className="flex items-center gap-2 text-green-600">
                   <MessageSquare className="size-5" />
-                  <span>Спасибо за ваш запрос! Мы ответим вам в ближайшее время.</span>
+                  <span>
+                    Спасибо за ваш запрос! Мы ответим вам в ближайшее время.
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -186,7 +201,11 @@ function FederationFeedbackPage() {
                         required
                         maxLength={100}
                         value={request.subject}
-                        onChange={e => setRequest(prev => ({ ...prev, subject: e.target.value }))}
+                        onChange={e =>
+                          setRequest(prev => ({
+                            ...prev,
+                            subject: e.target.value,
+                          }))}
                         className="w-full"
                       />
                     </div>
@@ -199,10 +218,13 @@ function FederationFeedbackPage() {
                         type="email"
                         id="email"
                         value={request.email || ''}
-                        onChange={e => setRequest(prev => ({
-                          ...prev,
-                          email: e.target.value ? e.target.value.trim() : me?.email ?? null,
-                        }))}
+                        onChange={e =>
+                          setRequest(prev => ({
+                            ...prev,
+                            email: e.target.value
+                              ? e.target.value.trim()
+                              : (me?.email ?? null),
+                          }))}
                         pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
                         placeholder={me?.email ?? ''}
                         className="w-full"
@@ -222,7 +244,8 @@ function FederationFeedbackPage() {
                       required
                       maxLength={1000}
                       value={request.text}
-                      onChange={e => setRequest(prev => ({ ...prev, text: e.target.value }))}
+                      onChange={e =>
+                        setRequest(prev => ({ ...prev, text: e.target.value }))}
                       rows={4}
                       className="min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     />

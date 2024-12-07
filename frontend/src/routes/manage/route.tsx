@@ -74,6 +74,9 @@ function AdminNav() {
         <NavLink to="/manage/analytics" icon={BarChart}>
           Аналитика
         </NavLink>
+        <NavLink to="/manage/feedback/all" icon={MessageSquare}>
+          Запросы
+        </NavLink>
       </nav>
     </>
   )
@@ -109,7 +112,7 @@ function FederationNav() {
         >
           Аналитика
         </NavLink>
-        <NavLink to="/manage/region/feedback" icon={MessageSquare}>
+        <NavLink to="/manage/feedback/region" icon={MessageSquare}>
           Связь с федерацией
         </NavLink>
         <NavLink

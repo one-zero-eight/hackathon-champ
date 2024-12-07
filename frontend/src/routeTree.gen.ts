@@ -33,7 +33,8 @@ import { Route as AuthLoginImport } from './routes/auth/login'
 import { Route as ManageFederationsIndexImport } from './routes/manage/federations/index'
 import { Route as ManageAnalyticsIndexImport } from './routes/manage/analytics/index'
 import { Route as ManageRegionHomeImport } from './routes/manage/region/home'
-import { Route as ManageRegionFeedbackImport } from './routes/manage/region/feedback'
+import { Route as ManageFeedbackRegionImport } from './routes/manage/feedback/region'
+import { Route as ManageFeedbackAllImport } from './routes/manage/feedback/all'
 import { Route as ManageFederationsIdImport } from './routes/manage/federations/$id'
 import { Route as ManageEventsSuggestImport } from './routes/manage/events/suggest'
 import { Route as ManageEventsRegionImport } from './routes/manage/events/region'
@@ -175,9 +176,15 @@ const ManageRegionHomeRoute = ManageRegionHomeImport.update({
   getParentRoute: () => ManageRouteRoute,
 } as any)
 
-const ManageRegionFeedbackRoute = ManageRegionFeedbackImport.update({
-  id: '/region/feedback',
-  path: '/region/feedback',
+const ManageFeedbackRegionRoute = ManageFeedbackRegionImport.update({
+  id: '/feedback/region',
+  path: '/feedback/region',
+  getParentRoute: () => ManageRouteRoute,
+} as any)
+
+const ManageFeedbackAllRoute = ManageFeedbackAllImport.update({
+  id: '/feedback/all',
+  path: '/feedback/all',
   getParentRoute: () => ManageRouteRoute,
 } as any)
 
@@ -414,11 +421,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageFederationsIdImport
       parentRoute: typeof ManageRouteImport
     }
-    '/manage/region/feedback': {
-      id: '/manage/region/feedback'
-      path: '/region/feedback'
-      fullPath: '/manage/region/feedback'
-      preLoaderRoute: typeof ManageRegionFeedbackImport
+    '/manage/feedback/all': {
+      id: '/manage/feedback/all'
+      path: '/feedback/all'
+      fullPath: '/manage/feedback/all'
+      preLoaderRoute: typeof ManageFeedbackAllImport
+      parentRoute: typeof ManageRouteImport
+    }
+    '/manage/feedback/region': {
+      id: '/manage/feedback/region'
+      path: '/feedback/region'
+      fullPath: '/manage/feedback/region'
+      preLoaderRoute: typeof ManageFeedbackRegionImport
       parentRoute: typeof ManageRouteImport
     }
     '/manage/region/home': {
@@ -473,7 +487,8 @@ interface ManageRouteRouteChildren {
   ManageEventsIdRoute: typeof ManageEventsIdRoute
   ManageEventsRoute: typeof ManageEventsRouteWithChildren
   ManageFederationsIdRoute: typeof ManageFederationsIdRoute
-  ManageRegionFeedbackRoute: typeof ManageRegionFeedbackRoute
+  ManageFeedbackAllRoute: typeof ManageFeedbackAllRoute
+  ManageFeedbackRegionRoute: typeof ManageFeedbackRegionRoute
   ManageRegionHomeRoute: typeof ManageRegionHomeRoute
   ManageAnalyticsIndexRoute: typeof ManageAnalyticsIndexRoute
   ManageFederationsIndexRoute: typeof ManageFederationsIndexRoute
@@ -487,7 +502,8 @@ const ManageRouteRouteChildren: ManageRouteRouteChildren = {
   ManageEventsIdRoute: ManageEventsIdRoute,
   ManageEventsRoute: ManageEventsRouteWithChildren,
   ManageFederationsIdRoute: ManageFederationsIdRoute,
-  ManageRegionFeedbackRoute: ManageRegionFeedbackRoute,
+  ManageFeedbackAllRoute: ManageFeedbackAllRoute,
+  ManageFeedbackRegionRoute: ManageFeedbackRegionRoute,
   ManageRegionHomeRoute: ManageRegionHomeRoute,
   ManageAnalyticsIndexRoute: ManageAnalyticsIndexRoute,
   ManageFederationsIndexRoute: ManageFederationsIndexRoute,
@@ -523,7 +539,8 @@ export interface FileRoutesByFullPath {
   '/manage/events/region': typeof ManageEventsRegionRoute
   '/manage/events/suggest': typeof ManageEventsSuggestRoute
   '/manage/federations/$id': typeof ManageFederationsIdRoute
-  '/manage/region/feedback': typeof ManageRegionFeedbackRoute
+  '/manage/feedback/all': typeof ManageFeedbackAllRoute
+  '/manage/feedback/region': typeof ManageFeedbackRegionRoute
   '/manage/region/home': typeof ManageRegionHomeRoute
   '/manage/analytics': typeof ManageAnalyticsIndexRoute
   '/manage/federations': typeof ManageFederationsIndexRoute
@@ -554,7 +571,8 @@ export interface FileRoutesByTo {
   '/manage/events/region': typeof ManageEventsRegionRoute
   '/manage/events/suggest': typeof ManageEventsSuggestRoute
   '/manage/federations/$id': typeof ManageFederationsIdRoute
-  '/manage/region/feedback': typeof ManageRegionFeedbackRoute
+  '/manage/feedback/all': typeof ManageFeedbackAllRoute
+  '/manage/feedback/region': typeof ManageFeedbackRegionRoute
   '/manage/region/home': typeof ManageRegionHomeRoute
   '/manage/analytics': typeof ManageAnalyticsIndexRoute
   '/manage/federations': typeof ManageFederationsIndexRoute
@@ -588,7 +606,8 @@ export interface FileRoutesById {
   '/manage/events/region': typeof ManageEventsRegionRoute
   '/manage/events/suggest': typeof ManageEventsSuggestRoute
   '/manage/federations/$id': typeof ManageFederationsIdRoute
-  '/manage/region/feedback': typeof ManageRegionFeedbackRoute
+  '/manage/feedback/all': typeof ManageFeedbackAllRoute
+  '/manage/feedback/region': typeof ManageFeedbackRegionRoute
   '/manage/region/home': typeof ManageRegionHomeRoute
   '/manage/analytics/': typeof ManageAnalyticsIndexRoute
   '/manage/federations/': typeof ManageFederationsIndexRoute
@@ -622,7 +641,8 @@ export interface FileRouteTypes {
     | '/manage/events/region'
     | '/manage/events/suggest'
     | '/manage/federations/$id'
-    | '/manage/region/feedback'
+    | '/manage/feedback/all'
+    | '/manage/feedback/region'
     | '/manage/region/home'
     | '/manage/analytics'
     | '/manage/federations'
@@ -652,7 +672,8 @@ export interface FileRouteTypes {
     | '/manage/events/region'
     | '/manage/events/suggest'
     | '/manage/federations/$id'
-    | '/manage/region/feedback'
+    | '/manage/feedback/all'
+    | '/manage/feedback/region'
     | '/manage/region/home'
     | '/manage/analytics'
     | '/manage/federations'
@@ -684,7 +705,8 @@ export interface FileRouteTypes {
     | '/manage/events/region'
     | '/manage/events/suggest'
     | '/manage/federations/$id'
-    | '/manage/region/feedback'
+    | '/manage/feedback/all'
+    | '/manage/feedback/region'
     | '/manage/region/home'
     | '/manage/analytics/'
     | '/manage/federations/'
@@ -767,7 +789,8 @@ export const routeTree = rootRoute
         "/manage/events/$id",
         "/manage/events",
         "/manage/federations/$id",
-        "/manage/region/feedback",
+        "/manage/feedback/all",
+        "/manage/feedback/region",
         "/manage/region/home",
         "/manage/analytics/",
         "/manage/federations/"
@@ -862,8 +885,12 @@ export const routeTree = rootRoute
       "filePath": "manage/federations/$id.tsx",
       "parent": "/manage"
     },
-    "/manage/region/feedback": {
-      "filePath": "manage/region/feedback.tsx",
+    "/manage/feedback/all": {
+      "filePath": "manage/feedback/all.tsx",
+      "parent": "/manage"
+    },
+    "/manage/feedback/region": {
+      "filePath": "manage/feedback/region.tsx",
       "parent": "/manage"
     },
     "/manage/region/home": {

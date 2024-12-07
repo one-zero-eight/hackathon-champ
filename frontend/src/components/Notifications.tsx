@@ -151,9 +151,9 @@ function NotificationItem({
         })
         break
       case 'new_feedback':
-        // TODO: implement
-        // eslint-disable-next-line no-alert
-        alert('TODO')
+        navigate({
+          to: '/manage/feedback/all',
+        })
         break
     }
   }
