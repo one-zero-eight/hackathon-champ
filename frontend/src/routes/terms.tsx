@@ -7,7 +7,7 @@ export const Route = createFileRoute('/terms')({
 
 function TermsOfUse() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white to-gray-50/50 px-4 pt-[calc(var(--header-height)+2rem)] pb-16">
+    <main className="min-h-screen bg-gradient-to-b from-white to-gray-50/50 px-4 pb-16 pt-[calc(var(--header-height)+2rem)]">
       <div className="mx-auto max-w-4xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -26,7 +26,9 @@ function TermsOfUse() {
                   <span className="absolute inline-flex size-full animate-ping rounded-full bg-purple-400 opacity-75"></span>
                   <span className="relative inline-flex size-2 rounded-full bg-purple-500"></span>
                 </span>
-                Последнее обновление: {new Date().toLocaleDateString('ru-RU')}
+                Последнее обновление:
+                {' '}
+                {new Date().toLocaleDateString('ru-RU')}
               </span>
             </div>
           </div>
@@ -139,4 +141,4 @@ function TermsOfUse() {
       </div>
     </main>
   )
-} 
+}

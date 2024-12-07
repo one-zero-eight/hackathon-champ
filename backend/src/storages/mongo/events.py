@@ -65,7 +65,7 @@ class TeamPlace(BaseSchema):
     "Название команды"
     members: list[str]
     "Состав команды"
-    score: int | None = None
+    score: float | None = None
     "Очки"
 
 
@@ -74,7 +74,7 @@ class SoloPlace(BaseSchema):
     "Место (1, 2, 3)"
     participant: str
     "ФИО участника"
-    score: int | None = None
+    score: float | None = None
     "Очки"
 
 

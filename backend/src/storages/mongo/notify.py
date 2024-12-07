@@ -56,7 +56,7 @@ class AccreditedFederation(BaseSchema):
     "ID федерации"
     status: StatusEnum
     "Статус федерации"
-    status_comment: str | None
+    status_comment: str | None = None
     "Комментарий к статусу"
 
 
@@ -71,7 +71,7 @@ class AccreditedEvent(BaseSchema):
     "ID события"
     status: EventStatusEnum
     "Статус события"
-    status_comment: str | None
+    status_comment: str | None = None
     "Комментарий к статусу"
 
 
