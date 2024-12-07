@@ -33,6 +33,7 @@ export const Route = createFileRoute('/search')({
 
 const getInitialFilters: () => Filters = () => ({
   date: plainDatesForFilter(Temporal.Now.plainDateISO(), null),
+  accreditation: true,
 })
 
 const SORT_PRESETS = {
@@ -119,7 +120,10 @@ function RouteComponent() {
     '/events/search',
     {
       body: {
-        filters: normalizeFilters(debouncedFilters || {}),
+        filters: {
+          ...normalizeFilters(debouncedFilters || {}),
+          accreditation: true,
+        },
         pagination: {
           page_no: 1,
           page_size: 100,
@@ -190,9 +194,9 @@ function RouteComponent() {
               )
             : data?.events.length
               ? (
-                  data.events.map(event => (
-                    <EventCard key={event.id} event={event} />
-                  ))
+                  data.events
+                    .filter(event => event.status === 'accredited')
+                    .map(event => <EventCard key={event.id} event={event} />)
                 )
               : (
                   <div className="flex h-[200px] w-full items-center justify-center">

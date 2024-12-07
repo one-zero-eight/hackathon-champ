@@ -486,9 +486,12 @@ function EventSelection({
   const events = useMemo(() => {
     if (!data?.events)
       return []
+
+    const accreditedEvents = data.events.filter(event => event.status === 'accredited')
+
     return shuffle
-      ? data.events.slice().sort(() => Math.random() - 0.5)
-      : data.events
+      ? accreditedEvents.slice().sort(() => Math.random() - 0.5)
+      : accreditedEvents
   }, [data, shuffle])
 
   return (
