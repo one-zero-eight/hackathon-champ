@@ -1,19 +1,48 @@
 import { $api } from '@/api'
 import { useMyFederation } from '@/api/me'
 import { EventCard } from '@/components/EventCard'
-import { Button } from '@/components/ui/button.tsx'
 import { Skeleton } from '@/components/ui/skeleton'
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { useMemo } from 'react'
-import Plus from '~icons/lucide/plus'
+import { createFileRoute } from '@tanstack/react-router'
+import { useMemo, useState } from 'react'
+import { type Event, EventsLayout, type EventSort, transformApiEvent } from './_layout'
 
 export const Route = createFileRoute('/manage/events/region')({
   component: RouteComponent,
 })
 
+function sortEvents(events: Array<Event>, sort: EventSort) {
+  return [...events].sort((a, b) => {
+    let aLocation = ''
+    let bLocation = ''
+    let result = 0
+
+    switch (sort.type) {
+      case 'date':
+        result = new Date(a.start_date || '').getTime() - new Date(b.start_date || '').getTime()
+        break
+      case 'name':
+        result = (a.title || '').localeCompare(b.title || '')
+        break
+      case 'status':
+        result = (a.status || '').localeCompare(b.status || '')
+        break
+      case 'participants':
+        result = (a.participant_count || 0) - (b.participant_count || 0)
+        break
+      case 'location':
+        aLocation = a.location[0]?.city || a.location[0]?.region || a.location[0]?.country || ''
+        bLocation = b.location[0]?.city || b.location[0]?.region || b.location[0]?.country || ''
+        result = aLocation.localeCompare(bLocation)
+        break
+    }
+
+    return sort.direction === 'asc' ? result : -result
+  })
+}
+
 function RouteComponent() {
-  const { data: myFederation, isLoading: myFederationLoading }
-    = useMyFederation()
+  const [sort, setSort] = useState<EventSort>({ type: 'date', direction: 'desc' })
+  const { data: myFederation, isLoading: myFederationLoading } = useMyFederation()
   const { data: eventsData, isLoading: eventsLoading } = $api.useQuery(
     'get',
     '/events/',
@@ -21,40 +50,28 @@ function RouteComponent() {
 
   const someLoading = myFederationLoading || eventsLoading
 
-  const allEvents = useMemo(() => eventsData ?? [], [eventsData])
+  const allEvents = useMemo(
+    () => (eventsData ?? []).map(event => transformApiEvent(event)),
+    [eventsData],
+  )
   const myFederationEvents = useMemo(
     () =>
       myFederation
-        ? allEvents.filter(event => event.host_federation === myFederation.id)
+        ? sortEvents(
+          allEvents.filter(event => event.host_federation === myFederation.id),
+          sort,
+        )
         : [],
-    [allEvents, myFederation],
+    [allEvents, myFederation, sort],
   )
 
-  return (
-    <div className="p-6">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">{myFederation?.region}</h1>
-          <p className="text-gray-500">
-            Мероприятия вашей региональной федерации
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button asChild>
-            <Link to="/manage/events/suggest">
-              <Plus className="mr-2 size-4" />
-              Новое мероприятие
-            </Link>
-          </Button>
-        </div>
-      </div>
-      <div className="flex flex-col gap-4">
-        {someLoading ? (
-          Array.from({ length: 4 }).map((_, i) => (
-            // eslint-disable-next-line react/no-array-index-key
-            <Skeleton key={i} className="h-[200px] w-full bg-neutral-200" />
-          ))
-        ) : myFederationEvents.length > 0
+  const content = (
+    <div className="flex flex-col gap-4">
+      {someLoading
+        ? (
+            <EventsLoadingSkeleton />
+          )
+        : myFederationEvents.length > 0
           ? (
               myFederationEvents.map(event => (
                 <EventCard key={event.id} event={event} />
@@ -63,7 +80,24 @@ function RouteComponent() {
           : (
               <div>Нет мероприятий</div>
             )}
-      </div>
     </div>
   )
+
+  return (
+    <EventsLayout
+      title={myFederation?.region ?? 'Загрузка...'}
+      description="Мероприятия вашей региональной федерации"
+      onSortChange={setSort}
+      currentSort={sort}
+    >
+      {content}
+    </EventsLayout>
+  )
+}
+
+function EventsLoadingSkeleton() {
+  return Array.from({ length: 4 }).map((_, i) => (
+    // eslint-disable-next-line react/no-array-index-key
+    <Skeleton key={i} className="h-[200px] w-full bg-neutral-200" />
+  ))
 }
