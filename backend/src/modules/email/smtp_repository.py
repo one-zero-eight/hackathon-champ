@@ -14,6 +14,7 @@ from src.config import settings
 
 VERIFICATION_CODE_TEMPLATE = (Path(__file__).parent / "templates/verification-code.html").read_text()
 NOTIFY_TEMPLATE = (Path(__file__).parent / "templates/notify.html").read_text()
+RESET_PASSWORD_TEMPLATE = (Path(__file__).parent / "templates/reset-password.html").read_text()
 
 
 # noinspection PyMethodMayBeStatic
@@ -38,6 +39,18 @@ class SMTPRepository:
         mail.attach(msg_html)
 
         mail["Subject"] = Header("Код подтверждения")
+        mail["From"] = Header(f"FSP Link <{settings.smtp.username}>")
+        mail["To"] = target_email
+
+        return mail.as_string()
+
+    def render_reset_password_message(self, target_email: str, url: str) -> str:
+        mail = MIMEMultipart("alternative")
+        html = RESET_PASSWORD_TEMPLATE.replace("${{url}}", url)
+        msg_html = MIMEText(html, "html")
+        mail.attach(msg_html)
+
+        mail["Subject"] = Header("Сброс пароля")
         mail["From"] = Header(f"FSP Link <{settings.smtp.username}>")
         mail["To"] = target_email
 

@@ -19,11 +19,24 @@ class UserRepository:
         return await created.insert()
 
     async def update(self, user_id: PydanticObjectId, data: UpdateUser) -> User | None:
-        await User.find_one(User.id == user_id).update({"$set": data.model_dump(exclude_unset=True)})
+        from src.modules.login_and_password.repository import login_password_repository
+
+        data = data.model_dump(exclude_unset=True)
+        password = data.pop("password", None)
+        if password is not None:
+            data["password_hash"] = login_password_repository.get_password_hash(password)
+
+        await User.find_one(User.id == user_id).update({"$set": data})
         return await User.get(user_id)
 
     async def read(self, user_id: PydanticObjectId) -> User | None:
         return await User.get(user_id)
+
+    async def read_by_email(self, email: str) -> User | None:
+        return await User.find_one(User.email == email)
+
+    async def read_by_login(self, login: str) -> User | None:
+        return await User.find_one(User.login == login)
 
     async def read_all(self) -> list[User]:
         return await User.all().to_list()
