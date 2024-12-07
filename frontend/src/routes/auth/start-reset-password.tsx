@@ -21,93 +21,150 @@ function RouteComponent() {
     mutate({ params: { query: { email_or_login: login } } })
   }
 
-  return (
-    <main className="fixed inset-0 overflow-hidden bg-gradient-to-b from-white to-gray-50/50">
-      <div className="flex h-full flex-col items-center justify-center p-4 sm:p-8">
+  // Helper function to safely get error message
+  const getErrorMessage = (error: unknown): string => {
+    if (error && typeof error === 'object' && 'detail' in error) {
+      return String(error.detail)
+    }
+    return String(error)
+  }
 
-        {!isSuccess
-          ? (
-              <Card className="w-full max-w-[min(400px,calc(100vw-2rem))] transition-all duration-200 sm:shadow-lg">
-                <CardHeader className="space-y-2 px-6 pb-4 pt-6 sm:px-8 sm:pb-6 sm:pt-8">
-                  <CardTitle className="text-center text-2xl font-bold tracking-tight sm:text-3xl">
-                    Восстановление пароля
-                  </CardTitle>
-                  <CardDescription className="text-center text-sm text-muted-foreground sm:text-base">
-                    Введите свой логин или email для восстановления пароля.
-                    К аккаунту должен быть привязан email.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="px-6 pb-6 sm:px-8 sm:pb-8">
-                  <form className="flex flex-col gap-4 sm:gap-6" onSubmit={onSubmit}>
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Input
-                          value={login}
-                          onChange={e => setLogin(e.target.value)}
-                          placeholder="Логин или email"
-                          type="text"
-                          className="h-11 text-base sm:h-12"
-                          autoComplete="username"
-                          autoFocus
-                        />
-                      </div>
+  return (
+    <main className="fixed inset-0 flex min-h-screen bg-white">
+      {/* Left panel - Decorative */}
+      <div className="hidden w-1/2 bg-gradient-to-br from-violet-50 via-violet-100/50 to-fuchsia-50 lg:block">
+        <div className="relative flex h-full flex-col items-center justify-center p-8">
+          <div className="absolute inset-0">
+            <div className="absolute left-1/4 top-1/4 size-32 rounded-full bg-violet-200/50 blur-3xl" />
+            <div className="absolute bottom-1/4 right-1/4 size-32 rounded-full bg-fuchsia-200/50 blur-3xl" />
+          </div>
+
+          <div className="relative space-y-12 text-center">
+            {/* Logo section */}
+            <div className="mx-auto flex items-center justify-center">
+              <div className="relative">
+                {/* Logo background effect */}
+                <div className="absolute -inset-8 rounded-full bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 blur-3xl" />
+                {/* Actual logo */}
+                <img
+                  src="/favicon.png"
+                  alt="Platform Logo"
+                  className="relative size-48 object-contain drop-shadow-2xl"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <h1 className="text-4xl font-bold tracking-tight text-gray-900">
+                Платформа управления регионами
+              </h1>
+              <div className="space-y-4">
+                <p className="mx-auto max-w-sm text-gray-600">
+                  Современное решение для эффективного управления и мониторинга региональных данных
+                </p>
+                <p className="mx-auto max-w-sm text-sm text-gray-500">
+                  Аналитика • Мониторинг • Управление
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right panel - Start reset password form */}
+      <div className="relative flex w-full flex-col justify-center bg-white lg:w-1/2">
+        <div className="mx-auto w-full max-w-[440px] px-8">
+          {!isSuccess
+            ? (
+                <>
+                  <div className="mb-8">
+                    <h2 className="text-2xl font-semibold tracking-tight text-gray-900">
+                      Восстановление пароля
+                    </h2>
+                    <p className="mt-2 text-gray-600">
+                      Введите логин или email для восстановления доступа
+                    </p>
+                  </div>
+
+                  <form className="space-y-6" onSubmit={onSubmit}>
+                    <div>
+                      <Input
+                        value={login}
+                        onChange={e => setLogin(e.target.value)}
+                        placeholder="Логин или email"
+                        type="text"
+                        className="h-12 border-gray-200 bg-white text-base shadow-sm transition-all placeholder:text-gray-400 focus:border-violet-500 focus:ring-violet-500"
+                        autoComplete="username"
+                        autoFocus
+                      />
                     </div>
 
-                    {(error) && (
-                      <div className="rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive sm:text-base">
-                        {(error?.detail || error || '').toString()}
+                    {error && (
+                      <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
+                        {getErrorMessage(error)}
                       </div>
                     )}
 
-                    <div className="space-y-3 sm:space-y-4">
+                    <div className="space-y-4">
                       <Button
                         type="submit"
-                        className="h-11 w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-base font-semibold hover:from-purple-600 hover:to-indigo-600 sm:h-12"
+                        className="relative h-12 w-full overflow-hidden bg-violet-500 text-base font-medium text-white transition-all hover:bg-violet-600 disabled:opacity-70"
                         disabled={isPending}
                       >
                         {isPending
                           ? (
-                              <>
-                                <Loader2 className="mr-2 size-4 animate-spin sm:size-5" />
-                                Отправка...
-                              </>
+                              <div className="flex items-center justify-center">
+                                <Loader2 className="mr-2 size-5 animate-spin" />
+                                <span>Отправка...</span>
+                              </div>
                             )
                           : (
                               'Отправить'
                             )}
                       </Button>
+
+                      <div className="text-center">
+                        <Button
+                          asChild
+                          type="button"
+                          variant="link"
+                          className="h-12 text-base font-normal text-gray-500 hover:text-violet-600"
+                        >
+                          <Link to="/auth/login">
+                            Вернуться ко входу
+                          </Link>
+                        </Button>
+                      </div>
                     </div>
                   </form>
-                </CardContent>
-              </Card>
-            )
-          : (
-              <Card className="w-full max-w-[min(400px,calc(100vw-2rem))] transition-all duration-200 sm:shadow-lg">
-                <CardHeader className="space-y-2 px-6 pb-4 pt-6 sm:px-8 sm:pb-6 sm:pt-8">
-                  <CardTitle className="text-center text-2xl font-bold tracking-tight sm:text-3xl">
-                    Восстановление пароля
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="px-6 pb-6 sm:px-8 sm:pb-8">
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <p>На ваш email было отправлено письмо с инструкциями по восстановлению пароля.</p>
-                    </div>
+                </>
+              )
+            : (
+                <>
+                  <div className="mb-8">
+                    <h2 className="text-2xl font-semibold tracking-tight text-gray-900">
+                      Проверьте почту
+                    </h2>
+                    <p className="mt-2 text-gray-600">
+                      Мы отправили инструкции по восстановлению пароля на ваш email
+                    </p>
                   </div>
-                </CardContent>
-              </Card>
-            )}
 
-        <Button
-          asChild
-          type="button"
-          variant="link"
-          className="h-11 w-full text-base font-normal hover:text-purple-600 sm:h-12"
-        >
-          <Link to="/auth/login">
-            Войти
-          </Link>
-        </Button>
+                  <div className="text-center">
+                    <Button
+                      asChild
+                      type="button"
+                      variant="link"
+                      className="h-12 text-base font-normal text-gray-500 hover:text-violet-600"
+                    >
+                      <Link to="/auth/login">
+                        Вернуться ко входу
+                      </Link>
+                    </Button>
+                  </div>
+                </>
+              )}
+        </div>
       </div>
     </main>
   )
