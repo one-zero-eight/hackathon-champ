@@ -112,7 +112,7 @@ function CreateFederationDialog({ open, setOpen }: { open: boolean, setOpen: (op
 
 function RouteComponent() {
   const navigate = useNavigate()
-  const { data: me, isError: meError } = useMe()
+  const { isError: meError } = useMe()
 
   useEffect(() => {
     if (meError) {
