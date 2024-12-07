@@ -373,7 +373,7 @@ async def update_event(id: PydanticObjectId, event: EventSchema, auth: USER_AUTH
         if was is None:
             raise HTTPException(status_code=404, detail="Event not found")
         updated = await events_repository.update(id, event)
-        if was.status != EventStatusEnum.ACCREDITED and updated.status == EventStatusEnum.ACCREDITED:
+        if was.status != EventStatusEnum.ON_CONSIDERATION and updated.status == EventStatusEnum.ON_CONSIDERATION:
             await notify_repository.create_notify(
                 NotifySchema(
                     for_admin=True, inner=AccreditationRequestEvent(event_id=id, federation_id=event.host_federation)
