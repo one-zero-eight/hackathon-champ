@@ -15,6 +15,7 @@ const NAVIGATION_ITEMS = [
   { to: '/disciplines', label: 'Дисциплины' },
   { to: '/calendar', label: 'Календарь' },
   { to: '/search', label: 'Мероприятия' },
+  { to: '/participants', label: 'Участники' },
 ] as const
 
 export function TopBar() {
