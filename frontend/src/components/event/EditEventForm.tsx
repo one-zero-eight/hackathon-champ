@@ -493,7 +493,7 @@ function ResultsCard({
             <CardTitle className="text-center text-xl font-semibold sm:text-left">
               Результаты соревнования
               <Button
-                className="absolute right-6 top-6"
+                className="do-not-print absolute right-6 top-6"
                 variant="outline"
                 onClick={() => window.print()}
                 type="button"
