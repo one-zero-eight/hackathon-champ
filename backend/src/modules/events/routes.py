@@ -52,7 +52,7 @@ async def hint_results(file: UploadFile) -> Results:
     mime_type = magic.from_buffer(bytes_, mime=True)
 
     # CSV
-    if mime_type == "text/csv":
+    if mime_type in ("text/csv", "application/csv"):
         df = pd.read_csv(BytesIO(bytes_))
 
     # XLSX
