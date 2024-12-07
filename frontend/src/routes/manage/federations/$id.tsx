@@ -1,5 +1,8 @@
 import type { SchemaFederationSchema, SchemaStatusEnum } from '@/api/types'
 import { $api } from '@/api'
+import { useMe } from '@/api/me.ts'
+import { AccrediteFederationDialog } from '@/components/federation/AccrediteDialog.tsx'
+import { RejectFederationDialog } from '@/components/federation/RejectDialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -57,6 +60,7 @@ export const Route = createFileRoute('/manage/federations/$id')({
 function RouteComponent() {
   const { id: federationId } = Route.useParams()
   const [isLoading, setIsLoading] = useState(false)
+  const { data: me } = useMe()
   const { data: federation, refetch } = $api.useQuery('get', '/federations/{id}', {
     params: { path: { id: federationId } },
   })
@@ -210,6 +214,16 @@ function RouteComponent() {
                   <p className="text-sm text-muted-foreground">
                     {federation.accreditation_comment}
                   </p>
+                </div>
+              )}
+
+              {me?.role === 'admin' && (
+                <div className="flex flex-col gap-1.5">
+                  <span className="font-medium">Сменить статус:</span>
+                  <div className="flex gap-2">
+                    <AccrediteFederationDialog federationId={federationId} />
+                    <RejectFederationDialog federationId={federationId} />
+                  </div>
                 </div>
               )}
             </div>
