@@ -241,7 +241,10 @@ async def count_events_by_month(filters: Filters) -> dict[str, int]:
     """
 
     counts = {}
-    current_year = datetime.now().year
+    if filters.date and filters.date.start_date:
+        current_year = filters.date.start_date.year
+    else:
+        current_year = datetime.now().year
     for i in range(1, 13):
         date_filter = DateFilter()
         date_filter.start_date = datetime(current_year, month=i, day=1)
