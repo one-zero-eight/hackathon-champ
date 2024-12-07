@@ -1,33 +1,39 @@
-import type { SchemaEventSchema } from '@/api/types.ts'
+import type { SchemaEvent, SchemaProtocol, SchemaViewUser } from '@/api/types.ts'
+import type { DropzoneOptions } from 'react-dropzone'
+import type { UseFormReturn } from 'react-hook-form'
 import { $api, apiFetch } from '@/api'
 import { useMe } from '@/api/me.ts'
 import { EventStatusBadge } from '@/components/EventStatusBadge.tsx'
-import { DatePicker } from '@/components/filters/DatesFilter.tsx'
-import { DisciplineFilter } from '@/components/filters/DisciplineFilter.tsx'
-import { GenderSelect } from '@/components/filters/GenderSelect.tsx'
 import { Button } from '@/components/ui/button.tsx'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.tsx'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form.tsx'
-import { Input } from '@/components/ui/input.tsx'
+import { Form } from '@/components/ui/form.tsx'
 import { Label } from '@/components/ui/label.tsx'
-import { Textarea } from '@/components/ui/textarea.tsx'
 import { useToast } from '@/components/ui/use-toast.ts'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { useForm } from 'react-hook-form'
-import { Temporal } from 'temporal-polyfill'
 import { z } from 'zod'
+import Download from '~icons/lucide/download'
 import Loader from '~icons/lucide/loader'
 import Trash from '~icons/lucide/trash'
+import { Skeleton } from '../ui/skeleton'
+import { EditEventFormAgesField } from './EditEventFormAgesField'
+import { EditEventFormDatesField } from './EditEventFormDatesField'
+import { EditEventFormDescriptionField } from './EditEventFormDescriptionField'
+import { EditEventFormDisciplineField } from './EditEventFormDisciplineField'
+import { EditEventFormEkpIdField } from './EditEventFormEkpIdField'
+import { EditEventFormGenderField } from './EditEventFormGenderField'
+import { EditEventFormParticipantCountField } from './EditEventFormParticipantCountField'
+import { EditEventFormTitleField } from './EditEventFormTitleField'
 
 const editEventFormSchema = z.object({
   title: z.string().min(3, 'Название должно содержать минимум 3 символа'),
   description: z.string().min(10, 'Описание должно содержать минимум 10 символов'),
   start_date: z.string().min(1, 'Выберите дату проведения'),
   end_date: z.string().min(1, 'Выберите дату проведения'),
-  age_min: z.number().min(0, 'Минимальный возраст должен быть неотрицательным числом').nullable(),
+  age_min: z.number().min(0, 'Минимальный возраст должен быть неотрицательным числом').max(100).nullable(),
   age_max: z.number().min(0, 'Максимальный возраст должен быть неотрицательным числом').nullable(),
   participant_count: z.number().min(0, 'Количество участников должно быть неотрицательным числом').nullable(),
   ekp_id: z.number().nullable(),
@@ -40,17 +46,25 @@ const editEventFormSchema = z.object({
   discipline: z.array(z.string().min(1, 'Введите дисциплину')),
 })
 
-type EditEventFormType = z.infer<typeof editEventFormSchema>
+export type EditEventFormType = z.infer<typeof editEventFormSchema>
 
 export function EditEventForm({
   eventId,
 }: { eventId: string }) {
   const { data: me } = useMe()
   const queryClient = useQueryClient()
-  const { data: event } = $api.useQuery('get', '/events/{id}', {
-    params: { path: { id: eventId } },
-  })
-  const { mutate: updateEvent, isPending } = $api.useMutation('put', '/events/{id}', {
+  const { toast } = useToast()
+
+  const { data: event } = $api.useQuery(
+    'get',
+    '/events/{id}',
+    { params: { path: { id: eventId } } },
+  )
+
+  const {
+    mutate: updateEvent,
+    isPending,
+  } = $api.useMutation('put', '/events/{id}', {
     onSettled: (data) => {
       queryClient.invalidateQueries({
         queryKey: $api.queryOptions('get', '/events/{id}', { params: { path: { id: data?.id ?? '' } } }).queryKey,
@@ -60,7 +74,6 @@ export function EditEventForm({
       })
     },
   })
-  const { toast } = useToast()
 
   const form = useForm<EditEventFormType>({
     resolver: zodResolver(editEventFormSchema),
@@ -71,6 +84,7 @@ export function EditEventForm({
       discipline: [],
     },
   })
+  const hasChanges = Object.keys(form.formState.dirtyFields).length > 0
 
   // Store initial values when federation data is loaded
   const [initialValues, setInitialValues] = useState<EditEventFormType | null>(null)
@@ -110,32 +124,46 @@ export function EditEventForm({
   }
 
   const onSubmit = async (data: EditEventFormType) => {
+    if (!event)
+      return
+
     try {
-      const updateData: SchemaEventSchema = {
-        ...event,
-        title: data.title,
-        description: data.description,
-        start_date: data.start_date,
-        end_date: data.end_date,
-        status: 'draft',
-        discipline: [],
-        location: [],
-      }
       updateEvent({
-        params: { path: { id: eventId } },
-        body: updateData,
+        params: { path: { id: event.id } },
+        body: {
+          ...event,
+          title: data.title,
+          description: data.description,
+          start_date: data.start_date,
+          end_date: data.end_date,
+          status: 'draft',
+          discipline: data.discipline,
+          location: [],
+        },
       }, {
         onSuccess: () => {
-          toast({ description: 'Мероприятие успешно отредактировано!' })
+          toast({ description: 'Данные успешно изменены и отправлены на рассмотрение.' })
         },
       })
     }
-    catch {
+    catch (error) {
+      console.error(error)
       toast({ description: 'Не удалось отредактировать мероприятие. Попробуйте еще раз.' })
     }
   }
 
-  const hasChanges = Object.keys(form.formState.dirtyFields).length > 0
+  const onSendToConsideration = () => {
+    if (!event)
+      return
+
+    updateEvent({
+      params: { path: { id: event.id } },
+      body: {
+        ...event,
+        status: 'on_consideration',
+      },
+    })
+  }
 
   const onDrop = async (acceptedFiles: File[]) => {
     if (!event)
@@ -168,465 +196,366 @@ export function EditEventForm({
     })
   }
 
-  const { getRootProps, getInputProps, open: openDropzone } = useDropzone({
-    onDrop,
-    maxSize: 50 * 1024 * 1024, // 50 MB
-    multiple: true,
-  })
+  const handleDeleteProtocol = (protocol: SchemaProtocol, idx: number) => {
+    if (!event)
+      return
+
+    const oldProtocols = event.results?.protocols ?? []
+
+    // Find index of protocol in results.protocols and make sure it's same as idx.
+    const index = oldProtocols.findIndex(p => (
+      (!!protocol.by_file && p.by_file === protocol.by_file)
+      || (!!protocol.by_url && p.by_url === protocol.by_url)
+    ))
+
+    if (index !== idx)
+      return
+
+    updateEvent({
+      params: { path: { id: event.id } },
+      body: {
+        ...event,
+        results: {
+          ...event.results,
+          protocols: oldProtocols.filter((_, i) => i !== index),
+        },
+      },
+    }, {
+      onSuccess: () => {
+        toast({ description: 'Протокол события удален.' })
+      },
+    })
+  }
+
+  if (!me || !event) {
+    return (
+      <div className="container mx-auto flex max-w-4xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
+        <div className="space-y-6">
+          <PageHeader />
+          <Skeleton className="h-[200px] w-full bg-neutral-200" />
+          <Skeleton className="h-[200px] w-full bg-neutral-200" />
+          <Skeleton className="h-[200px] w-full bg-neutral-200" />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="mb-8 space-y-2">
-            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-              Мероприятие
-            </h1>
-            <p className="text-sm text-muted-foreground sm:text-base">
-              Редактирование данных мероприятия
-            </p>
-          </div>
+          <PageHeader />
 
-          {event && (
-            <Card className="mb-6">
-              <CardHeader className="space-y-1">
-                <CardTitle className="text-xl">Текущий статус</CardTitle>
-                <CardDescription className="text-sm">
-                  Информация о статусе подтверждения мероприятия
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex flex-col gap-3">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-medium">Статус:</span>
-                    <EventStatusBadge status={event.status} />
-                  </div>
-                  {event.accreditation_comment && (
-                    <div className="flex flex-col gap-1.5">
-                      <span className="font-medium">
-                        Комментарий представительства:
-                      </span>
-                      <p className="text-sm text-muted-foreground">
-                        {event.accreditation_comment}
-                      </p>
-                    </div>
-                  )}
-                  {event.status_comment && (
-                    <div className="flex flex-col gap-1.5">
-                      <span className="font-medium">
-                        Комментарий к статусу:
-                      </span>
-                      <p className="text-sm text-muted-foreground">
-                        {event.status_comment}
-                      </p>
-                    </div>
-                  )}
-                  {event.status === 'draft' && (
-                    <div className="flex flex-col gap-1.5">
-                      <div className="flex gap-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() =>
-                            updateEvent({
-                              params: { path: { id: event.id } },
-                              body: { ...event, status: 'on_consideration' },
-                            })}
-                        >
-                          Отправить на рассмотрение
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                  {me?.role === 'admin'
-                  && event.status === 'on_consideration' && (
-                    <div className="flex flex-col gap-1.5">
-                      <span className="font-medium">Рассмотреть:</span>
-                      <div className="flex gap-2">
-                        <Button type="button" variant="outline">
-                          Аккредитовать
-                        </Button>
-                        <Button type="button" variant="outline">
-                          Отклонить
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          <StatusCard
+            event={event}
+            me={me}
+            onSendToConsideration={onSendToConsideration}
+          />
 
-          <Card className="w-full">
-            <CardHeader className="space-y-2">
-              <CardTitle className="text-center text-xl font-semibold sm:text-left">
-                Основные данные
-              </CardTitle>
-              <CardDescription className="text-sm">
-                Общие данные о мероприятии
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-6 sm:grid-cols-2">
-                {/* Title */}
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-base">Название</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Введите название мероприятия"
-                          {...field}
-                          className="h-11"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+          <GeneralInfoCard
+            form={form}
+            isLoading={isPending}
+            isDirty={hasChanges}
+            handleCancel={handleCancel}
+          />
 
-                {/* Dates */}
-                <div className="flex flex-col gap-2">
-                  <Label className="text-base font-medium">
-                    Даты проведения
-                  </Label>
-                  <div className="flex items-center gap-2">
-                    <FormField
-                      control={form.control}
-                      name="start_date"
-                      render={({ field: { ref, ...field } }) => (
-                        <FormItem>
-                          <FormControl>
-                            <DatePicker
-                              {...field}
-                              value={
-                                field.value
-                                  ? Temporal.PlainDate.from(
-                                    field.value.substring(0, 10),
-                                  )
-                                  : null
-                              }
-                              onChange={v =>
-                                field.onChange(v ? v.toString() : null)}
-                              placeholder="Начало"
-                              className="h-11 max-w-[150px] flex-1 basis-0"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <span>—</span>
-                    <FormField
-                      control={form.control}
-                      name="end_date"
-                      render={({ field: { ref, ...field } }) => (
-                        <FormItem>
-                          <FormControl>
-                            <DatePicker
-                              {...field}
-                              value={
-                                field.value
-                                  ? Temporal.PlainDate.from(
-                                    field.value.substring(0, 10),
-                                  )
-                                  : null
-                              }
-                              onChange={v =>
-                                field.onChange(v ? v.toString() : null)}
-                              placeholder="Конец"
-                              className="h-11 max-w-[150px] flex-1 basis-0"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Description */}
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-base">Описание</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Введите описание мероприятия"
-                        className="min-h-[120px] resize-y"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Discipline */}
-              <FormField
-                control={form.control}
-                name="discipline"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-base">Дисциплина</FormLabel>
-                    <FormControl>
-                      <DisciplineFilter
-                        value={field.value}
-                        onChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Participant count */}
-              <FormField
-                control={form.control}
-                name="participant_count"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-base">
-                      Количество участников
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Введите количество участников"
-                        type="number"
-                        {...field}
-                        value={field.value ?? ''}
-                        onChange={e =>
-                          field.onChange(
-                            e.target.value ? Number(e.target.value) : null,
-                          )}
-                        className="h-11"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="grid gap-6 sm:grid-cols-2">
-                {/* Gender */}
-                <FormField
-                  control={form.control}
-                  name="gender"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-base">Пол</FormLabel>
-                      <FormControl>
-                        <GenderSelect
-                          value={field.value}
-                          onChange={field.onChange}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Ages */}
-                <div className="flex flex-col gap-2">
-                  <Label className="text-base font-medium">Возраст</Label>
-                  <div className="flex items-center gap-2">
-                    <FormField
-                      control={form.control}
-                      name="age_min"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input
-                              placeholder="От"
-                              type="number"
-                              {...field}
-                              value={field.value ?? ''}
-                              onChange={e =>
-                                field.onChange(
-                                  e.target.value
-                                    ? Number(e.target.value)
-                                    : null,
-                                )}
-                              className="h-11 w-20"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <span>—</span>
-                    <FormField
-                      control={form.control}
-                      name="age_max"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input
-                              placeholder="До"
-                              type="number"
-                              {...field}
-                              value={field.value ?? ''}
-                              onChange={e =>
-                                field.onChange(
-                                  e.target.value
-                                    ? Number(e.target.value)
-                                    : null,
-                                )}
-                              className="h-11 w-20"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* EKP ID */}
-              <FormField
-                control={form.control}
-                name="ekp_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-base">Номер ЕКП</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Введите номер в ЕКП"
-                        type="number"
-                        {...field}
-                        value={field.value ?? ''}
-                        onChange={e =>
-                          field.onChange(
-                            e.target.value ? Number(e.target.value) : null,
-                          )}
-                        className="h-11"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* TODO: Location */}
-
-              <div className="mt-2 flex flex-col justify-end gap-3 sm:flex-row sm:gap-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleCancel}
-                  disabled={isPending || !hasChanges}
-                  className="w-full sm:w-auto"
-                >
-                  Отмена
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={isPending || !hasChanges}
-                  className="w-full sm:w-auto"
-                >
-                  {isPending
-                    ? (
-                        <>
-                          <Loader className="mr-2 size-4 animate-spin" />
-                          Сохранение...
-                        </>
-                      )
-                    : (
-                        'Сохранить изменения'
-                      )}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="w-full">
-            <CardHeader className="space-y-2">
-              <CardTitle className="text-center text-xl font-semibold sm:text-left">
-                Результаты соревнования
-              </CardTitle>
-              <CardDescription className="text-sm">
-                Загрузите протоколы с результатами прошедшего соревнования
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-6 sm:grid-cols-2">
-                <div className="flex flex-col gap-2">
-                  <Label className="text-base font-medium">Протоколы</Label>
-                  <ul className="mt-2 grid gap-2">
-                    {event?.results?.protocols.map((protocol, index) => (
-                      // eslint-disable-next-line react/no-array-index-key
-                      <li key={index} className="flex items-center gap-2">
-                        {protocol.by_url && (
-                          <Button asChild variant="outline">
-                            <a
-                              href={protocol.by_url}
-                              target="_blank"
-                              className="flex items-center gap-1"
-                            >
-                              Скачать
-                            </a>
-                          </Button>
-                        )}
-                        {protocol.by_file && (
-                          <Button asChild variant="outline">
-                            <a
-                              href={`/api/file_worker/download?url=${encodeURIComponent(protocol.by_file)}`}
-                              target="_blank"
-                              className="flex items-center gap-1"
-                            >
-                              {protocol.by_file.split('/').pop()}
-                            </a>
-                          </Button>
-                        )}
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          onClick={() =>
-                            updateEvent({
-                              params: { path: { id: event.id } },
-                              body: {
-                                ...event,
-                                results: {
-                                  team_places: event.results?.team_places ?? [],
-                                  protocols:
-                                    event.results?.protocols.filter(
-                                      (_, i) => i !== index,
-                                    ) ?? [],
-                                },
-                              },
-                            })}
-                        >
-                          <Trash />
-                        </Button>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="flex gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full"
-                      onClick={openDropzone}
-                    >
-                      Добавить файлы
-                    </Button>
-                    <div {...getRootProps()}>
-                      <Input {...getInputProps()} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <ResultsCard
+            event={event}
+            onDrop={onDrop}
+            handleDeleteProtocol={handleDeleteProtocol}
+          />
         </form>
       </Form>
     </div>
   )
+}
+
+function PageHeader() {
+  return (
+    <div className="mb-8 space-y-2">
+      <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+        Мероприятие
+      </h1>
+      <p className="text-sm text-muted-foreground sm:text-base">
+        Редактирование данных мероприятия
+      </p>
+    </div>
+  )
+}
+
+function StatusCard({
+  event,
+  me,
+  onSendToConsideration,
+}: {
+  event: SchemaEvent
+  me: SchemaViewUser
+  onSendToConsideration: () => void
+}) {
+  return (
+    <Card className="mb-6">
+      <CardHeader className="space-y-1">
+        <CardTitle className="text-xl">Текущий статус</CardTitle>
+        <CardDescription className="text-sm">
+          Информация о статусе подтверждения мероприятия
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-medium">Статус:</span>
+            <EventStatusBadge status={event.status} />
+          </div>
+
+          {event.accreditation_comment && (
+            <div className="flex flex-col gap-1.5">
+              <span className="font-medium">
+                Комментарий представительства:
+              </span>
+              <p className="text-sm text-muted-foreground">
+                {event.accreditation_comment}
+              </p>
+            </div>
+          )}
+
+          {event.status_comment && (
+            <div className="flex flex-col gap-1.5">
+              <span className="font-medium">
+                Комментарий к статусу:
+              </span>
+              <p className="text-sm text-muted-foreground">
+                {event.status_comment}
+              </p>
+            </div>
+          )}
+
+          {event.status === 'draft' && (
+            <div className="flex flex-col gap-1.5">
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onSendToConsideration}
+                >
+                  Отправить на рассмотрение
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {me?.role === 'admin' && event.status === 'on_consideration' && (
+            <div className="flex flex-col gap-1.5">
+              <span className="font-medium">Рассмотреть:</span>
+              <div className="flex gap-2">
+                <Button type="button" variant="outline" onClick={() => alert('TODO')}>
+                  Аккредитовать
+                </Button>
+                <Button type="button" variant="outline" onClick={() => alert('TODO')}>
+                  Отклонить
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function GeneralInfoCard({
+  form,
+  isLoading,
+  isDirty,
+  handleCancel,
+}: {
+  form: UseFormReturn<EditEventFormType>
+  isLoading: boolean
+  isDirty: boolean
+  handleCancel: () => void
+}) {
+  return (
+    <Card className="w-full">
+      <CardHeader className="space-y-2">
+        <CardTitle className="text-center text-xl font-semibold sm:text-left">
+          Основные данные
+        </CardTitle>
+        <CardDescription className="text-sm">
+          Общие данные о мероприятии
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-6 sm:grid-cols-2">
+          <EditEventFormTitleField form={form} />
+          <EditEventFormDatesField form={form} />
+        </div>
+
+        <EditEventFormDescriptionField form={form} />
+        <EditEventFormDisciplineField form={form} />
+        <EditEventFormParticipantCountField form={form} />
+
+        <div className="grid gap-6 sm:grid-cols-2">
+          <EditEventFormGenderField form={form} />
+          <EditEventFormAgesField form={form} />
+        </div>
+
+        {/* EKP ID */}
+        <EditEventFormEkpIdField form={form} />
+
+        <div className="mt-2 flex flex-col justify-end gap-3 sm:flex-row sm:gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleCancel}
+            disabled={isLoading || !isDirty}
+            className="w-full sm:w-auto"
+          >
+            Отмена
+          </Button>
+          <Button
+            type="submit"
+            disabled={isLoading || !isDirty}
+            className="w-full sm:w-auto"
+          >
+            {isLoading
+              ? (
+                  <>
+                    <Loader className="mr-2 size-4 animate-spin" />
+                    Сохранение...
+                  </>
+                )
+              : ('Сохранить изменения')}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function ResultsCard({
+  event,
+  onDrop,
+  handleDeleteProtocol,
+}: {
+  event: SchemaEvent
+  onDrop: DropzoneOptions['onDrop']
+  handleDeleteProtocol: (protocol: SchemaProtocol, idx: number) => void
+}) {
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
+    onDrop,
+    maxSize: 50 * 1024 * 1024, // 50 MB
+    multiple: true,
+    noClick: true,
+  })
+
+  const protocols = event.results?.protocols ?? []
+
+  return (
+    <Card className="w-full">
+      <CardHeader className="space-y-2">
+        <CardTitle className="text-center text-xl font-semibold sm:text-left">
+          Результаты соревнования
+        </CardTitle>
+        <CardDescription className="text-sm">
+          Загрузите протокол мероприятия и укажите места участников и команд
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-2">
+            <Label className="text-base font-medium" htmlFor="event-protocols">
+              Протоколы
+            </Label>
+
+            <div
+              className="relative rounded-md border bg-neutral-100 p-4"
+              {...getRootProps()}
+              onClick={(e) => {
+                if (protocols.length === 0) {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  open()
+                }
+              }}
+            >
+              <input {...getInputProps({ id: 'event-protocols' })} />
+
+              {isDragActive && (
+                <div className="absolute inset-0 z-[1] flex flex-col items-center justify-center gap-2 bg-neutral-100 text-muted-foreground">
+                  <Download className="size-10 animate-bounce" />
+                  <p className="text-sm">
+                    Перетащите файлы сюда или нажмите для выбора
+                  </p>
+                </div>
+              )}
+
+              {protocols.length === 0
+                ? (
+                    <p className="py-8 text-center text-sm text-muted-foreground">
+                      Перетащите файлы сюда или нажмите для выбора
+                    </p>
+                  )
+                : (
+                    <ul className="flex flex-col gap-2">
+                      {protocols.map((protocol, index) => (
+                        // eslint-disable-next-line react/no-array-index-key
+                        <li key={index} className="flex items-center gap-2">
+                          <span className="grow rounded-md border bg-white px-4 py-2">
+                            {getProtocolLabel(protocol)}
+                          </span>
+
+                          <Button
+                            asChild
+                            variant="outline"
+                            size="icon"
+                          >
+                            <a
+                              href={getProtocolUrl(protocol)}
+                              target="_blank"
+                            >
+                              <Download />
+                            </a>
+                          </Button>
+
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="icon"
+                            onClick={(e) => {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              handleDeleteProtocol(protocol, index)
+                            }}
+                          >
+                            <Trash />
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+            </div>
+
+            <p className="text-sm text-muted-foreground">
+              Загрузите протоколы с результатами прошедшего соревнования
+            </p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function getProtocolUrl(protocol: SchemaProtocol) {
+  if (protocol.by_file)
+    return `/api/file_worker/download?url=${encodeURIComponent(protocol.by_file)}`
+  if (protocol.by_url)
+    return protocol.by_url
+  return ''
+}
+
+function getProtocolLabel(protocol: SchemaProtocol) {
+  if (protocol.by_file)
+    return protocol.by_file.split('/').pop()
+  if (protocol.by_url)
+    return protocol.by_url
+  return '—'
 }

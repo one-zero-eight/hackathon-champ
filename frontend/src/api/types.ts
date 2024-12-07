@@ -1509,15 +1509,18 @@ export interface components {
             /**
              * Protocols
              * @description Протоколы зачёта, список ссылок
-             * @default []
              */
-            protocols: components["schemas"]["Protocol"][];
+            protocols?: components["schemas"]["Protocol"][] | null;
             /**
              * Team Places
              * @description Места команд
-             * @default []
              */
-            team_places: components["schemas"]["TeamPlace"][];
+            team_places?: components["schemas"]["TeamPlace"][] | null;
+            /**
+             * Solo Places
+             * @description Места участников
+             */
+            solo_places?: components["schemas"]["SoloPlace"][] | null;
         };
         /** SearchEventsResponse */
         SearchEventsResponse: {
@@ -1548,6 +1551,24 @@ export interface components {
              * @default {}
              */
             sort: components["schemas"]["Sort"];
+        };
+        /** SoloPlace */
+        SoloPlace: {
+            /**
+             * Place
+             * @description Место (1, 2, 3-5)
+             */
+            place: string;
+            /**
+             * Participant
+             * @description ФИО участника
+             */
+            participant: string;
+            /**
+             * Score
+             * @description Очки
+             */
+            score?: unknown | null;
         };
         /** Sort */
         Sort: {
@@ -1667,6 +1688,7 @@ export type SchemaRegionsFilterVariants = components['schemas']['RegionsFilterVa
 export type SchemaResults = components['schemas']['Results'];
 export type SchemaSearchEventsResponse = components['schemas']['SearchEventsResponse'];
 export type SchemaSelection = components['schemas']['Selection'];
+export type SchemaSoloPlace = components['schemas']['SoloPlace'];
 export type SchemaSort = components['schemas']['Sort'];
 export type SchemaStatusEnum = components['schemas']['StatusEnum'];
 export type SchemaTeamPlace = components['schemas']['TeamPlace'];

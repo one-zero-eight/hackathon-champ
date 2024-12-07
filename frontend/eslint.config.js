@@ -19,6 +19,8 @@ export default antfu(
     rules: {
       'ts/consistent-type-definitions': 'off',
       'tailwindcss/migration-from-tailwind-2': 'off',
+      'no-alert': 'warn',
+      'no-console': 'warn',
     },
   },
 )
