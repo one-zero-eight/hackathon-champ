@@ -34,6 +34,9 @@ class ParticipantStats(BaseSchema):
 
 @router.get("/person/")
 async def get_participant(name: str) -> ParticipantStats:
+    if not name:
+        return ParticipantStats(name=name, participations=[])
+
     events = await events_repository.read_for_participant(name)
 
     participations = []
@@ -112,6 +115,7 @@ async def get_all_participants(limit: int = 100) -> list[ParticipantStats]:
             bronzes=bronzes[name],
         )
         for name in total
+        if name
     ]
 
     participants.sort(key=lambda p: (p.golds, p.silvers, p.bronzes, p.total, p.name), reverse=True)
@@ -136,6 +140,8 @@ class TeamStats(BaseSchema):
 
 @router.get("/team/")
 async def get_team(name: str):
+    if not name:
+        return TeamStats(name=name, participations=[])
     events = await events_repository.read_for_team(name)
 
     participations = []
@@ -195,6 +201,7 @@ async def get_all_teams() -> list[TeamStats]:
             bronzes=bronzes[team],
         )
         for team in total
+        if team
     ]
 
     teams.sort(key=lambda t: (t.golds, t.silvers, t.bronzes, t.total, t.name), reverse=True)
