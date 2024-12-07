@@ -189,23 +189,15 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/events/{id}": {
+    "/events/hint-results": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /**
-         * Get Event
-         * @description Get info about one event.
-         */
-        get: operations["events_get_event"];
-        /**
-         * Update Event
-         * @description Update event.
-         */
-        put: operations["events_update_event"];
+        get?: never;
+        put?: never;
         /** Hint Results */
         post: operations["events_hint_results"];
         delete?: never;
@@ -404,6 +396,30 @@ export interface paths {
         /** Get Selection Ics */
         get: operations["events_get_selection_ics"];
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Event
+         * @description Get info about one event.
+         */
+        get: operations["events_get_event"];
+        /**
+         * Update Event
+         * @description Update event.
+         */
+        put: operations["events_update_event"];
         post?: never;
         delete?: never;
         options?: never;
@@ -1589,9 +1605,9 @@ export interface components {
         SoloPlace: {
             /**
              * Place
-             * @description Место (1, 2, 3-5)
+             * @description Место (1, 2, 3)
              */
-            place: string;
+            place: number;
             /**
              * Participant
              * @description ФИО участника
@@ -1601,7 +1617,7 @@ export interface components {
              * Score
              * @description Очки
              */
-            score?: unknown | null;
+            score?: number | null;
         };
         /** Sort */
         Sort: {
@@ -1618,9 +1634,9 @@ export interface components {
         TeamPlace: {
             /**
              * Place
-             * @description Место (1, 2, 3-5)
+             * @description Место (1, 2, 3)
              */
-            place: string;
+            place: number;
             /**
              * Team
              * @description Название команды
@@ -1635,7 +1651,7 @@ export interface components {
              * Score
              * @description Очки
              */
-            score?: unknown | null;
+            score?: number | null;
         };
         /** UpdateUser */
         UpdateUser: {
@@ -2076,93 +2092,6 @@ export interface operations {
             };
         };
     };
-    events_get_event: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Info about event */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Event"];
-                };
-            };
-            /** @description Event not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    events_update_event: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["EventSchema"];
-            };
-        };
-        responses: {
-            /** @description Event info updated */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Event"];
-                };
-            };
-            /** @description Only admin or related federation can update event */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Event not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
     events_hint_results: {
         parameters: {
             query?: never;
@@ -2501,6 +2430,93 @@ export interface operations {
                 content?: never;
             };
             /** @description Selection not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    events_get_event: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Info about event */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Event"];
+                };
+            };
+            /** @description Event not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    events_update_event: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EventSchema"];
+            };
+        };
+        responses: {
+            /** @description Event info updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Event"];
+                };
+            };
+            /** @description Only admin or related federation can update event */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Event not found */
             404: {
                 headers: {
                     [name: string]: unknown;

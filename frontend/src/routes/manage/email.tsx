@@ -62,7 +62,7 @@ function RouteComponent() {
     const email_flow_id = connectData?.email_flow_id
     if (!email_flow_id || !verification_code)
       return
-    verifyCode({ body: { email_flow_id, verification_code } })
+    verifyCode({ params: { query: { email_flow_id, verification_code } } })
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
