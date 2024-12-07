@@ -106,3 +106,7 @@ body,
     display: none !important;
   }
 }
+
+.print-no-break {
+  break-inside: avoid;
+}

@@ -36,7 +36,7 @@ export function EditEventFormTeamPlaces({
         <div className="max-h-[500px] overflow-y-auto">
           <div className="flex flex-col gap-2">
             {fields.map((field, index) => (
-              <div key={field.id} className="space-y-4 rounded-lg border bg-white p-4">
+              <div key={field.id} className="print-no-break space-y-4 rounded-lg border bg-white p-4">
                 <div className="flex items-start gap-4">
                   <FormField
                     control={form.control}

@@ -37,7 +37,7 @@ export function EditEventFormSoloPlaces({
         <div className="max-h-[500px] overflow-y-auto">
           <div className="flex flex-col gap-2">
             {fields.map((field, index) => (
-              <div key={field.id} className="flex items-start gap-4 rounded-lg border bg-white p-4">
+              <div key={field.id} className="print-no-break flex items-start gap-4 rounded-lg border bg-white p-4">
                 <FormField
                   control={form.control}
                   name={`solo_places.${index}.place`}
