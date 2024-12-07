@@ -73,7 +73,7 @@ function RouteComponent() {
       </div>
 
       {/* Main Content */}
-      <div className="grid gap-6 lg:grid-cols-[300px,1fr]">
+      <div className="grid items-start gap-6 lg:grid-cols-[300px,1fr]">
         {/* Filters Card */}
         <Card>
           <CardHeader>
@@ -84,7 +84,6 @@ function RouteComponent() {
               filters={filters}
               onChange={setFilters}
               exclude={['date']}
-              className="space-y-6"
             />
           </CardContent>
         </Card>
