@@ -43,7 +43,7 @@ function FederationFeedbackPage() {
   const [request, setRequest] = useState<SchemaFeedbackSchema>({
     subject: '',
     text: '',
-    email: me?.login ?? null,
+    email: me?.email ?? null,
     federation: federation?.id ?? null,
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -51,10 +51,10 @@ function FederationFeedbackPage() {
 
   // Update email when user data loads
   useEffect(() => {
-    if (me?.login) {
-      setRequest(prev => ({ ...prev, email: me.login }))
+    if (me?.email) {
+      setRequest(prev => ({ ...prev, email: me.email }))
     }
-  }, [me?.login])
+  }, [me?.email])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -65,7 +65,7 @@ function FederationFeedbackPage() {
         body: {
           ...request,
           federation: federation?.id ?? null,
-          email: request.email || me?.login || null,
+          email: request.email || me?.email || null,
         },
       }, {
         onSuccess: () => {
@@ -73,7 +73,7 @@ function FederationFeedbackPage() {
           setRequest({
             subject: '',
             text: '',
-            email: me?.login ?? null,
+            email: me?.email ?? null,
             federation: federation?.id ?? null,
           })
 
@@ -87,7 +87,7 @@ function FederationFeedbackPage() {
     catch {
       toast({
         variant: 'destructive',
-        title: 'шибка',
+        title: 'Ошибка',
         description: 'Не удалось отправить запрос. Попробуйте позже.',
       })
     }
@@ -229,10 +229,10 @@ function FederationFeedbackPage() {
                         value={request.email || ''}
                         onChange={e => setRequest(prev => ({
                           ...prev,
-                          email: e.target.value ? e.target.value.trim() : me?.login ?? null,
+                          email: e.target.value ? e.target.value.trim() : me?.email ?? null,
                         }))}
                         pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-                        placeholder={me?.login ?? ''}
+                        placeholder={me?.email ?? ''}
                         className="w-full"
                       />
                       <p className="text-sm text-muted-foreground">
