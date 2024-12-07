@@ -1,11 +1,13 @@
 import { $api } from '@/api'
 import { ColoredBadge } from '@/components/ColoredBadge'
+import { EventCard } from '@/components/EventCard'
 import { FederationPublicStats } from '@/components/federation/FederationPublicStats.tsx'
 import { FederationLogo } from '@/components/FederationLogo'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 import { urlToMaps } from '@/lib/utils'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import Globe from '~icons/lucide/globe'
 import Mail from '~icons/lucide/mail'
 import MapPin from '~icons/lucide/map-pin'
@@ -33,6 +35,25 @@ function RouteComponent() {
   const { data: federation, isPending, isError } = $api.useQuery('get', `/federations/{id}`, {
     params: { path: { id: federationId } },
   })
+  const {
+    data: events,
+    isPending: isEventsPending,
+  } = $api.useQuery(
+    'post',
+    '/events/search',
+    {
+      body: {
+        filters: {
+          host_federation: federationId,
+        },
+        pagination: {
+          page_no: 1,
+          page_size: 100,
+        },
+        sort: { date: 'desc' },
+      },
+    },
+  )
 
   if (isPending) {
     return (
@@ -78,7 +99,7 @@ function RouteComponent() {
         </div>
       </div>
 
-      <div className="grid items-start gap-6 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Контактная информация</CardTitle>
@@ -166,6 +187,46 @@ function RouteComponent() {
           </CardContent>
         </Card>
       </div>
+
+      <div className="flex items-start justify-between">
+        <h2 className="text-2xl font-bold">События федерации</h2>
+        <Button asChild>
+          <Link
+            to="/search"
+            search={{
+              filters: {
+                host_federation: federationId,
+              },
+            }}
+          >
+            Все cобытия федерации
+          </Link>
+        </Button>
+      </div>
+
+      {isEventsPending
+        ? (
+            <div className="flex flex-col gap-6">
+              <Skeleton className="h-[200px]" />
+              <Skeleton className="h-[200px]" />
+              <Skeleton className="h-[200px]" />
+            </div>
+          )
+        : (events?.events && events.events.length > 0)
+            ? (
+                <div className="flex flex-col gap-6">
+                  {events.events.map(event => (
+                    <EventCard key={event.id} event={event} />
+                  ))}
+                </div>
+              )
+            : (
+                <div className="rounded-lg bg-neutral-100 py-12">
+                  <p className="text-center text-lg text-muted-foreground">
+                    У этой федерации ещё нет событий
+                  </p>
+                </div>
+              )}
     </div>
   )
 }
