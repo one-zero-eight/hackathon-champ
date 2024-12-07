@@ -8,12 +8,14 @@ class CreateUser(BaseSchema):
     login: str
     password: str
     federation: PydanticObjectId | None = None
+    email: str | None = None
 
 
 class UpdateUser(BaseSchema):
     login: str | None = None
     password: str | None = None
     federation: PydanticObjectId | None = None
+    email: str | None = None
 
 
 class ViewUser(BaseSchema):
