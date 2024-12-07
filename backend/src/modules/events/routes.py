@@ -10,6 +10,7 @@ from src.api.dependencies import USER_AUTH
 from src.modules.events.ics_utils import get_base_calendar
 from src.modules.events.repository import events_repository
 from src.modules.events.schemas import DateFilter, Filters, Pagination, Sort
+from src.modules.federation.repository import federation_repository
 from src.modules.notify.repository import notify_repository
 from src.modules.users.repository import user_repository
 from src.storages.mongo.events import Event, EventSchema, EventStatusEnum
@@ -83,6 +84,17 @@ async def create_many_events(events: list[EventSchema], auth: USER_AUTH) -> bool
     user = await user_repository.read(auth.user_id)
 
     if user.role == UserRole.ADMIN:
+        to_create = []
+        federations = await federation_repository.read_all()
+        region_x_federation = {f.region.upper(): f.id for f in federations}
+        for event in events:
+            if len(event.location) == 1:
+                location = event.location[0]
+                if location.region:
+                    event.host_federation = region_x_federation.get(location.region.upper())
+
+            to_create.append(event)
+
         return await events_repository.create_many(events)
     else:
         raise HTTPException(status_code=403, detail="Only admin can create events")
