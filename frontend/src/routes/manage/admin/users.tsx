@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useToast } from '@/components/ui/use-toast'
 import { cn } from '@/lib/utils'
@@ -30,9 +31,11 @@ function RouteComponent() {
   const [federations, setFederations] = useState<Array<{ id: string, region: string, district: string | null }>>([])
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [newUserData, setNewUserData] = useState({ login: '', email: '', password: '' })
+  const [isLoading, setIsLoading] = useState(true)
 
   const fetchUsers = async () => {
     try {
+      setIsLoading(true)
       const response = await fetch('/api/users/')
       if (!response.ok)
         throw new Error('Не удалось загрузить пользователей')
@@ -45,6 +48,9 @@ function RouteComponent() {
         description: error?.message || 'Не удалось загрузить пользователей',
         variant: 'destructive',
       })
+    }
+    finally {
+      setIsLoading(false)
     }
   }
 
@@ -94,7 +100,7 @@ function RouteComponent() {
     }
     catch (error: any) {
       toast({
-        title: 'Ошибка',
+        title: 'Ошиб��а',
         description: error?.message || 'Не удалось обновить пароль',
         variant: 'destructive',
       })
@@ -170,111 +176,125 @@ function RouteComponent() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {users.map(user => (
-                <TableRow key={user.id}>
-                  <TableCell>{user.login}</TableCell>
-                  <TableCell>{user.email || '-'}</TableCell>
-                  <TableCell>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          className="h-8 w-[230px] justify-between px-3 text-left font-normal"
-                          role="combobox"
-                        >
-                          <span className="truncate">
-                            {federations.find(f => f.id === user.federation)?.region || 'Нет федерации'}
-                          </span>
-                          <Edit className="ml-2 size-4 shrink-0 opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[300px] p-0" align="start">
-                        <Command>
-                          <CommandInput placeholder="Поиск федерации..." className="h-9" />
-                          <CommandList className="max-h-[300px] overflow-y-auto">
-                            <CommandEmpty>Ничего не найдено.</CommandEmpty>
-                            <CommandGroup>
-                              <CommandItem
-                                onSelect={async () => {
-                                  try {
-                                    const response = await fetch(`/api/users/${user.id}`, {
-                                      method: 'POST',
-                                      headers: { 'Content-Type': 'application/json' },
-                                      body: JSON.stringify({ federation: null }),
-                                    })
-                                    if (!response.ok)
-                                      throw new Error('Не удалось обновить федерацию')
-                                    toast({ title: 'Успешно', description: 'Федерация обновлена' })
-                                    fetchUsers()
-                                  }
-                                  catch (error: any) {
-                                    toast({
-                                      title: 'Ошибка',
-                                      description: error?.message || 'Не удалось обновить федерацию',
-                                      variant: 'destructive',
-                                    })
-                                  }
-                                }}
+              {isLoading
+                ? (
+                    Array.from({ length: 5 }).map((_, index) => (
+                      <TableRow key={index}>
+                        <TableCell><Skeleton className="h-6 w-[120px]" /></TableCell>
+                        <TableCell><Skeleton className="h-6 w-[180px]" /></TableCell>
+                        <TableCell><Skeleton className="h-8 w-[200px]" /></TableCell>
+                        <TableCell><Skeleton className="h-6 w-[100px]" /></TableCell>
+                        <TableCell className="text-right"><Skeleton className="ml-auto h-9 w-[120px]" /></TableCell>
+                      </TableRow>
+                    ))
+                  )
+                : (
+                    users.map(user => (
+                      <TableRow key={user.id}>
+                        <TableCell>{user.login}</TableCell>
+                        <TableCell>{user.email || '-'}</TableCell>
+                        <TableCell>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                className="h-8 w-[230px] justify-between px-3 text-left font-normal"
+                                role="combobox"
                               >
-                                <Check className={cn('mr-2 h-4 w-4', !user.federation ? 'opacity-100' : 'opacity-0')} />
-                                Нет федерации
-                              </CommandItem>
-                            </CommandGroup>
-                            {Array.from(byDistrict.entries()).map(([district, feds]) => (
-                              <CommandGroup key={district} heading={district || 'Без округа'}>
-                                {feds.map(federation => (
-                                  <CommandItem
-                                    key={federation.id}
-                                    onSelect={async () => {
-                                      try {
-                                        const response = await fetch(`/api/users/${user.id}`, {
-                                          method: 'POST',
-                                          headers: { 'Content-Type': 'application/json' },
-                                          body: JSON.stringify({ federation: federation.id }),
-                                        })
-                                        if (!response.ok)
-                                          throw new Error('Не удалось обновить федерацию')
-                                        toast({ title: 'Успешно', description: 'Федерация обновлена' })
-                                        fetchUsers()
-                                      }
-                                      catch (error: any) {
-                                        toast({
-                                          title: 'Ошибка',
-                                          description: error?.message || 'Не удалось обновить федерацию',
-                                          variant: 'destructive',
-                                        })
-                                      }
-                                    }}
-                                  >
-                                    <Check className={cn('mr-2 h-4 w-4', user.federation === federation.id ? 'opacity-100' : 'opacity-0')} />
-                                    <span>{federation.region}</span>
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            ))}
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
-                      {user.role === 'admin' ? 'Администратор' : 'Пользователь'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setSelectedUser(user)
-                      }}
-                    >
-                      Сменить пароль
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+                                <span className="truncate">
+                                  {federations.find(f => f.id === user.federation)?.region || 'Нет федерации'}
+                                </span>
+                                <Edit className="ml-2 size-4 shrink-0 opacity-50" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[300px] p-0" align="start">
+                              <Command>
+                                <CommandInput placeholder="Поиск федерации..." className="h-9" />
+                                <CommandList className="max-h-[300px] overflow-y-auto">
+                                  <CommandEmpty>Ничего не найдено.</CommandEmpty>
+                                  <CommandGroup>
+                                    <CommandItem
+                                      onSelect={async () => {
+                                        try {
+                                          const response = await fetch(`/api/users/${user.id}`, {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ federation: null }),
+                                          })
+                                          if (!response.ok)
+                                            throw new Error('Не удалось обновить федерацию')
+                                          toast({ title: 'Успешно', description: 'Федерация обновлена' })
+                                          fetchUsers()
+                                        }
+                                        catch (error: any) {
+                                          toast({
+                                            title: 'Ошибка',
+                                            description: error?.message || 'Не удалось обновить федерацию',
+                                            variant: 'destructive',
+                                          })
+                                        }
+                                      }}
+                                    >
+                                      <Check className={cn('mr-2 h-4 w-4', !user.federation ? 'opacity-100' : 'opacity-0')} />
+                                      Нет федерации
+                                    </CommandItem>
+                                  </CommandGroup>
+                                  {Array.from(byDistrict.entries()).map(([district, feds]) => (
+                                    <CommandGroup key={district} heading={district || 'Без округа'}>
+                                      {feds.map(federation => (
+                                        <CommandItem
+                                          key={federation.id}
+                                          onSelect={async () => {
+                                            try {
+                                              const response = await fetch(`/api/users/${user.id}`, {
+                                                method: 'POST',
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify({ federation: federation.id }),
+                                              })
+                                              if (!response.ok)
+                                                throw new Error('Не удалось обновить федерацию')
+                                              toast({ title: 'Успешно', description: 'Федерация обновлена' })
+                                              fetchUsers()
+                                            }
+                                            catch (error: any) {
+                                              toast({
+                                                title: 'Ошибка',
+                                                description: error?.message || 'Не удалось обновить федерацию',
+                                                variant: 'destructive',
+                                              })
+                                            }
+                                          }}
+                                        >
+                                          <Check className={cn('mr-2 h-4 w-4', user.federation === federation.id ? 'opacity-100' : 'opacity-0')} />
+                                          <span>{federation.region}</span>
+                                        </CommandItem>
+                                      ))}
+                                    </CommandGroup>
+                                  ))}
+                                </CommandList>
+                              </Command>
+                            </PopoverContent>
+                          </Popover>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
+                            {user.role === 'admin' ? 'Администратор' : 'Пользователь'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedUser(user)
+                            }}
+                          >
+                            Сменить пароль
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
             </TableBody>
           </Table>
         </CardContent>
