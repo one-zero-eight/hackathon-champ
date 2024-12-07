@@ -9,8 +9,6 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import {
-  Area,
-  AreaChart,
   Bar,
   CartesianGrid,
   Cell,
@@ -22,13 +20,10 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import BarChart from '~icons/lucide/bar-chart-2'
 import Building from '~icons/lucide/building'
-import Calendar from '~icons/lucide/calendar'
 import CheckCircle from '~icons/lucide/check-circle'
 import Clock from '~icons/lucide/clock'
 import Map from '~icons/lucide/map'
-import XCircle from '~icons/lucide/x-circle'
 
 const COLORS = ['#0ea5e9', '#22c55e', '#eab308', '#ef4444']
 
@@ -397,8 +392,8 @@ function RouteComponent() {
                       nameKey="name"
                       label={entry => entry.name}
                     >
-                      {stats.statusData.map((_, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      {stats.statusData.map(entry => (
+                        <Cell key={entry.name} fill={COLORS[stats.statusData.indexOf(entry) % COLORS.length]} />
                       ))}
                     </Pie>
                     <Tooltip

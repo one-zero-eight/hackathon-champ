@@ -201,8 +201,8 @@ function RouteComponent() {
             {loading
               ? (
                   <>
-                    {Array.from({ length: 3 }).map((_, i) => (
-                      <Card key={i} className="w-full overflow-hidden">
+                    {Array.from({ length: 3 }).map((_, index) => (
+                      <Card key={`skeleton-${index}`} className="w-full overflow-hidden">
                         <Skeleton className="h-[180px] w-full md:h-[200px]" />
                       </Card>
                     ))}

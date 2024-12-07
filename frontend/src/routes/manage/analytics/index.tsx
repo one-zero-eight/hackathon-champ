@@ -416,8 +416,8 @@ function RouteComponent() {
                       nameKey="name"
                       label={entry => entry.name}
                     >
-                      {stats.statusData.map((_, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      {stats.statusData.map(entry => (
+                        <Cell key={entry.name} fill={COLORS[stats.statusData.indexOf(entry) % COLORS.length]} />
                       ))}
                     </Pie>
                     <Tooltip
