@@ -1,16 +1,23 @@
 import type { UseFormReturn } from 'react-hook-form'
-import type { EditEventFormType } from './EditEventForm'
+import type { EventGeneralInfoType } from './EditEventForm'
+import { cn } from '@/lib/utils'
 import { FormControl, FormField, FormFieldMessage, FormItem } from '../ui/form'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
 
 export function EditEventFormAgesField({
   form,
+  className,
 }: {
-  form: UseFormReturn<EditEventFormType>
-}) {
+  form: UseFormReturn<EventGeneralInfoType>
+  className?: string
+},
+) {
+  const ageMinError = form.formState.errors.age_min
+  const ageMaxError = form.formState.errors.age_max
+
   return (
-    <div className="flex flex-col gap-2">
+    <div className={cn('flex flex-col gap-2', className)}>
       <Label className="text-base font-medium">Возраст</Label>
       <div className="flex items-center gap-2">
         <FormField
@@ -51,10 +58,12 @@ export function EditEventFormAgesField({
           )}
         />
       </div>
-      <div>
-        <FormFieldMessage name="age_min" />
-        <FormFieldMessage name="age_max" />
-      </div>
+      {(ageMinError || ageMaxError) && (
+        <div>
+          {ageMinError && <FormFieldMessage name="age_min" />}
+          {ageMaxError && <FormFieldMessage name="age_max" />}
+        </div>
+      )}
     </div>
   )
 }

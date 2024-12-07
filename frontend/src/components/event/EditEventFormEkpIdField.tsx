@@ -1,15 +1,21 @@
 import type { UseFormReturn } from 'react-hook-form'
-import type { EditEventFormType } from './EditEventForm'
+import type { EventGeneralInfoType } from './EditEventForm'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { Input } from '../ui/input'
 
-export function EditEventFormEkpIdField({ form }: { form: UseFormReturn<EditEventFormType> }) {
+export function EditEventFormEkpIdField({
+  form,
+  className,
+}: {
+  form: UseFormReturn<EventGeneralInfoType>
+  className?: string
+}) {
   return (
     <FormField
       control={form.control}
       name="ekp_id"
       render={({ field }) => (
-        <FormItem>
+        <FormItem className={className}>
           <FormLabel className="text-base">Номер ЕКП</FormLabel>
           <FormControl>
             <Input

@@ -1,6 +1,4 @@
-import type { SchemaEvent, SchemaProtocol, SchemaViewUser } from '@/api/types.ts'
-import type { DropzoneOptions } from 'react-dropzone'
-import type { UseFormReturn } from 'react-hook-form'
+import type { SchemaEvent, SchemaViewUser } from '@/api/types.ts'
 import { $api, apiFetch } from '@/api'
 import { useMe } from '@/api/me.ts'
 import { AccrediteDialog } from '@/components/event/AccrediteDialog.tsx'
@@ -10,17 +8,13 @@ import { EventStatusBadge } from '@/components/EventStatusBadge.tsx'
 import { Button } from '@/components/ui/button.tsx'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.tsx'
 import { Form } from '@/components/ui/form.tsx'
-import { Label } from '@/components/ui/label.tsx'
 import { useToast } from '@/components/ui/use-toast.ts'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
-import { useDropzone } from 'react-dropzone'
+import { useCallback, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import Download from '~icons/lucide/download'
 import Loader from '~icons/lucide/loader'
-import Trash from '~icons/lucide/trash'
 import { Skeleton } from '../ui/skeleton'
 import { EditEventFormAgesField } from './EditEventFormAgesField'
 import { EditEventFormDatesField } from './EditEventFormDatesField'
@@ -29,31 +23,12 @@ import { EditEventFormDisciplineField } from './EditEventFormDisciplineField'
 import { EditEventFormEkpIdField } from './EditEventFormEkpIdField'
 import { EditEventFormGenderField } from './EditEventFormGenderField'
 import { EditEventFormParticipantCountField } from './EditEventFormParticipantCountField'
+import { EditEventFormProtocols } from './EditEventFormProtocols'
+import { EditEventFormSoloPlaces } from './EditEventFormSoloPlaces'
+import { EditEventFormTeamPlaces } from './EditEventFormTeamPlaces'
 import { EditEventFormTitleField } from './EditEventFormTitleField'
 
-const editEventFormSchema = z.object({
-  title: z.string().min(3, 'Название должно содержать минимум 3 символа'),
-  description: z.string().min(10, 'Описание должно содержать минимум 10 символов'),
-  start_date: z.string().min(1, 'Выберите дату проведения'),
-  end_date: z.string().min(1, 'Выберите дату проведения'),
-  age_min: z.number().min(0, 'Минимальный возраст должен быть неотрицательным числом').max(100).nullable(),
-  age_max: z.number().min(0, 'Максимальный возраст должен быть неотрицательным числом').nullable(),
-  participant_count: z.number().min(0, 'Количество участников должно быть неотрицательным числом').nullable(),
-  ekp_id: z.number().nullable(),
-  location: z.array(z.object({
-    country: z.string().min(1, 'Введите страну'),
-    region: z.string().nullable(),
-    city: z.string().nullable(),
-  })),
-  gender: z.enum(['male', 'female']).nullable(),
-  discipline: z.array(z.string().min(1, 'Введите дисциплину')),
-})
-
-export type EditEventFormType = z.infer<typeof editEventFormSchema>
-
-export function EditEventForm({
-  eventId,
-}: { eventId: string }) {
+export function EditEventForm({ eventId }: { eventId: string }) {
   const { data: me } = useMe()
   const queryClient = useQueryClient()
   const { toast } = useToast()
@@ -78,55 +53,20 @@ export function EditEventForm({
     },
   })
 
-  const form = useForm<EditEventFormType>({
-    resolver: zodResolver(editEventFormSchema),
-    defaultValues: {
-      title: '',
-      description: '',
-      location: [],
-      discipline: [],
-    },
-  })
-  const hasChanges = Object.keys(form.formState.dirtyFields).length > 0
+  const onSendToConsideration = () => {
+    if (!event)
+      return
 
-  // Store initial values when federation data is loaded
-  const [initialValues, setInitialValues] = useState<EditEventFormType | null>(null)
-
-  useEffect(() => {
-    if (event) {
-      const values: EditEventFormType = {
-        title: event.title,
-        description: event.description ?? '',
-        start_date: event.start_date,
-        end_date: event.end_date,
-        age_min: event.age_min,
-        age_max: event.age_max,
-        participant_count: event.participant_count,
-        ekp_id: event.ekp_id,
-        location: event.location.map(v => ({
-          country: v.country,
-          region: v.region ?? null,
-          city: v.city ?? null,
-        })),
-        gender: event.gender,
-        discipline: event.discipline,
-      }
-      form.reset(values)
-      setInitialValues(values)
-    }
-  }, [event, form])
-
-  const handleCancel = () => {
-    if (initialValues) {
-      form.reset(initialValues)
-      toast({
-        description: 'Изменения отменены',
-        duration: 3000,
-      })
-    }
+    updateEvent({
+      params: { path: { id: event.id } },
+      body: {
+        ...event,
+        status: 'on_consideration',
+      },
+    })
   }
 
-  const onSubmit = async (data: EditEventFormType) => {
+  const handleGeneralInfoSubmit = async (data: EventGeneralInfoType) => {
     if (!event)
       return
 
@@ -141,6 +81,13 @@ export function EditEventForm({
           end_date: data.end_date,
           status: 'draft',
           discipline: data.discipline,
+          participant_count: data.participant_count,
+          age_min: data.age_min,
+          age_max: data.age_max,
+          gender: data.gender,
+          ekp_id: data.ekp_id,
+
+          // TODO
           location: [],
         },
       }, {
@@ -155,67 +102,20 @@ export function EditEventForm({
     }
   }
 
-  const onDrop = async (acceptedFiles: File[]) => {
+  const handleUpdateResults = useCallback((
+    results: SchemaEvent['results'],
+    successMessage: string = 'Результаты мероприятия успешно обновлены.',
+  ) => {
     if (!event)
-      return
-
-    const fileNames: string[] = []
-    for (const file of acceptedFiles) {
-      const formData = new FormData()
-      formData.append('file', file)
-      const response = await apiFetch.POST('/file_worker/upload', {
-      // @ts-expect-error incorrect openapi type
-        body: formData,
-      })
-      const fileName = response.data
-      if (fileName) {
-        fileNames.push(fileName)
-      }
-    }
-
-    const newProtocols = fileNames.map(fileName => ({ by_file: fileName }))
-    updateEvent({
-      params: { path: { id: event.id } },
-      body: {
-        ...event,
-        results: {
-          team_places: event.results?.team_places ?? [],
-          protocols: [...(event.results?.protocols ?? []), ...newProtocols],
-        },
-      },
-    })
-  }
-
-  const handleDeleteProtocol = (protocol: SchemaProtocol, idx: number) => {
-    if (!event)
-      return
-
-    const oldProtocols = event.results?.protocols ?? []
-
-    // Find index of protocol in results.protocols and make sure it's same as idx.
-    const index = oldProtocols.findIndex(p => (
-      (!!protocol.by_file && p.by_file === protocol.by_file)
-      || (!!protocol.by_url && p.by_url === protocol.by_url)
-    ))
-
-    if (index !== idx)
       return
 
     updateEvent({
       params: { path: { id: event.id } },
-      body: {
-        ...event,
-        results: {
-          ...event.results,
-          protocols: oldProtocols.filter((_, i) => i !== index),
-        },
-      },
+      body: { ...event, results },
     }, {
-      onSuccess: () => {
-        toast({ description: 'Протокол события удален.' })
-      },
+      onSuccess: () => { toast({ title: successMessage }) },
     })
-  }
+  }, [event, updateEvent, toast])
 
   if (!me || !event) {
     return (
@@ -232,29 +132,27 @@ export function EditEventForm({
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <PageHeader />
+      <div className="space-y-6">
+        <PageHeader />
 
-          <StatusCard
-            event={event}
-            me={me}
-          />
+        <StatusCard
+          event={event}
+          me={me}
+          onSendToConsideration={onSendToConsideration}
+        />
 
-          <GeneralInfoCard
-            form={form}
-            isLoading={isPending}
-            isDirty={hasChanges}
-            handleCancel={handleCancel}
-          />
+        <GeneralInfoCard
+          event={event}
+          isLoading={isPending}
+          onSubmit={handleGeneralInfoSubmit}
+        />
 
-          <ResultsCard
-            event={event}
-            onDrop={onDrop}
-            handleDeleteProtocol={handleDeleteProtocol}
-          />
-        </form>
-      </Form>
+        <ResultsCard
+          event={event}
+          isLoading={isPending}
+          onSubmit={handleUpdateResults}
+        />
+      </div>
     </div>
   )
 }
@@ -339,200 +237,275 @@ function StatusCard({
   )
 }
 
+const EventGeneralInfoSchema = z.object({
+  title: z.string().min(3, 'Название должно содержать минимум 3 символа'),
+  description: z.string().min(10, 'Описание должно содержать минимум 10 символов'),
+  start_date: z.string().min(1, 'Выберите дату проведения'),
+  end_date: z.string().min(1, 'Выберите дату проведения'),
+  age_min: z.number().min(0, 'Минимальный возраст должен быть неотрицательным числом').max(100).nullable(),
+  age_max: z.number().min(0, 'Максимальный возраст должен быть неотрицательным числом').nullable(),
+  participant_count: z.number().min(0, 'Количество участников должно быть неотрицательным числом').nullable(),
+  ekp_id: z.number().nullable(),
+  location: z.array(z.object({
+    country: z.string().min(1, 'Введите страну'),
+    region: z.string().nullable(),
+    city: z.string().nullable(),
+  })),
+  gender: z.enum(['male', 'female']).nullable(),
+  discipline: z.array(z.string().min(1, 'Введите дисциплину')),
+})
+export type EventGeneralInfoType = z.infer<typeof EventGeneralInfoSchema>
+
+function eventToDefaultValues(event: SchemaEvent): EventGeneralInfoType {
+  return {
+    title: event.title,
+    description: event.description ?? '',
+    start_date: event.start_date,
+    end_date: event.end_date,
+    age_min: event.age_min,
+    age_max: event.age_max,
+    participant_count: event.participant_count,
+    ekp_id: event.ekp_id,
+    location: event.location.map(v => ({
+      country: v.country,
+      region: v.region ?? null,
+      city: v.city ?? null,
+    })),
+    gender: event.gender,
+    discipline: event.discipline,
+  }
+}
+
 function GeneralInfoCard({
-  form,
+  event,
   isLoading,
-  isDirty,
-  handleCancel,
+  onSubmit,
 }: {
-  form: UseFormReturn<EditEventFormType>
+  event: SchemaEvent
   isLoading: boolean
-  isDirty: boolean
-  handleCancel: () => void
+  onSubmit: (data: EventGeneralInfoType) => void
 }) {
+  const { toast } = useToast()
+  const form = useForm<EventGeneralInfoType>({
+    resolver: zodResolver(EventGeneralInfoSchema),
+    defaultValues: eventToDefaultValues(event),
+  })
+
+  const hasChanges = Object.keys(form.formState.dirtyFields).length > 0
+
+  const handleCancel = () => {
+    form.reset()
+    toast({
+      description: 'Изменения отменены',
+      duration: 3000,
+    })
+  }
+
+  useEffect(() => {
+    // Reset form to default values when event changes.
+    form.reset(eventToDefaultValues(event))
+  }, [event, form])
+
   return (
-    <Card className="w-full">
-      <CardHeader className="space-y-2">
-        <CardTitle className="text-center text-xl font-semibold sm:text-left">
-          Основные данные
-        </CardTitle>
-        <CardDescription className="text-sm">
-          Общие данные о мероприятии
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="grid gap-6 sm:grid-cols-2">
-          <EditEventFormTitleField form={form} />
-          <EditEventFormDatesField form={form} />
-        </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <Card className="w-full">
+          <CardHeader className="space-y-2">
+            <CardTitle className="text-center text-xl font-semibold sm:text-left">
+              Основные данные
+            </CardTitle>
+            <CardDescription className="text-sm">
+              Общие данные о мероприятии
+            </CardDescription>
+          </CardHeader>
 
-        <EditEventFormDescriptionField form={form} />
-        <EditEventFormDisciplineField form={form} />
-        <EditEventFormParticipantCountField form={form} />
+          <CardContent className="space-y-6">
+            <EditEventFormTitleField form={form} />
 
-        <div className="grid gap-6 sm:grid-cols-2">
-          <EditEventFormGenderField form={form} />
-          <EditEventFormAgesField form={form} />
-        </div>
+            <div className="flex gap-6">
+              <EditEventFormDatesField form={form} className="shrink-0" />
+              <EditEventFormEkpIdField form={form} className="grow" />
+            </div>
 
-        {/* EKP ID */}
-        <EditEventFormEkpIdField form={form} />
+            <EditEventFormDescriptionField form={form} />
+            <EditEventFormDisciplineField form={form} />
 
-        <div className="mt-2 flex flex-col justify-end gap-3 sm:flex-row sm:gap-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleCancel}
-            disabled={isLoading || !isDirty}
-            className="w-full sm:w-auto"
-          >
-            Отмена
-          </Button>
-          <Button
-            type="submit"
-            disabled={isLoading || !isDirty}
-            className="w-full sm:w-auto"
-          >
-            {isLoading
-              ? (
-                  <>
-                    <Loader className="mr-2 size-4 animate-spin" />
-                    Сохранение...
-                  </>
-                )
-              : ('Сохранить изменения')}
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+            <div className="flex gap-6">
+              <EditEventFormParticipantCountField form={form} className="basis-2/5" />
+              <EditEventFormGenderField form={form} className="basis-[30%]" />
+              <EditEventFormAgesField form={form} className="basis-[30%]" />
+            </div>
+
+            <div className="mt-2 flex flex-col justify-end gap-3 sm:flex-row sm:gap-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCancel}
+                disabled={isLoading || !hasChanges}
+                className="w-full sm:w-auto"
+              >
+                Отмена
+              </Button>
+              <Button
+                type="submit"
+                disabled={isLoading || !hasChanges}
+                className="w-full sm:w-auto"
+              >
+                {isLoading
+                  ? (
+                      <>
+                        <Loader className="mr-2 size-4 animate-spin" />
+                        Сохранение...
+                      </>
+                    )
+                  : ('Сохранить изменения')}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </form>
+    </Form>
   )
+}
+
+const EventResultsSchema = z.object({
+  protocols: z.array(z.object({
+    by_file: z.string().nullable(),
+    by_url: z.string().nullable(),
+  })),
+  team_places: z.array(z.object({
+    team: z.string().min(1, 'Название команды должно не должно быть пустым'),
+    place: z.number().min(1, 'Место команды должно быть неотрицательным числом'),
+    members: z.array(z.string().min(1, 'Имя участника должно не должно быть пустым')),
+    score: z.number().min(0, 'Результат команды должен быть неотрицательным числом').nullable(),
+  })),
+  solo_places: z.array(z.object({
+    place: z.number().min(1, 'Место участника должно быть неотрицательным числом'),
+    participant: z.string().min(1, 'Имя участника должно не должно быть пустым'),
+    score: z.number().min(0, 'Результат участника должен быть неотрицательным числом').nullable(),
+  })),
+})
+export type EventResultsType = z.infer<typeof EventResultsSchema>
+
+function eventResultsToDefaultValues(event: SchemaEvent): EventResultsType {
+  return {
+    protocols: (event.results?.protocols ?? []).map(v => ({
+      by_file: v.by_file ?? null,
+      by_url: v.by_url ?? null,
+    })),
+    team_places: (event.results?.team_places ?? []).map(v => ({
+      team: v.team,
+      place: v.place,
+      members: v.members,
+      score: v.score ?? null,
+    })),
+    solo_places: (event.results?.solo_places ?? []).map(v => ({
+      place: v.place,
+      participant: v.participant,
+      score: v.score ?? null,
+    })),
+  }
 }
 
 function ResultsCard({
   event,
-  onDrop,
-  handleDeleteProtocol,
+  isLoading,
+  onSubmit,
 }: {
   event: SchemaEvent
-  onDrop: DropzoneOptions['onDrop']
-  handleDeleteProtocol: (protocol: SchemaProtocol, idx: number) => void
+  isLoading: boolean
+  onSubmit: (results: EventResultsType) => void
 }) {
-  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
-    onDrop,
-    maxSize: 50 * 1024 * 1024, // 50 MB
-    multiple: true,
-    noClick: true,
+  const { toast } = useToast()
+  const form = useForm<EventResultsType>({
+    resolver: zodResolver(EventResultsSchema),
+    defaultValues: eventResultsToDefaultValues(event),
+    disabled: isLoading,
   })
 
-  const protocols = event.results?.protocols ?? []
+  const hasChanges = Object.keys(form.formState.dirtyFields).length > 0
+
+  const handleCancel = () => {
+    form.reset()
+    toast({
+      description: 'Изменения отменены',
+      duration: 3000,
+    })
+  }
+
+  const handleSubmit = (data: EventResultsType) => {
+    onSubmit({
+      protocols: data.protocols,
+      team_places: data.team_places,
+      solo_places: data.solo_places,
+    })
+  }
+
+  useEffect(() => {
+    // Reset form to default values when event changes.
+    form.reset(eventResultsToDefaultValues(event))
+  }, [event, form])
+
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    if (!event)
+      return
+
+    const fileNames: string[] = []
+    for (const file of acceptedFiles) {
+      const formData = new FormData()
+      formData.append('file', file)
+      const response = await apiFetch.POST('/file_worker/upload', {
+        // @ts-expect-error incorrect openapi type
+        body: formData,
+      })
+      const fileName = response.data
+      if (fileName) {
+        fileNames.push(fileName)
+      }
+    }
+
+    const newProtocols = fileNames.map(fileName => ({ by_file: fileName, by_url: null }))
+    form.setValue('protocols', [...form.getValues('protocols'), ...newProtocols], { shouldDirty: true })
+  }, [event, form])
 
   return (
-    <Card className="w-full">
-      <CardHeader className="space-y-2">
-        <CardTitle className="text-center text-xl font-semibold sm:text-left">
-          Результаты соревнования
-        </CardTitle>
-        <CardDescription className="text-sm">
-          Загрузите протокол мероприятия и укажите места участников и команд
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-2">
-            <Label className="text-base font-medium" htmlFor="event-protocols">
-              Протоколы
-            </Label>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)}>
+        <Card className="w-full">
+          <CardHeader className="space-y-2">
+            <CardTitle className="text-center text-xl font-semibold sm:text-left">
+              Результаты соревнования
+            </CardTitle>
+            <CardDescription className="text-sm">
+              Загрузите протокол мероприятия и укажите места участников и команд
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <EditEventFormProtocols form={form} onDrop={onDrop} />
+            <EditEventFormTeamPlaces form={form} />
+            <EditEventFormSoloPlaces form={form} />
 
-            <div
-              className="relative rounded-md border bg-neutral-100 p-4"
-              {...getRootProps()}
-              onClick={(e) => {
-                if (protocols.length === 0) {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  open()
-                }
-              }}
-            >
-              <input {...getInputProps({ id: 'event-protocols' })} />
-
-              {isDragActive && (
-                <div className="absolute inset-0 z-[1] flex flex-col items-center justify-center gap-2 bg-neutral-100 text-muted-foreground">
-                  <Download className="size-10 animate-bounce" />
-                  <p className="text-sm">
-                    Перетащите файлы сюда или нажмите для выбора
-                  </p>
-                </div>
-              )}
-
-              {protocols.length === 0
-                ? (
-                    <p className="py-8 text-center text-sm text-muted-foreground">
-                      Перетащите файлы сюда или нажмите для выбора
-                    </p>
-                  )
-                : (
-                    <ul className="flex flex-col gap-2">
-                      {protocols.map((protocol, index) => (
-                        // eslint-disable-next-line react/no-array-index-key
-                        <li key={index} className="flex items-center gap-2">
-                          <span className="grow rounded-md border bg-white px-4 py-2">
-                            {getProtocolLabel(protocol)}
-                          </span>
-
-                          <Button
-                            asChild
-                            variant="outline"
-                            size="icon"
-                          >
-                            <a
-                              href={getProtocolUrl(protocol)}
-                              target="_blank"
-                            >
-                              <Download />
-                            </a>
-                          </Button>
-
-                          <Button
-                            type="button"
-                            variant="destructive"
-                            size="icon"
-                            onClick={(e) => {
-                              e.preventDefault()
-                              e.stopPropagation()
-                              handleDeleteProtocol(protocol, index)
-                            }}
-                          >
-                            <Trash />
-                          </Button>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+            <div className="mt-2 flex flex-col justify-end gap-3 sm:flex-row sm:gap-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCancel}
+                disabled={!hasChanges}
+                className="w-full sm:w-auto"
+              >
+                Отмена
+              </Button>
+              <Button
+                type="submit"
+                disabled={!hasChanges}
+                className="w-full sm:w-auto"
+              >
+                Сохранить изменения
+              </Button>
             </div>
-
-            <p className="text-sm text-muted-foreground">
-              Загрузите протоколы с результатами прошедшего соревнования
-            </p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+          </CardContent>
+        </Card>
+      </form>
+    </Form>
   )
-}
-
-function getProtocolUrl(protocol: SchemaProtocol) {
-  if (protocol.by_file)
-    return `/api/file_worker/download?url=${encodeURIComponent(protocol.by_file)}`
-  if (protocol.by_url)
-    return protocol.by_url
-  return ''
-}
-
-function getProtocolLabel(protocol: SchemaProtocol) {
-  if (protocol.by_file)
-    return protocol.by_file.split('/').pop()
-  if (protocol.by_url)
-    return protocol.by_url
-  return '—'
 }

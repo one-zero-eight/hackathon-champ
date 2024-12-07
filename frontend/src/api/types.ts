@@ -817,6 +817,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/participants/person/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Participant */
+        get: operations["participants_get_participant"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/participants/person/all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get All Participants */
+        get: operations["participants_get_all_participants"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/participants/team/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Team */
+        get: operations["participants_get_team"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/participants/team/all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get All Teams */
+        get: operations["participants_get_all_teams"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -883,7 +951,7 @@ export interface components {
              * Status Comment
              * @description Комментарий к статусу
              */
-            status_comment: string | null;
+            status_comment?: string | null;
         };
         /**
          * AccreditedFederation
@@ -907,7 +975,7 @@ export interface components {
              * Status Comment
              * @description Комментарий к статусу
              */
-            status_comment: string | null;
+            status_comment?: string | null;
         };
         /** Body_email_start_email_flow */
         Body_email_start_email_flow: {
@@ -1533,6 +1601,55 @@ export interface components {
             /** Page No */
             page_no: number;
         };
+        /** ParticipantStats */
+        ParticipantStats: {
+            /**
+             * Name
+             * @description Имя участника
+             */
+            name: string;
+            /**
+             * Participations
+             * @description Участия
+             */
+            participations: components["schemas"]["Participation"][];
+            /**
+             * Total
+             * @description Общее количество участий
+             * @default 0
+             */
+            total: number;
+            /**
+             * Golds
+             * @description Общее количество золотых медалей
+             * @default 0
+             */
+            golds: number;
+            /**
+             * Silvers
+             * @description Общее количество серебрянных медалей
+             * @default 0
+             */
+            silvers: number;
+            /**
+             * Bronzes
+             * @description Общее количество бронзовых медалей
+             * @default 0
+             */
+            bronzes: number;
+        };
+        /** Participation */
+        Participation: {
+            /**
+             * Event Id
+             * @example 5eb7cf5a86d9755df3a6c593
+             */
+            event_id: string;
+            /** Event Title */
+            event_title: string;
+            solo_place?: components["schemas"]["SoloPlace"] | null;
+            team_place?: components["schemas"]["TeamPlace"] | null;
+        };
         /** Protocol */
         Protocol: {
             /**
@@ -1653,6 +1770,43 @@ export interface components {
              */
             score?: number | null;
         };
+        /** TeamStats */
+        TeamStats: {
+            /**
+             * Name
+             * @description Название команды
+             */
+            name: string;
+            /**
+             * Participations
+             * @description Участия
+             */
+            participations: components["schemas"]["Participation"][];
+            /**
+             * Total
+             * @description Общее количество участий
+             * @default 0
+             */
+            total: number;
+            /**
+             * Golds
+             * @description Общее количество золотых медалей
+             * @default 0
+             */
+            golds: number;
+            /**
+             * Silvers
+             * @description Общее количество серебрянных медалей
+             * @default 0
+             */
+            silvers: number;
+            /**
+             * Bronzes
+             * @description Общее количество бронзовых медалей
+             * @default 0
+             */
+            bronzes: number;
+        };
         /** UpdateUser */
         UpdateUser: {
             /** Login */
@@ -1732,6 +1886,8 @@ export type SchemaNotify = components['schemas']['Notify'];
 export type SchemaNotifySchema = components['schemas']['NotifySchema'];
 export type SchemaOrder = components['schemas']['Order'];
 export type SchemaPagination = components['schemas']['Pagination'];
+export type SchemaParticipantStats = components['schemas']['ParticipantStats'];
+export type SchemaParticipation = components['schemas']['Participation'];
 export type SchemaProtocol = components['schemas']['Protocol'];
 export type SchemaRegionsFilterVariants = components['schemas']['RegionsFilterVariants'];
 export type SchemaResults = components['schemas']['Results'];
@@ -1741,6 +1897,7 @@ export type SchemaSoloPlace = components['schemas']['SoloPlace'];
 export type SchemaSort = components['schemas']['Sort'];
 export type SchemaStatusEnum = components['schemas']['StatusEnum'];
 export type SchemaTeamPlace = components['schemas']['TeamPlace'];
+export type SchemaTeamStats = components['schemas']['TeamStats'];
 export type SchemaUpdateUser = components['schemas']['UpdateUser'];
 export type SchemaUserRole = components['schemas']['UserRole'];
 export type SchemaValidationError = components['schemas']['ValidationError'];
@@ -3288,6 +3445,119 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    participants_get_participant: {
+        parameters: {
+            query: {
+                name: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ParticipantStats"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    participants_get_all_participants: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ParticipantStats"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    participants_get_team: {
+        parameters: {
+            query: {
+                name: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    participants_get_all_teams: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamStats"][];
                 };
             };
         };

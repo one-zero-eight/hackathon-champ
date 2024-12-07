@@ -1,13 +1,20 @@
 import type { UseFormReturn } from 'react-hook-form'
-import type { EditEventFormType } from './EditEventForm'
+import type { EventGeneralInfoType } from './EditEventForm'
+import { cn } from '@/lib/utils'
 import { Temporal } from 'temporal-polyfill'
 import { DatePicker } from '../filters/DatesFilter'
 import { FormControl, FormField, FormFieldMessage, FormItem } from '../ui/form'
 import { Label } from '../ui/label'
 
-export function EditEventFormDatesField({ form }: { form: UseFormReturn<EditEventFormType> }) {
+export function EditEventFormDatesField({
+  form,
+  className,
+}: {
+  form: UseFormReturn<EventGeneralInfoType>
+  className?: string
+}) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className={cn('flex flex-col gap-2', className)}>
       <Label className="text-base font-medium">
         Даты проведения
       </Label>

@@ -1,15 +1,21 @@
 import type { UseFormReturn } from 'react-hook-form'
-import type { EditEventFormType } from './EditEventForm'
+import type { EventGeneralInfoType } from './EditEventForm'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { Textarea } from '../ui/textarea'
 
-export function EditEventFormDescriptionField({ form }: { form: UseFormReturn<EditEventFormType> }) {
+export function EditEventFormDescriptionField({
+  form,
+  className,
+}: {
+  form: UseFormReturn<EventGeneralInfoType>
+  className?: string
+}) {
   return (
     <FormField
       control={form.control}
       name="description"
       render={({ field }) => (
-        <FormItem>
+        <FormItem className={className}>
           <FormLabel className="text-base">Описание</FormLabel>
           <FormControl>
             <Textarea
