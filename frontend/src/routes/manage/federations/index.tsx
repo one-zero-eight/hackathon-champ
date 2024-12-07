@@ -324,7 +324,15 @@ function RouteComponent() {
                       )}
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="space-x-2">
+                    <Button asChild variant="outline">
+                      <Link
+                        to="/manage/analytics/$id"
+                        params={{ id: federation.id }}
+                      >
+                        Аналитика
+                      </Link>
+                    </Button>
                     <Button asChild variant="outline">
                       <Link
                         to="/manage/federations/$id"
