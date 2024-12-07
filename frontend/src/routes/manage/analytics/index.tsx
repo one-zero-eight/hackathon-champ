@@ -1,6 +1,7 @@
 import type { DateRange } from 'react-day-picker'
 import { $api } from '@/api'
 import { AnalyticsFilters } from '@/components/analytics/AnalyticsFilters'
+import { QuickStatsCard } from '@/components/analytics/QuickStatsCard'
 import { TrendAnalysis } from '@/components/analytics/TrendAnalysis'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -285,52 +286,31 @@ function RouteComponent() {
 
         {/* Summary Cards */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardContent className="flex items-center gap-4 pt-6">
-              <div className="rounded-full bg-primary/10 p-3 text-primary">
-                <Building className="size-6" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Всего федераций</p>
-                <p className="text-2xl font-bold">{stats.total}</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="flex items-center gap-4 pt-6">
-              <div className="rounded-full bg-blue-500/10 p-3 text-blue-500">
-                <Map className="size-6" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Федеральных округов</p>
-                <p className="text-2xl font-bold">{stats.activeDistricts}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="flex items-center gap-4 pt-6">
-              <div className="rounded-full bg-purple-500/10 p-3 text-purple-500">
-                <BarChart className="size-6" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Среднее число мероприятий</p>
-                <p className="text-2xl font-bold">{stats.avgEventsPerFederation}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="flex items-center gap-4 pt-6">
-              <div className="rounded-full bg-orange-500/10 p-3 text-orange-500">
-                <Calendar className="size-6" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Всего мероприятий</p>
-                <p className="text-2xl font-bold">{stats.totalEvents}</p>
-              </div>
-            </CardContent>
-          </Card>
+          <QuickStatsCard
+            title="Всего федераций"
+            icon={Building}
+            value={stats.total}
+            secondaryValue={stats.byStatus.on_consideration}
+            color="blue"
+          />
+          <QuickStatsCard
+            title="Федеральных округов"
+            icon={Map}
+            value={stats.activeDistricts}
+            color="green"
+          />
+          <QuickStatsCard
+            title="Среднее число мероприятий"
+            icon={BarChart}
+            value={stats.avgEventsPerFederation}
+            color="purple"
+          />
+          <QuickStatsCard
+            title="Всего мероприятий"
+            icon={Calendar}
+            value={stats.totalEvents}
+            color="yellow"
+          />
         </div>
 
         {/* Charts */}

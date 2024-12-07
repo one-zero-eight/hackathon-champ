@@ -3,6 +3,7 @@ import type { DateRange } from 'react-day-picker'
 import { $api } from '@/api'
 import { useMe } from '@/api/me'
 import { AnalyticsFilters } from '@/components/analytics/AnalyticsFilters'
+import { QuickStatsCard } from '@/components/analytics/QuickStatsCard'
 import { TrendAnalysis } from '@/components/analytics/TrendAnalysis'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -223,7 +224,7 @@ function RouteComponent() {
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   {Array.from({ length: 4 }).map((_, i) => (
                     // eslint-disable-next-line react/no-array-index-key
-                    <Skeleton key={i} className="h-[120px] bg-neutral-200" />
+                    <Skeleton key={i} className="h-[5.875rem] bg-neutral-200" />
                   ))}
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">
@@ -238,55 +239,30 @@ function RouteComponent() {
               <>
                 {/* Summary Cards */}
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                  <Card>
-                    <CardContent className="flex items-center gap-4 p-4 md:p-6">
-                      <div className="rounded-full bg-primary/10 p-2 md:p-3">
-                        <Calendar className="size-5 md:size-6" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground md:text-sm">Всего мероприятий</p>
-                        <p className="text-xl font-bold md:text-2xl">{stats.total}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardContent className="flex items-center gap-4 p-4 md:p-6">
-                      <div className="rounded-full bg-green-500/10 p-2 md:p-3">
-                        <CheckCircle className="size-5 md:size-6" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground md:text-sm">Завершено</p>
-                        <p className="text-xl font-bold md:text-2xl">{finishedEventsCount}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardContent className="flex items-center gap-4 p-4 md:p-6">
-                      <div className="rounded-full bg-yellow-500/10 p-2 md:p-3">
-                        <Clock className="size-5 md:size-6" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground md:text-sm">Сейчас идёт</p>
-                        <p className="text-xl font-bold md:text-2xl">{activeEventsCount}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardContent className="flex items-center gap-4 p-4 md:p-6">
-                      <div className="rounded-full bg-blue-500/10 p-2 md:p-3">
-                        <Map className="size-5 md:size-6" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground md:text-sm">Среднее число участников</p>
-                        <p className="text-xl font-bold md:text-2xl">
-                          {Number.isNaN(stats.averageParticipants) ? '—' : stats.averageParticipants}
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <QuickStatsCard
+                    title="Всего мероприятий"
+                    icon={Calendar}
+                    value={stats.total}
+                    color="blue"
+                  />
+                  <QuickStatsCard
+                    title="Завершено"
+                    icon={CheckCircle}
+                    value={finishedEventsCount}
+                    color="green"
+                  />
+                  <QuickStatsCard
+                    title="Сейчас идёт"
+                    icon={Clock}
+                    value={activeEventsCount}
+                    color="yellow"
+                  />
+                  <QuickStatsCard
+                    title="Среднее число участников"
+                    icon={Map}
+                    value={Number.isNaN(stats.averageParticipants) ? '—' : stats.averageParticipants}
+                    color="purple"
+                  />
                 </div>
 
                 {events.length === 0

@@ -1,4 +1,5 @@
 import { $api } from '@/api'
+import { QuickStatsCard } from '@/components/analytics/QuickStatsCard'
 import { EventCard } from '@/components/EventCard'
 import { Notifications } from '@/components/Notifications'
 import { Badge } from '@/components/ui/badge'
@@ -15,7 +16,6 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { plainDatesForFilter } from '@/lib/utils'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Temporal } from 'temporal-polyfill'
-import ArrowUpRight from '~icons/lucide/arrow-up-right'
 import Award from '~icons/lucide/award'
 import Building from '~icons/lucide/building'
 import CalendarIcon from '~icons/lucide/calendar'
@@ -101,128 +101,45 @@ function RouteComponent() {
           {federationsLoading || feedbackLoading
             ? (
                 <>
-                  <Card>
-                    <CardContent className="pt-4">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-2">
-                          <Skeleton className="h-4 w-24" />
-                          <Skeleton className="h-8 w-16" />
-                        </div>
-                        <Skeleton className="size-8 rounded" />
-                      </div>
-                      <Skeleton className="mt-4 h-4 w-32" />
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="pt-4">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-2">
-                          <Skeleton className="h-4 w-24" />
-                          <Skeleton className="h-8 w-16" />
-                        </div>
-                        <Skeleton className="size-8 rounded" />
-                      </div>
-                      <Skeleton className="mt-4 h-4 w-32" />
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="pt-4">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-2">
-                          <Skeleton className="h-4 w-24" />
-                          <Skeleton className="h-8 w-16" />
-                        </div>
-                        <Skeleton className="size-8 rounded" />
-                      </div>
-                      <Skeleton className="mt-4 h-4 w-32" />
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="pt-4">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-2">
-                          <Skeleton className="h-4 w-24" />
-                          <Skeleton className="h-8 w-16" />
-                        </div>
-                        <Skeleton className="size-8 rounded" />
-                      </div>
-                      <Skeleton className="mt-4 h-4 w-32" />
-                    </CardContent>
-                  </Card>
+                  <Skeleton className="h-[8.125rem]" />
+                  <Skeleton className="h-[8.125rem]" />
+                  <Skeleton className="h-[8.125rem]" />
+                  <Skeleton className="h-[8.125rem]" />
                 </>
               )
             : (
                 <>
-                  <Card>
-                    <CardContent className="pt-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-gray-500">
-                            Всего федераций
-                          </p>
-                          <p className="text-2xl font-bold">{federationStats.total}</p>
-                        </div>
-                        <Building className="size-8 text-blue-500" />
-                      </div>
-                      <div className="mt-4 flex items-center text-sm text-gray-500">
-                        <ArrowUpRight className="mr-1 size-4 text-green-500" />
-                        {federationStats.pending}
-                        {' '}
-                        на рассмотрении
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="pt-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-gray-500">
-                            Аккредитовано
-                          </p>
-                          <p className="text-2xl font-bold">{federationStats.accredited}</p>
-                        </div>
-                        <Award className="size-8 text-green-500" />
-                      </div>
-                      <div className="mt-4 flex items-center text-sm text-gray-500">
-                        {((federationStats.accredited / federationStats.total) * 100).toFixed(1)}
-                        % от общего числа
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="pt-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-gray-500">
-                            Мероприятий
-                          </p>
-                          <p className="text-2xl font-bold">{upcomingEvents?.events.length ?? 0}</p>
-                        </div>
-                        <CalendarIcon className="size-8 text-purple-500" />
-                      </div>
-                      <div className="mt-4 flex items-center text-sm text-gray-500">
-                        На ближайшие 30 дней
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="pt-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-gray-500">
-                            Запросов
-                          </p>
-                          <p className="text-2xl font-bold">{feedbackStats.total}</p>
-                        </div>
-                        <FileText className="size-8 text-yellow-500" />
-                      </div>
-                      <div className="mt-4 flex items-center text-sm text-gray-500">
-                        {feedbackStats.newThisWeek}
-                        {' '}
-                        новых за неделю
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <QuickStatsCard
+                    title="Всего федераций"
+                    icon={Building}
+                    value={federationStats.total}
+                    secondaryValue={federationStats.pending}
+                    secondaryText="на рассмотрении"
+                    color="blue"
+                  />
+                  <QuickStatsCard
+                    title="Аккредитовано"
+                    icon={Award}
+                    value={federationStats.accredited}
+                    secondaryText="от общего числа"
+                    secondaryValue={`${((federationStats.accredited / federationStats.total) * 100).toFixed(1)}%`}
+                    color="green"
+                  />
+                  <QuickStatsCard
+                    title="Мероприятий"
+                    icon={CalendarIcon}
+                    value={upcomingEvents?.events.length}
+                    secondaryText="На ближайшие 30 дней"
+                    color="purple"
+                  />
+                  <QuickStatsCard
+                    title="Запросов"
+                    icon={FileText}
+                    value={feedbackStats.total}
+                    secondaryValue={feedbackStats.newThisWeek}
+                    secondaryText="новых за неделю"
+                    color="yellow"
+                  />
                 </>
               )}
         </div>

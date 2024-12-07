@@ -1,5 +1,6 @@
 import { $api } from '@/api'
 import { useMe } from '@/api/me'
+import { QuickStatsCard } from '@/components/analytics/QuickStatsCard'
 import { ColoredBadge } from '@/components/ColoredBadge'
 import { EventCard } from '@/components/EventCard'
 import { Notifications } from '@/components/Notifications'
@@ -104,66 +105,30 @@ function RouteComponent() {
       <div className="grid gap-6">
         {/* Quick Stats */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">
-                    Мероприятий
-                  </p>
-                  <span className="text-2xl font-bold">
-                    {federationStats?.total_competitions ?? (<Skeleton className="mr-2 h-8 w-12" />)}
-                  </span>
-                </div>
-                <Award className="size-8 text-yellow-500" />
-              </div>
-              <div className="mt-4 flex items-center text-sm text-gray-500">
-                {federationStats?.competitions_for_last_month ?? (<Skeleton className="mr-2 size-6" />)}
-                {' '}
-                за последний месяц
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">
-                    Всего участников
-                  </p>
-                  <span className="text-2xl font-bold">
-                    {federationStats?.total_participations ?? (<Skeleton className="mr-2 h-8 w-12" />)}
-                  </span>
-                </div>
-                <Users className="size-8 text-blue-500" />
-              </div>
-              <div className="mt-4 flex items-center text-sm text-gray-500">
-                {federationStats?.participations_for_last_month ?? (<Skeleton className="mr-2 size-6" />)}
-                {' '}
-                за последний месяц
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">
-                    Всего команд
-                  </p>
-                  <span className="text-2xl font-bold">
-                    {federationStats?.total_teams ?? (<Skeleton className="mr-2 h-8 w-12" />)}
-                  </span>
-                </div>
-                <Users className="size-8 text-purple-500" />
-              </div>
-              <div className="mt-4 flex items-center text-sm text-gray-500">
-                {federationStats?.teams_for_last_month ?? (<Skeleton className="mr-2 size-6" />)}
-                {' '}
-                за последний месяц
-              </div>
-            </CardContent>
-          </Card>
+          <QuickStatsCard
+            title="Мероприятий"
+            icon={Award}
+            value={federationStats?.total_competitions}
+            secondaryValue={federationStats?.competitions_for_last_month ?? null}
+            secondaryText="за последний месяц"
+            color="yellow"
+          />
+          <QuickStatsCard
+            title="Всего участников"
+            icon={Users}
+            value={federationStats?.total_participations}
+            secondaryValue={federationStats?.participations_for_last_month ?? null}
+            secondaryText="за последний месяц"
+            color="blue"
+          />
+          <QuickStatsCard
+            title="Всего команд"
+            icon={Users}
+            value={federationStats?.total_teams}
+            secondaryValue={federationStats?.teams_for_last_month ?? null}
+            secondaryText="за последний месяц"
+            color="purple"
+          />
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
