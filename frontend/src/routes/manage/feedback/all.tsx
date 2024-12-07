@@ -23,7 +23,7 @@ function RouteComponent() {
       {feedbackList?.map(feedback => (
         <div
           key={feedback.id}
-          className="relative rounded-lg border bg-card p-4 text-card-foreground shadow-sm transition-colors"
+          className="relative mb-2 rounded-lg border bg-card p-4 text-card-foreground shadow-sm transition-colors"
         >
           <div className="flex flex-col gap-3">
             {/* Header with subject and timestamp */}
