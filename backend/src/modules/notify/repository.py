@@ -64,7 +64,8 @@ class NotifyRepository:
             msg = f'<p>Обновление <a href="{href}">статуса аккредитации события {event.name}</a></p><p>Статус: {status_element}</p><p>Комментарий: {created.inner.status_comment}</p>'
         elif isinstance(created.inner, NewFeedback):
             feedback = await feedback_repository.get(created.inner.feedback_id)
-            msg = f"<p>Получена новая обратная связь: {feedback.text}</p><p>{feedback.email}</p>"
+            href = "https://champ.innohassle.ru/manage/feedback/all"
+            msg = f'<p>Получена <a href="{href}">новая обратная связь</a>: {feedback.text}</p><p>{feedback.email}</p>'
         else:
             msg = "Новое уведомление!"
         message = smtp_repository.render_notify_message(msg)
