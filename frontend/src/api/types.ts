@@ -451,6 +451,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/federations/{id}/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Stats Federation */
+        get: operations["federations_stats_federation"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/federations/{id}": {
         parameters: {
             query?: never;
@@ -1456,6 +1473,39 @@ export interface components {
              */
             notified_about_interaction: boolean;
         };
+        /** FederationStats */
+        FederationStats: {
+            /**
+             * Total Participations
+             * @description Сколько всего участий в мероприятиях этой федерации
+             */
+            total_participations: number;
+            /**
+             * Participations For Last Month
+             * @description Сколько участников было на мероприятиях этой федерации за последний месяц
+             */
+            participations_for_last_month: number;
+            /**
+             * Total Teams
+             * @description Сколько всего команд участвует в мероприятиях этой федерации
+             */
+            total_teams: number;
+            /**
+             * Teams For Last Month
+             * @description Сколько команд было на мероприятиях этой федерации за последний месяц
+             */
+            teams_for_last_month: number;
+            /**
+             * Total Competitions
+             * @description Сколько всего мероприятий провела эта федерация
+             */
+            total_competitions: number;
+            /**
+             * Competitions For Last Month
+             * @description Сколько мероприятий провела эта федерация за последний месяц
+             */
+            competitions_for_last_month: number;
+        };
         /** Feedback */
         Feedback: {
             /**
@@ -1934,6 +1984,7 @@ export type SchemaEventSchema = components['schemas']['EventSchema'];
 export type SchemaEventStatusEnum = components['schemas']['EventStatusEnum'];
 export type SchemaFederation = components['schemas']['Federation'];
 export type SchemaFederationSchema = components['schemas']['FederationSchema'];
+export type SchemaFederationStats = components['schemas']['FederationStats'];
 export type SchemaFeedback = components['schemas']['Feedback'];
 export type SchemaFeedbackSchema = components['schemas']['FeedbackSchema'];
 export type SchemaFilters = components['schemas']['Filters'];
@@ -2792,6 +2843,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Federation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    federations_stats_federation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FederationStats"];
                 };
             };
             /** @description Validation Error */

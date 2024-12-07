@@ -25,6 +25,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -53,12 +54,24 @@ function RouteComponent() {
   const { id: federationId } = Route.useParams()
   const [isLoading, setIsLoading] = useState(false)
   const { data: me } = useMe()
+  const queryClient = useQueryClient()
   const { data: federation, refetch } = $api.useQuery('get', '/federations/{id}', {
     params: { path: { id: federationId } },
   })
   const { mutate: updateFederation } = $api.useMutation(
     'put',
     '/federations/{id}/',
+  )
+  const { mutate: touchFederation } = $api.useMutation(
+    'post',
+    '/federations/{id}/touch',
+    {
+      onSettled: () => {
+        queryClient.invalidateQueries({
+          queryKey: $api.queryOptions('get', '/federations/{id}', { params: { path: { id: federationId } } }).queryKey,
+        })
+      },
+    },
   )
   const { toast } = useToast()
 
@@ -127,6 +140,7 @@ function RouteComponent() {
         site: data.site,
         address: data.address,
         logo: data.logo,
+        notified_about_interaction: federation.notified_about_interaction,
       }
 
       updateFederation(
@@ -217,6 +231,19 @@ function RouteComponent() {
                       </div>
                     </div>
                   )}
+
+                  {(federation.last_interaction_at === null
+                    || new Date(federation.last_interaction_at).getTime() < Date.now() - 60 * 1000) // 1 minute
+                    && (
+                      <div className="flex flex-col gap-1.5">
+                        <span className="font-medium">Данные давно не обновлялись:</span>
+                        <div className="flex gap-2">
+                          <Button type="button" variant="outline" onClick={() => touchFederation({ params: { path: { id: federationId } } })}>
+                            Отметить как актуальные
+                          </Button>
+                        </div>
+                      </div>
+                    )}
                 </div>
               )
             : (
