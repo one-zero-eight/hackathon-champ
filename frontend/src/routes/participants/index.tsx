@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { cn } from '@/lib/utils'
+import { cn, pluralize } from '@/lib/utils'
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import Search from '~icons/lucide/search'
@@ -98,7 +98,7 @@ function ParticipantCard({ participant, onClick, rank }: { participant: any, onC
         <div className="text-lg font-semibold">
           {participant.total}
           {' '}
-          участий
+          {pluralize(participant.total, 'участие', 'участия', 'участий')}
         </div>
       </div>
     </Card>
