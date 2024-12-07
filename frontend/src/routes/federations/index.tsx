@@ -62,8 +62,8 @@ function RouteComponent() {
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline" className="w-full justify-start text-muted-foreground">
-              <Search />
-              Поиск федерации...
+              <Search className="size-4" />
+              <span>Поиск федерации...</span>
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
@@ -112,10 +112,11 @@ function RouteComponent() {
                           <FederationLogo logoUrl={federation.logo} alt={federation.region} size="card" />
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <h3 className="font-semibold">{federation.region}</h3>
+                              <h3 className="text-sm font-medium">{federation.region}</h3>
                               <StatusIcon
                                 status={federation.status}
                                 className={cn(
+                                  'size-4',
                                   federation.status === 'on_consideration' && 'text-yellow-500',
                                   federation.status === 'accredited' && 'text-green-500',
                                   federation.status === 'rejected' && 'text-red-500',
@@ -123,27 +124,27 @@ function RouteComponent() {
                               />
                             </div>
                             {federation.district && (
-                              <p className="text-sm text-muted-foreground">{federation.district}</p>
+                              <p className="text-xs text-muted-foreground">{federation.district}</p>
                             )}
                           </div>
                         </div>
                       </CardHeader>
                       <CardContent className="flex-1">
                         {federation.head && (
-                          <div className="flex items-center gap-2 text-sm">
+                          <div className="flex items-center gap-2 text-xs">
                             <User className="size-4" />
                             <span>{federation.head}</span>
                           </div>
                         )}
                         <div className="mt-2 space-y-1">
                           {federation.email && (
-                            <div className="flex items-center gap-2 text-sm">
+                            <div className="flex items-center gap-2 text-xs">
                               <Mail className="size-4" />
                               <span>{federation.email}</span>
                             </div>
                           )}
                           {federation.phone && (
-                            <div className="flex items-center gap-2 text-sm">
+                            <div className="flex items-center gap-2 text-xs">
                               <Phone className="size-4" />
                               <span>{federation.phone}</span>
                             </div>

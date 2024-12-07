@@ -91,10 +91,10 @@ function RouteComponent() {
 
   if (isPending) {
     return (
-      <div className="container mx-auto space-y-6 p-8">
-        <div>
-          <h1 className="text-3xl font-bold">Управление федерациями</h1>
-          <p className="mt-2 text-muted-foreground">
+      <div className="container mx-auto space-y-6 p-6">
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold">Управление федерациями</h1>
+          <p className="text-muted-foreground">
             Просмотр и управление статусами федераций
           </p>
         </div>
@@ -166,10 +166,10 @@ function RouteComponent() {
   }
 
   return (
-    <div className="container mx-auto space-y-6 p-8">
-      <div>
-        <h1 className="text-3xl font-bold">Управление федерациями</h1>
-        <p className="mt-2 text-muted-foreground">
+    <div className="container mx-auto space-y-6 p-6">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold">Управление федерациями</h1>
+        <p className="text-muted-foreground">
           Просмотр и управление статусами федераций
         </p>
       </div>
