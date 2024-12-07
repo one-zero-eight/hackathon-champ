@@ -1,9 +1,15 @@
 import type { Event } from '@/lib/types'
-import type { Temporal } from 'temporal-polyfill'
 import { useMe } from '@/api/me.ts'
+import { EventDetailsDialog } from '@/components/EventDetailsDialog.tsx'
 import { EventExportToCalButton } from '@/components/EventExportToCalButton'
 import { Button } from '@/components/ui/button.tsx'
-import { cn, infoForDateRange, locationText, urlToMaps } from '@/lib/utils.ts'
+import {
+  cn,
+  infoForDateRange,
+  locationText,
+  plainDateStr,
+  urlToMaps,
+} from '@/lib/utils.ts'
 import { Link } from '@tanstack/react-router'
 import LinkIcon from '~icons/lucide/link'
 import MapPin from '~icons/lucide/map-pin'
@@ -11,25 +17,6 @@ import Users from '~icons/lucide/users'
 import { EventStatusBadge } from './EventStatusBadge'
 import { Badge } from './ui/badge'
 import { Separator } from './ui/separator'
-
-const MONTH_NAMES: Record<number, string> = {
-  1: 'ЯНВ',
-  2: 'ФЕВ',
-  3: 'МАР',
-  4: 'АПР',
-  5: 'МАЙ',
-  6: 'ИЮН',
-  7: 'ИЮЛ',
-  8: 'АВГ',
-  9: 'СЕН',
-  10: 'ОКТ',
-  11: 'НОЯ',
-  12: 'ДЕК',
-}
-
-function plainDateStr(d: Temporal.PlainDate) {
-  return `${d.day} ${MONTH_NAMES[d.month]}`
-}
 
 export function EventCard({
   event,
@@ -160,13 +147,19 @@ export function EventCard({
 
         <div className="flex items-center gap-2">
           <EventExportToCalButton event={event} />
-          {((me?.federation && me.federation === event.host_federation) || me?.role === 'admin') && (
+          <EventDetailsDialog event={event} />
+          {((me?.federation && me.federation === event.host_federation)
+            || me?.role === 'admin') && (
             <Button
               asChild
               className="h-7 w-fit rounded-md px-2 text-xs"
               variant="secondary"
             >
-              <Link to="/manage/events/$id" params={{ id: event.id }} className="!text-blue-500">
+              <Link
+                to="/manage/events/$id"
+                params={{ id: event.id }}
+                className="!text-blue-500"
+              >
                 Редактировать
               </Link>
             </Button>
@@ -174,7 +167,10 @@ export function EventCard({
         </div>
       </div>
 
-      <EventStatusBadge className="absolute right-4 top-4" status={event.status} />
+      <EventStatusBadge
+        className="absolute right-4 top-4"
+        status={event.status}
+      />
     </div>
   )
 }

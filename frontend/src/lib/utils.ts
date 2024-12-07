@@ -17,14 +17,17 @@ export function locationText({ country, city, region }: Location) {
   return joinName([country, region, city])
 }
 
-export function infoForDateRange(a: Temporal.PlainDate | string, b: Temporal.PlainDate | string): {
-  start: Temporal.PlainDate
-  end: Temporal.PlainDate
-  daysTillStart: number
-  daysTillEnd: number
-  time: 'past' | 'present' | 'future'
-  label: string
-} {
+export function infoForDateRange(
+  a: Temporal.PlainDate | string,
+  b: Temporal.PlainDate | string,
+): {
+    start: Temporal.PlainDate
+    end: Temporal.PlainDate
+    daysTillStart: number
+    daysTillEnd: number
+    time: 'past' | 'present' | 'future'
+    label: string
+  } {
   const today = Temporal.Now.plainDateISO()
   try {
     const start
@@ -77,7 +80,10 @@ export function infoForDateRange(a: Temporal.PlainDate | string, b: Temporal.Pla
   }
 }
 
-export function plainDatesForFilter(from: Temporal.PlainDate | null, to: Temporal.PlainDate | null): Filters['date'] {
+export function plainDatesForFilter(
+  from: Temporal.PlainDate | null,
+  to: Temporal.PlainDate | null,
+): Filters['date'] {
   const out: Filters['date'] = {}
   if (from) {
     out.start_date = from.toPlainDateTime('00:00:00').toString()
@@ -139,10 +145,7 @@ export function urlToMaps(location: Location) {
  * labelForDateDiff(new Date(), new Date(Date.now() - 2 * 60 * 60 * 1000)) // "2 часа назад"
  * labelForDateDiff(new Date(), new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)) // "2 дня назад"
  */
-export function labelForDateDiff(
-  from: Date,
-  to: Date,
-): string {
+export function labelForDateDiff(from: Date, to: Date): string {
   const aMs = from.getTime()
   const bMs = to.getTime()
 
@@ -173,4 +176,23 @@ export const STATUS_TEXT: Record<EventStatus, string> = {
 
 export function getStatusText(status: EventStatus | string) {
   return status in STATUS_TEXT ? STATUS_TEXT[status as EventStatus] : status
+}
+
+const MONTH_NAMES: Record<number, string> = {
+  1: 'ЯНВ',
+  2: 'ФЕВ',
+  3: 'МАР',
+  4: 'АПР',
+  5: 'МАЙ',
+  6: 'ИЮН',
+  7: 'ИЮЛ',
+  8: 'АВГ',
+  9: 'СЕН',
+  10: 'ОКТ',
+  11: 'НОЯ',
+  12: 'ДЕК',
+}
+
+export function plainDateStr(d: Temporal.PlainDate) {
+  return `${d.day} ${MONTH_NAMES[d.month]}`
 }

@@ -132,7 +132,7 @@ export function EditEventFormProtocols({ form, onDrop, className }: EditEventFor
   )
 }
 
-function getProtocolUrl(protocol: SchemaProtocol) {
+export function getProtocolUrl(protocol: SchemaProtocol) {
   if (protocol.by_file)
     return `/api/file_worker/download?url=${encodeURIComponent(protocol.by_file)}`
   if (protocol.by_url)
@@ -140,7 +140,7 @@ function getProtocolUrl(protocol: SchemaProtocol) {
   return ''
 }
 
-function getProtocolLabel(protocol: SchemaProtocol) {
+export function getProtocolLabel(protocol: SchemaProtocol) {
   if (protocol.by_file)
     return protocol.by_file.split('/').pop()
   if (protocol.by_url)
