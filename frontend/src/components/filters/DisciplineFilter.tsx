@@ -112,24 +112,26 @@ export function DisciplineFilter(props: FilterBaseProps<Filters['discipline']>) 
         </PopoverContent>
       </Popover>
 
-      <div className="flex flex-col gap-2">
-        {selected.map(name => (
-          <div
-            key={name}
-            className="flex items-center justify-between rounded bg-blue-50 p-2 pl-4"
-          >
-            <span className="mr-2 text-sm">{name}</span>
-            <Button
-              variant="outline"
-              size="icon"
-              className="shrink-0"
-              onClick={() => handleSelect(name)}
+      {selected.length > 0 && (
+        <div className="flex flex-col gap-2">
+          {selected.map(name => (
+            <div
+              key={name}
+              className="flex items-center justify-between rounded bg-blue-50 p-2 pl-4"
             >
-              <X />
-            </Button>
-          </div>
-        ))}
-      </div>
+              <span className="mr-2 text-sm">{name}</span>
+              <Button
+                variant="outline"
+                size="icon"
+                className="shrink-0"
+                onClick={() => handleSelect(name)}
+              >
+                <X />
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
     </BaseFilter>
   )
 }

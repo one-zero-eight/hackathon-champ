@@ -12,6 +12,7 @@ import { ru } from 'date-fns/locale/ru'
 import { useState } from 'react'
 import { Temporal } from 'temporal-polyfill'
 import CalendarIcon from '~icons/lucide/calendar'
+import { Separator } from '../ui/separator'
 import { BaseFilter } from './BaseFilter'
 
 export function DatesFilter(props: FilterBaseProps<Filters['date']>) {
@@ -31,7 +32,13 @@ export function DatesFilter(props: FilterBaseProps<Filters['date']>) {
           placeholder="Не раньше"
           className="w-full"
         />
-        <span className="text-sm text-muted-foreground">до</span>
+
+        <div className="flex items-center gap-2">
+          <Separator className="flex-1" />
+          <span className="text-sm text-muted-foreground">до</span>
+          <Separator className="flex-1" />
+        </div>
+
         <DatePicker
           value={valueEndPlain}
           onChange={v => onChange(plainDatesForFilter(valueStartPlain, v))}
@@ -56,6 +63,7 @@ export function DatePicker({
 }) {
   const selectedDate = value ? plainToDate(value) : undefined
   const [open, setOpen] = useState(false)
+  const today = Temporal.Now.plainDateISO()
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -72,11 +80,13 @@ export function DatePicker({
           <CalendarIcon className="mr-2 size-4 shrink-0" />
           <span className="flex-1 truncate">
             {value
-              ? plainToDate(value).toLocaleString('ru-RU', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-              })
+              ? value.equals(today)
+                ? 'Сегодня'
+                : plainToDate(value).toLocaleString('ru-RU', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                })
               : placeholder}
           </span>
         </Button>

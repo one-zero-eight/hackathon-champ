@@ -31,24 +31,12 @@ export function AllFilters({
   }
 
   return (
-    <div className={cn('flex flex-col gap-6', className)}>
-      <LocationFilter
-        disabled={disabled}
-        label="Место проведения"
-        value={filters.location}
-        onChange={getOnChange('location')}
-      />
+    <div className={cn('flex flex-col gap-8', className)}>
       <FederationFilter
         disabled={disabled}
         label="Федерация"
         value={filters.host_federation}
         onChange={getOnChange('host_federation')}
-      />
-      <DisciplineFilter
-        disabled={disabled}
-        label="Дисциплина"
-        value={filters.discipline}
-        onChange={getOnChange('discipline')}
       />
       {!exclude.includes('date') && (
         <DatesFilter
@@ -58,6 +46,18 @@ export function AllFilters({
           onChange={getOnChange('date')}
         />
       )}
+      <DisciplineFilter
+        disabled={disabled}
+        label="Дисциплина"
+        value={filters.discipline}
+        onChange={getOnChange('discipline')}
+      />
+      <LocationFilter
+        disabled={disabled}
+        label="Место проведения"
+        value={filters.location}
+        onChange={getOnChange('location')}
+      />
       <MinMaxFilter
         disabled={disabled}
         label="Количество участников"

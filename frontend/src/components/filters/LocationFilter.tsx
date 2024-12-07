@@ -181,25 +181,27 @@ export function LocationFilter(props: FilterBaseProps<Filters['location']>) {
         </PopoverContent>
       </Popover>
 
-      <div className="flex flex-col gap-2">
-        {selected.map(({ t, name, filter }) => (
-          <div
-            key={name}
-            className="flex items-center rounded bg-blue-50 p-2 pl-4"
-          >
-            <span className="mr-2 text-sm">{name}</span>
-            <LocBadge t={t} />
-            <Button
-              variant="outline"
-              size="icon"
-              className="shrink-0"
-              onClick={() => handleSelect(filter)}
+      {selected.length > 0 && (
+        <div className="flex flex-col gap-2">
+          {selected.map(({ t, name, filter }) => (
+            <div
+              key={name}
+              className="flex items-center rounded bg-blue-50 p-2 pl-4"
             >
-              <X />
-            </Button>
-          </div>
-        ))}
-      </div>
+              <span className="mr-2 text-sm">{name}</span>
+              <LocBadge t={t} />
+              <Button
+                variant="outline"
+                size="icon"
+                className="shrink-0"
+                onClick={() => handleSelect(filter)}
+              >
+                <X />
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
     </BaseFilter>
   )
 }
