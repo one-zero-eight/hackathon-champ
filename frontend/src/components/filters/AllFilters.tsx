@@ -2,6 +2,7 @@ import type { Filters } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { DatesFilter } from './DatesFilter'
 import { DisciplineFilter } from './DisciplineFilter'
+import { FederationFilter } from './FederationFilter'
 import { GenderSelect } from './GenderSelect'
 import { LocationFilter } from './LocationFilter'
 import { MinMaxFilter } from './MinMaxFilter'
@@ -36,6 +37,12 @@ export function AllFilters({
         label="Место проведения"
         value={filters.location}
         onChange={getOnChange('location')}
+      />
+      <FederationFilter
+        disabled={disabled}
+        label="Федерация"
+        value={filters.host_federation}
+        onChange={getOnChange('host_federation')}
       />
       <DisciplineFilter
         disabled={disabled}
