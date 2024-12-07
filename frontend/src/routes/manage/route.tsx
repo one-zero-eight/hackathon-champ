@@ -19,7 +19,7 @@ function RouteComponent() {
   const { data: me, isLoading } = useMe()
 
   return (
-    <div className="mt-[calc(var(--header-height)*-1)] flex-grow bg-gray-50">
+    <div className="mt-[calc(var(--header-height)*-1)] flex-grow bg-gray-50 print:bg-transparent">
       <aside
         className="do-not-print fixed bottom-0 left-0 top-[var(--header-height)] w-[var(--manage-sidebar-width)] overflow-y-auto border-r bg-white"
       >

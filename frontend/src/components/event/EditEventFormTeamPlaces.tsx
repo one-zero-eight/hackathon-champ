@@ -23,10 +23,10 @@ export function EditEventFormTeamPlaces({
   })
 
   return (
-    <div className={cn('flex flex-col gap-2', className)}>
+    <div className={cn('flex flex-col gap-2', className, fields.length === 0 && 'do-not-print')}>
       <Label className="text-base font-medium">Места (по командам)</Label>
 
-      <div className="flex flex-col gap-2 rounded-md border bg-neutral-100 p-4">
+      <div className="flex flex-col gap-2 rounded-md border bg-neutral-100 p-4 print:border-0 print:bg-transparent print:p-0">
         {fields.length === 0 && (
           <p className="py-8 text-center text-sm text-muted-foreground">
             Места не указаны
@@ -96,7 +96,7 @@ export function EditEventFormTeamPlaces({
                     type="button"
                     variant="destructive"
                     size="icon"
-                    className="mt-6"
+                    className="do-not-print mt-6"
                     onClick={() => remove(index)}
                   >
                     <X className="size-4" />
@@ -105,7 +105,7 @@ export function EditEventFormTeamPlaces({
 
                 <div className="space-y-2">
                   <FormLabel>Участники команды</FormLabel>
-                  <div className="space-y-2">
+                  <div className="space-y-2 print:flex print:items-start print:gap-2 print:space-y-0">
                     {form.watch(`team_places.${index}.members`).map((_, memberIndex) => (
                       <div key={memberIndex} className="flex gap-2">
                         <FormField
@@ -124,6 +124,7 @@ export function EditEventFormTeamPlaces({
                           type="button"
                           variant="destructive"
                           size="icon"
+                          className="do-not-print"
                           onClick={() => {
                             const members = form.getValues(`team_places.${index}.members`)
                             form.setValue(
@@ -140,7 +141,7 @@ export function EditEventFormTeamPlaces({
                     <Button
                       type="button"
                       variant="outline"
-                      className="w-full"
+                      className="do-not-print w-full"
                       onClick={() => {
                         const members = form.getValues(`team_places.${index}.members`)
                         form.setValue(
@@ -160,10 +161,11 @@ export function EditEventFormTeamPlaces({
           </div>
         </div>
 
-        <Separator />
+        <Separator className="do-not-print" />
 
         <Button
           type="button"
+          className="do-not-print"
           onClick={() => append({
             team: '',
             place: fields.length + 1,

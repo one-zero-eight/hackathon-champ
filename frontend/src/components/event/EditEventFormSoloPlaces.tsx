@@ -24,10 +24,10 @@ export function EditEventFormSoloPlaces({
   })
 
   return (
-    <div className={cn('flex flex-col gap-2', className)}>
+    <div className={cn('flex flex-col gap-2', className, fields.length === 0 && 'do-not-print')}>
       <Label className="text-base font-medium">Места (индивидуальные)</Label>
 
-      <div className="flex flex-col gap-2 rounded-md border bg-neutral-100 p-4">
+      <div className="flex flex-col gap-2 rounded-md border bg-neutral-100 p-4 print:border-0 print:bg-transparent print:p-0">
         {fields.length === 0 && (
           <p className="py-8 text-center text-sm text-muted-foreground">
             Места не указаны
@@ -96,7 +96,7 @@ export function EditEventFormSoloPlaces({
                   type="button"
                   variant="destructive"
                   size="icon"
-                  className="mt-6"
+                  className="do-not-print mt-6"
                   onClick={() => remove(index)}
                 >
                   <X className="size-4" />
@@ -106,10 +106,11 @@ export function EditEventFormSoloPlaces({
           </div>
         </div>
 
-        <Separator />
+        <Separator className="do-not-print" />
 
         <Button
           type="button"
+          className="do-not-print"
           onClick={() => append({
             participant: '',
             place: fields.length + 1,

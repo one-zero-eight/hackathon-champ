@@ -41,7 +41,7 @@ export function EditEventFormProtocols({ form, onDrop, className }: EditEventFor
       control={form.control}
       name="protocols"
       render={({ field }) => (
-        <FormItem className={cn('flex flex-col gap-2', className)}>
+        <FormItem className={cn('do-not-print flex flex-col gap-2', className)}>
           <Label className="text-base font-medium" htmlFor="event-protocols">
             Протоколы
           </Label>

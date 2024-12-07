@@ -14,6 +14,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import Printer from '~icons/lucide/printer'
 import { Skeleton } from '../ui/skeleton'
 import { EditEventFormAgesField } from './EditEventFormAgesField'
 import { EditEventFormDatesField } from './EditEventFormDatesField'
@@ -145,7 +146,7 @@ export function EditEventForm({ eventId }: { eventId: string }) {
 
 function PageHeader() {
   return (
-    <div className="mb-8 space-y-2">
+    <div className="do-not-print mb-8 space-y-2">
       <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
         Мероприятие
       </h1>
@@ -164,7 +165,7 @@ function StatusCard({
   me: SchemaViewUser
 }) {
   return (
-    <Card className="mb-6">
+    <Card className="do-not-print mb-6">
       <CardHeader className="space-y-1">
         <CardTitle className="text-xl">Текущий статус</CardTitle>
         <CardDescription className="text-sm">
@@ -294,7 +295,7 @@ function GeneralInfoCard({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="do-not-print">
         <Card className="w-full">
           <CardHeader className="space-y-2">
             <CardTitle className="text-center text-xl font-semibold sm:text-left">
@@ -453,12 +454,16 @@ function ResultsCard({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)}>
-        <Card className="w-full">
-          <CardHeader className="space-y-2">
-            <CardTitle className="text-center text-xl font-semibold sm:text-left">
+        <Card className="w-full print:border-0 print:p-0 print:shadow-none">
+          <CardHeader className="space-y-2 print:py-0">
+            <CardTitle className="flex flex-wrap items-end justify-between text-center text-xl font-semibold sm:text-left">
               Результаты соревнования
+              <Button variant="outline" onClick={() => print()}>
+                <Printer className="mr-2 size-4" />
+                Печать
+              </Button>
             </CardTitle>
-            <CardDescription className="text-sm">
+            <CardDescription className="do-not-print text-sm">
               Загрузите протокол мероприятия и укажите места участников и команд
             </CardDescription>
           </CardHeader>
@@ -467,7 +472,7 @@ function ResultsCard({
             <EditEventFormTeamPlaces form={form} />
             <EditEventFormSoloPlaces form={form} />
           </CardContent>
-          <CardFooter className="sticky bottom-0 flex flex-col gap-3 rounded-b-lg border-t bg-white py-4 sm:flex-row sm:gap-4">
+          <CardFooter className="do-not-print sticky bottom-0 flex flex-col gap-3 rounded-b-lg border-t bg-white py-4 sm:flex-row sm:gap-4">
             <EventSuggestResultsButton
               disabled={disabled}
               onSuggestStart={() => setIsSuggesting(true)}
