@@ -80,3 +80,29 @@ body,
   height: 100%;
   overscroll-behavior-y: none;
 }
+
+@media print {
+  .do-not-print,
+  .do-not-print * {
+    /* Remove elements that should not be visible during print */
+    display: none !important;
+  }
+
+  /* Force set page size */
+  @page {
+    size: a4 portrait;
+  }
+
+  * {
+    /* Do not remove background colors */
+    print-color-adjust: exact;
+  }
+}
+
+@media screen {
+  .only-print,
+  .only-print * {
+    /* Remove elements that should be visible only during print */
+    display: none !important;
+  }
+}

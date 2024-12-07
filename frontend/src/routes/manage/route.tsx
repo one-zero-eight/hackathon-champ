@@ -21,7 +21,7 @@ function RouteComponent() {
   return (
     <div className="mt-[calc(var(--header-height)*-1)] flex-grow bg-gray-50">
       <aside
-        className="fixed bottom-0 left-0 top-[var(--header-height)] w-[var(--manage-sidebar-width)] overflow-y-auto border-r bg-white"
+        className="do-not-print fixed bottom-0 left-0 top-[var(--header-height)] w-[var(--manage-sidebar-width)] overflow-y-auto border-r bg-white"
       >
         <div className="flex min-h-full flex-col">
           {isLoading
@@ -44,7 +44,7 @@ function RouteComponent() {
         </div>
       </aside>
 
-      <main className="pl-[var(--manage-sidebar-width)] pt-[var(--header-height)]">
+      <main className="pl-[var(--manage-sidebar-width)] pt-[var(--header-height)] print:pl-0">
         <Outlet />
       </main>
     </div>

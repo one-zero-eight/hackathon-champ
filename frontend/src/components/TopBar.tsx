@@ -37,7 +37,7 @@ export function TopBar() {
   }
 
   return (
-    <header className="fixed top-0 z-50 flex h-[--header-height] w-full items-center border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
+    <header className="do-not-print fixed top-0 z-50 flex h-[--header-height] w-full items-center border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
       <div className="container mx-auto flex w-full items-center justify-between px-4">
         <div className="flex items-center gap-4">
           <Link to="/" className="flex items-center gap-2 whitespace-nowrap">

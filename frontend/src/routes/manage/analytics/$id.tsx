@@ -452,7 +452,7 @@ function PageHeader({
         </p>
       </div>
       {isAdmin && (
-        <Button asChild variant="outline" className="w-full md:w-auto">
+        <Button asChild variant="outline" className="do-not-print w-full md:w-auto">
           <Link to="/manage/analytics">
             Вернуться к списку
           </Link>
