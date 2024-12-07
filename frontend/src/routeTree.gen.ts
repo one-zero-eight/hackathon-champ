@@ -21,6 +21,7 @@ import { Route as DisciplinesImport } from './routes/disciplines'
 import { Route as CalendarImport } from './routes/calendar'
 import { Route as AboutImport } from './routes/about'
 import { Route as ManageRouteImport } from './routes/manage/route'
+import { Route as AuthRouteImport } from './routes/auth/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as ParticipantsIndexImport } from './routes/participants/index'
 import { Route as ManageIndexImport } from './routes/manage/index'
@@ -100,6 +101,12 @@ const ManageRouteRoute = ManageRouteImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const AuthRouteRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
@@ -149,21 +156,21 @@ const EventsEventIdRoute = EventsEventIdImport.update({
 } as any)
 
 const AuthStartResetPasswordRoute = AuthStartResetPasswordImport.update({
-  id: '/auth/start-reset-password',
-  path: '/auth/start-reset-password',
-  getParentRoute: () => rootRoute,
+  id: '/start-reset-password',
+  path: '/start-reset-password',
+  getParentRoute: () => AuthRouteRoute,
 } as any)
 
 const AuthResetPasswordRoute = AuthResetPasswordImport.update({
-  id: '/auth/reset-password',
-  path: '/auth/reset-password',
-  getParentRoute: () => rootRoute,
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => AuthRouteRoute,
 } as any)
 
 const AuthLoginRoute = AuthLoginImport.update({
-  id: '/auth/login',
-  path: '/auth/login',
-  getParentRoute: () => rootRoute,
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AuthRouteRoute,
 } as any)
 
 const ManageFederationsIndexRoute = ManageFederationsIndexImport.update({
@@ -260,6 +267,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRoute
+    }
     '/manage': {
       id: '/manage'
       path: '/manage'
@@ -318,24 +332,24 @@ declare module '@tanstack/react-router' {
     }
     '/auth/login': {
       id: '/auth/login'
-      path: '/auth/login'
+      path: '/login'
       fullPath: '/auth/login'
       preLoaderRoute: typeof AuthLoginImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof AuthRouteImport
     }
     '/auth/reset-password': {
       id: '/auth/reset-password'
-      path: '/auth/reset-password'
+      path: '/reset-password'
       fullPath: '/auth/reset-password'
       preLoaderRoute: typeof AuthResetPasswordImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof AuthRouteImport
     }
     '/auth/start-reset-password': {
       id: '/auth/start-reset-password'
-      path: '/auth/start-reset-password'
+      path: '/start-reset-password'
       fullPath: '/auth/start-reset-password'
       preLoaderRoute: typeof AuthStartResetPasswordImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof AuthRouteImport
     }
     '/events/$eventId': {
       id: '/events/$eventId'
@@ -489,6 +503,22 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
+interface AuthRouteRouteChildren {
+  AuthLoginRoute: typeof AuthLoginRoute
+  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
+  AuthStartResetPasswordRoute: typeof AuthStartResetPasswordRoute
+}
+
+const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthLoginRoute: AuthLoginRoute,
+  AuthResetPasswordRoute: AuthResetPasswordRoute,
+  AuthStartResetPasswordRoute: AuthStartResetPasswordRoute,
+}
+
+const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
+  AuthRouteRouteChildren,
+)
+
 interface ManageEventsRouteChildren {
   ManageEventsLayoutRoute: typeof ManageEventsLayoutRoute
   ManageEventsAllRoute: typeof ManageEventsAllRoute
@@ -545,6 +575,7 @@ const ManageRouteRouteWithChildren = ManageRouteRoute._addFileChildren(
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRouteRouteWithChildren
   '/manage': typeof ManageRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/calendar': typeof CalendarRoute
@@ -580,6 +611,7 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/calendar': typeof CalendarRoute
   '/disciplines': typeof DisciplinesRoute
@@ -615,6 +647,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/auth': typeof AuthRouteRouteWithChildren
   '/manage': typeof ManageRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/calendar': typeof CalendarRoute
@@ -653,6 +686,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
     | '/manage'
     | '/about'
     | '/calendar'
@@ -687,6 +721,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
     | '/about'
     | '/calendar'
     | '/disciplines'
@@ -720,6 +755,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/auth'
     | '/manage'
     | '/about'
     | '/calendar'
@@ -757,6 +793,7 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRouteRoute: typeof AuthRouteRouteWithChildren
   ManageRouteRoute: typeof ManageRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   CalendarRoute: typeof CalendarRoute
@@ -765,9 +802,6 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   SearchRoute: typeof SearchRoute
   TermsRoute: typeof TermsRoute
-  AuthLoginRoute: typeof AuthLoginRoute
-  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
-  AuthStartResetPasswordRoute: typeof AuthStartResetPasswordRoute
   EventsEventIdRoute: typeof EventsEventIdRoute
   FederationsFederationIdRoute: typeof FederationsFederationIdRoute
   FederationsIndexRoute: typeof FederationsIndexRoute
@@ -776,6 +810,7 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRouteRoute: AuthRouteRouteWithChildren,
   ManageRouteRoute: ManageRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   CalendarRoute: CalendarRoute,
@@ -784,9 +819,6 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   SearchRoute: SearchRoute,
   TermsRoute: TermsRoute,
-  AuthLoginRoute: AuthLoginRoute,
-  AuthResetPasswordRoute: AuthResetPasswordRoute,
-  AuthStartResetPasswordRoute: AuthStartResetPasswordRoute,
   EventsEventIdRoute: EventsEventIdRoute,
   FederationsFederationIdRoute: FederationsFederationIdRoute,
   FederationsIndexRoute: FederationsIndexRoute,
@@ -804,6 +836,7 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/auth",
         "/manage",
         "/about",
         "/calendar",
@@ -812,9 +845,6 @@ export const routeTree = rootRoute
         "/privacy",
         "/search",
         "/terms",
-        "/auth/login",
-        "/auth/reset-password",
-        "/auth/start-reset-password",
         "/events/$eventId",
         "/federations/$federationId",
         "/federations/",
@@ -823,6 +853,14 @@ export const routeTree = rootRoute
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/auth": {
+      "filePath": "auth/route.tsx",
+      "children": [
+        "/auth/login",
+        "/auth/reset-password",
+        "/auth/start-reset-password"
+      ]
     },
     "/manage": {
       "filePath": "manage/route.tsx",
@@ -864,13 +902,16 @@ export const routeTree = rootRoute
       "filePath": "terms.tsx"
     },
     "/auth/login": {
-      "filePath": "auth/login.tsx"
+      "filePath": "auth/login.tsx",
+      "parent": "/auth"
     },
     "/auth/reset-password": {
-      "filePath": "auth/reset-password.tsx"
+      "filePath": "auth/reset-password.tsx",
+      "parent": "/auth"
     },
     "/auth/start-reset-password": {
-      "filePath": "auth/start-reset-password.tsx"
+      "filePath": "auth/start-reset-password.tsx",
+      "parent": "/auth"
     },
     "/events/$eventId": {
       "filePath": "events/$eventId.tsx"
