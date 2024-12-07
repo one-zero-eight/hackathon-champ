@@ -269,7 +269,7 @@ function RouteComponent() {
       <div className="mb-8">
         <h1 className="text-2xl font-bold">Аналитика федераций</h1>
         <p className="text-muted-foreground">
-          Статистика и налитика по региональным федерациям
+          Статистика и аналитика по региональным федерациям
         </p>
       </div>
 
