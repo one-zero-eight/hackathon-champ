@@ -226,8 +226,8 @@ function RouteComponent() {
                     <div className="flex flex-col gap-1.5">
                       <span className="font-medium">Сменить статус:</span>
                       <div className="flex gap-2">
-                        <AccrediteFederationDialog federationId={federationId} />
-                        <RejectFederationDialog federationId={federationId} />
+                        {federation.status !== 'accredited' && <AccrediteFederationDialog federationId={federationId} />}
+                        {federation.status !== 'rejected' && <RejectFederationDialog federationId={federationId} />}
                       </div>
                     </div>
                   )}
