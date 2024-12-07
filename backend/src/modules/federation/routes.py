@@ -69,10 +69,16 @@ class FederationStats(BaseSchema):
     "Сколько всего мероприятий провела эта федерация"
     competitions_for_last_month: int
     "Сколько мероприятий провела эта федерация за последний месяц"
+    profile_fill_percentage: int
+    "Процент заполненности профиля федерации"
 
 
 @router.get("/{id}/stats")
 async def stats_federation(id: PydanticObjectId) -> FederationStats:
+    federation = await federation_repository.read_one(id)
+    if federation is None:
+        raise HTTPException(status_code=404, detail="Federation not found")
+
     events = await events_repository.read_for_federation(id)
     now = datetime.datetime.now(datetime.UTC)
     last_month = now - datetime.timedelta(days=30)
@@ -97,6 +103,28 @@ async def stats_federation(id: PydanticObjectId) -> FederationStats:
     total_competitions = len(events)
     competitions_for_last_month = sum(1 for e in events if e.start_date > last_month)
 
+    filled_fields = 0
+
+    if federation.email:
+        filled_fields += 1
+    if federation.phone:
+        filled_fields += 1
+    if federation.head:
+        filled_fields += 1
+    if federation.telegram:
+        filled_fields += 1
+    if federation.site:
+        filled_fields += 1
+    if federation.address:
+        filled_fields += 1
+    if federation.logo:
+        filled_fields += 1
+    if federation.description:
+        filled_fields += 1
+
+    total_fields = 8
+    profile_fill_percentage = (filled_fields / total_fields) * 100
+
     return FederationStats(
         total_participations=total_participation,
         participations_for_last_month=participations_for_last_month,
@@ -104,6 +132,7 @@ async def stats_federation(id: PydanticObjectId) -> FederationStats:
         teams_for_last_month=teams_for_last_month,
         total_competitions=total_competitions,
         competitions_for_last_month=competitions_for_last_month,
+        profile_fill_percentage=round(profile_fill_percentage),
     )
 
 
