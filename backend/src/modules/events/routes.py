@@ -34,48 +34,8 @@ async def get_all_events() -> list[Event]:
     return await events_repository.read_all()
 
 
-@router.get("/{id}", responses={200: {"description": "Info about event"}, 404: {"description": "Event not found"}})
-async def get_event(id: PydanticObjectId) -> Event:
-    """
-    Get info about one event.
-    """
-    e = await events_repository.read_one(id)
-    if e is None:
-        raise HTTPException(status_code=404, detail="Event not found")
-    return e
-
-
-@router.put(
-    "/{id}",
-    responses={
-        200: {"description": "Event info updated"},
-        403: {"description": "Only admin or related federation can update event"},
-        404: {"description": "Event not found"},
-    },
-)
-async def update_event(id: PydanticObjectId, event: EventSchema, auth: USER_AUTH) -> Event:
-    """
-    Update event.
-    """
-    user = await user_repository.read(auth.user_id)
-    if user.role == UserRole.ADMIN or (event.host_federation and user.federation == event.host_federation):
-        was = await events_repository.read_one(id)
-        if was is None:
-            raise HTTPException(status_code=404, detail="Event not found")
-        updated = await events_repository.update(id, event)
-        if was.status != EventStatusEnum.ACCREDITED and updated.status == EventStatusEnum.ACCREDITED:
-            await notify_repository.create_notify(
-                NotifySchema(
-                    for_admin=True, inner=AccreditationRequestEvent(event_id=id, federation_id=event.host_federation)
-                )
-            )
-        return updated
-    else:
-        raise HTTPException(status_code=403, detail="Only admin or related federation can update event")
-
-
 @router.post(
-    "/{id}",
+    "/hint-results",
     responses={
         200: {"description": "Hint for event results"},
         400: {"description": "Cannot parse file"},
@@ -382,3 +342,43 @@ async def get_selection_ics(selection_id: PydanticObjectId):
         media_type="text/calendar",
         headers={"Content-Disposition": 'attachment; filename="schedule.ics"'},
     )
+
+
+@router.get("/{id}", responses={200: {"description": "Info about event"}, 404: {"description": "Event not found"}})
+async def get_event(id: PydanticObjectId) -> Event:
+    """
+    Get info about one event.
+    """
+    e = await events_repository.read_one(id)
+    if e is None:
+        raise HTTPException(status_code=404, detail="Event not found")
+    return e
+
+
+@router.put(
+    "/{id}",
+    responses={
+        200: {"description": "Event info updated"},
+        403: {"description": "Only admin or related federation can update event"},
+        404: {"description": "Event not found"},
+    },
+)
+async def update_event(id: PydanticObjectId, event: EventSchema, auth: USER_AUTH) -> Event:
+    """
+    Update event.
+    """
+    user = await user_repository.read(auth.user_id)
+    if user.role == UserRole.ADMIN or (event.host_federation and user.federation == event.host_federation):
+        was = await events_repository.read_one(id)
+        if was is None:
+            raise HTTPException(status_code=404, detail="Event not found")
+        updated = await events_repository.update(id, event)
+        if was.status != EventStatusEnum.ACCREDITED and updated.status == EventStatusEnum.ACCREDITED:
+            await notify_repository.create_notify(
+                NotifySchema(
+                    for_admin=True, inner=AccreditationRequestEvent(event_id=id, federation_id=event.host_federation)
+                )
+            )
+        return updated
+    else:
+        raise HTTPException(status_code=403, detail="Only admin or related federation can update event")
