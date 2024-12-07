@@ -166,6 +166,8 @@ function RouteComponent() {
   const { data: eventsTotal } = $api.useQuery('post', '/events/search/count', {
     body: {},
   })
+  const { data: federations } = $api.useQuery('get', '/federations/')
+  const { data: participantsCount } = $api.useQuery('get', '/participants/person/count')
   const navigate = useNavigate()
 
   const calendarRef = useRef<HTMLDivElement>(null)
@@ -256,13 +258,13 @@ function RouteComponent() {
                 label: 'Мероприятий в системе',
               },
               {
-                value: 85,
-                suffix: '%',
+                value: federations?.length ?? 1000,
+                suffix: '',
                 label: 'Регионов уже с нами',
               },
               {
-                value: 10000,
-                suffix: '+',
+                value: participantsCount ?? 1000,
+                suffix: '',
                 label: 'Участников соревнований',
               },
             ].map((stat, index) => (

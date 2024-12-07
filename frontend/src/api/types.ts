@@ -511,6 +511,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/federations/{id}/touch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Touch Federation
+         * @description Touch federation to update last_interaction_at.
+         */
+        post: operations["federations_touch_federation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/federations/{id}/": {
         parameters: {
             query?: never;
@@ -811,6 +831,23 @@ export interface paths {
         put?: never;
         /** Set New Password */
         post: operations["email_set_new_password"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/participants/person/count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Participant Count */
+        get: operations["participants_get_participant_count"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1328,6 +1365,17 @@ export interface components {
              * @description Ссылка на канал в Telegram
              */
             telegram: string | null;
+            /**
+             * Last Interaction At
+             * @description Дата последнего взаимодействия с федерацией от представителя
+             */
+            last_interaction_at: string | null;
+            /**
+             * Notified About Interaction
+             * @description Было ли уведомление о взаимодействии
+             * @default false
+             */
+            notified_about_interaction: boolean;
         };
         /** FederationSchema */
         FederationSchema: {
@@ -1396,6 +1444,17 @@ export interface components {
              * @description Ссылка на канал в Telegram
              */
             telegram?: string | null;
+            /**
+             * Last Interaction At
+             * @description Дата последнего взаимодействия с федерацией от представителя
+             */
+            last_interaction_at?: string | null;
+            /**
+             * Notified About Interaction
+             * @description Было ли уведомление о взаимодействии
+             * @default false
+             */
+            notified_about_interaction: boolean;
         };
         /** Feedback */
         Feedback: {
@@ -2865,6 +2924,44 @@ export interface operations {
             };
         };
     };
+    federations_touch_federation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Touch federation */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Only admin or federation owner can update federation */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     federations_update_federation: {
         parameters: {
             query?: never;
@@ -3447,6 +3544,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    participants_get_participant_count: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": number;
                 };
             };
         };
