@@ -7,6 +7,7 @@
         "logo": "https://fsp-russia.com/upload/iblock/7b0/5n5imvtfzfn32tcqsdr2ce5adv7z73qv.jpg",
         "phone": "+79268454512",
         "site": "https://fsp.moscow",
+        "telegram": "https://t.me/fspmsk",
         "address": "г. Москва, ул. Сходненская, д.56"
     },
     {
@@ -146,6 +147,8 @@
         "district": "Южный федеральный округ",
         "region": "Краснодарский край",
         "head": "Алферов Сергей Сергеевич",
+        "site": "https://fspkk.ru/",
+        "phone": "+79885570002",
         "email": "krasnodar@fsp-russia.com",
         "logo": "https://fsp-russia.com/upload/iblock/820/mcqxi2s5h1dbb1e96r701mbjluzpifs8.jpg"
     },
@@ -209,6 +212,8 @@
         "district": "Северо-западный федеральный округ",
         "region": "Калининградская область",
         "head": "Дубинин Иван Витальевич",
+        "site": "https://fsp-kaliningrad.ru/",
+        "telegram": "https://t.me/fsp_kld",
         "email": "info@fsp-kaliningrad.ru",
         "logo": "https://fsp-russia.com/upload/iblock/787/9xxtt1brhrcrznjdvva1yiedgvwxxyyo.jpg"
     },
@@ -257,6 +262,8 @@
     {
         "district": "Северо-западный федеральный округ",
         "region": "г. Санкт Петербург",
+        "telegram": "https://t.me/fspspb",
+        "phone": "+79112646181",
         "head": "Кувиков Денис",
         "email": "saint-petersburg@fsp-russia.com",
         "logo": "https://fsp-russia.com/upload/iblock/635/fgefa46p3zl1hztcx5i14t9f02oq50tt.jpg"
@@ -427,6 +434,8 @@
         "region": "Тюменская область",
         "head": "Сенкевич Людмила Борисовна",
         "email": "tyumen@fsp-russia.com",
+        "address": "Тюменская область, г. Тюмень, ул. Пермякова, д. 3а, помещ. 33",
+        "phone": "+79199347688",
         "logo": "https://fsp-russia.com/upload/iblock/b74/c5vh3pnyt8t579kl9apx33zv03a7dmjj.jpg"
     },
     {
@@ -534,6 +543,7 @@
         "district": "Приволжский федеральный округ",
         "region": "Самарская область",
         "head": "Бабенко Михаил Владимирович",
+        "telegram": "https://t.me/fspsamara",
         "email": "samara@fsp-russia.com",
         "logo": "https://fsp-russia.com/upload/iblock/8f2/emw9yyesaqvoiijt8z8702ye6tjfvkig.jpg"
     },
@@ -612,7 +622,9 @@
         "region": "Луганская Народная Республика",
         "head": "Мальцева-Светличная Ольга Валерьевна",
         "email": "fsp_lnr@mail.ru",
-        "site": "www.fsp-lnr.ru",
+        "phone": "+79094167976",
+        "address": "г. Луганск, кв. Еременко, 4д",
+        "site": "https://www.fsp-lnr.ru/",
         "logo": "https://fsp-russia.com/upload/iblock/584/yawii7yzdof959n9lef7oe99ud5g6qow.jpg"
     },
     {
