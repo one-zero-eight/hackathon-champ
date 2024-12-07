@@ -45,17 +45,17 @@ async def hint_results(file: UploadFile) -> Results:
     return Results(
         solo_places=[
             SoloPlace(
-                place="1",
+                place=1,
                 participant="Иванов Иван Иванович",
                 score=100,
             ),
             SoloPlace(
-                place="2",
+                place=2,
                 participant="Петров Петр Петрович",
                 score=90,
             ),
             SoloPlace(
-                place="3-5",
+                place=3,
                 participant="Сидоров Сидор Сидорович",
                 score=80,
             ),

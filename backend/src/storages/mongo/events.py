@@ -1,6 +1,5 @@
 import datetime
 from enum import StrEnum
-from typing import Any
 
 import pymongo
 from beanie import PydanticObjectId
@@ -60,22 +59,22 @@ class EventStatusEnum(StrEnum):
 
 
 class TeamPlace(BaseSchema):
-    place: str
-    "Место (1, 2, 3-5)"
+    place: int
+    "Место (1, 2, 3)"
     team: str
     "Название команды"
     members: list[str]
     "Состав команды"
-    score: Any | None = None
+    score: int | None = None
     "Очки"
 
 
 class SoloPlace(BaseSchema):
-    place: str
-    "Место (1, 2, 3-5)"
+    place: int
+    "Место (1, 2, 3)"
     participant: str
     "ФИО участника"
-    score: Any | None = None
+    score: int | None = None
     "Очки"
 
 
