@@ -5,6 +5,7 @@ import { TrendAnalysis } from '@/components/analytics/TrendAnalysis'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { getStatusText } from '@/lib/utils'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import {
@@ -29,26 +30,6 @@ import XCircle from '~icons/lucide/x-circle'
 
 const COLORS = ['#0ea5e9', '#22c55e', '#eab308', '#ef4444']
 
-// Helper function to format status
-function formatStatus(status: string) {
-  switch (status) {
-    case 'accredited':
-      return 'Аккредитована'
-    case 'on_consideration':
-      return 'На рассмотрении'
-    case 'rejected':
-      return 'Отклонена'
-    case 'completed':
-      return 'Завершено'
-    case 'in_progress':
-      return 'В процессе'
-    case 'draft':
-      return 'Черновик'
-    default:
-      return status
-  }
-}
-
 // Helper function to format month
 function formatMonth(date: string) {
   return new Date(date).toLocaleString('ru', { month: 'long', year: 'numeric' })
@@ -59,8 +40,8 @@ export const Route = createFileRoute('/manage/analytics/')({
 })
 
 function RouteComponent() {
-  const { data: federationsData, isPending: federationsLoading } = $api.useQuery('get', '/federations/')
-  const { data: eventsData, isPending: eventsLoading } = $api.useQuery('get', '/events/')
+  const { data: federationsData, isLoading: federationsLoading } = $api.useQuery('get', '/federations/')
+  const { data: eventsData, isLoading: eventsLoading } = $api.useQuery('get', '/events/')
 
   const isLoading = federationsLoading || eventsLoading
   const federations = useMemo(() => federationsData ?? [], [federationsData])
@@ -184,7 +165,7 @@ function RouteComponent() {
       : 0
 
     const statusData = Object.entries(federationsByStatus).map(([name, value]) => ({
-      name: formatStatus(name),
+      name: getStatusText(name),
       value,
     }))
 
@@ -288,7 +269,7 @@ function RouteComponent() {
   return (
     <div className="p-6">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold">Аналитика федерация</h1>
+        <h1 className="text-2xl font-bold">Аналитика федераций</h1>
         <p className="text-muted-foreground">
           Статистика и налитика по региональным федерациям
         </p>

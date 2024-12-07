@@ -1468,6 +1468,8 @@ export interface components {
             participant_count?: components["schemas"]["MinMaxFilter"] | null;
             /** By Ids */
             by_ids?: string[] | null;
+            /** Host Federation */
+            host_federation?: string | null;
         };
         /**
          * Gender

@@ -1,14 +1,10 @@
-import type { EventStatus } from '@/lib/types'
+import type { EventStatus, FederationStatus } from '@/lib/types'
+import { getStatusText } from '@/lib/utils'
 import { ColoredBadge } from './ColoredBadge'
 
-const STATUS_TEXT: Record<EventStatus, string> = {
-  draft: 'Черновик',
-  on_consideration: 'На рассмотрении',
-  accredited: 'Аккредитовано',
-  rejected: 'Отклонено',
-}
+type StatusEnum = EventStatus | FederationStatus
 
-const STATUS_COLOR: Record<EventStatus, 'gray' | 'blue' | 'green' | 'red'> = {
+const STATUS_COLOR: Record<StatusEnum, 'gray' | 'blue' | 'green' | 'red'> = {
   draft: 'gray',
   on_consideration: 'blue',
   accredited: 'green',
@@ -19,12 +15,12 @@ export function EventStatusBadge({
   status,
   className,
 }: {
-  status: EventStatus
+  status: StatusEnum
   className?: string
 }) {
   return (
     <ColoredBadge color={STATUS_COLOR[status]} className={className}>
-      {STATUS_TEXT[status]}
+      {getStatusText(status)}
     </ColoredBadge>
   )
 }

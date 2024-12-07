@@ -1,4 +1,4 @@
-import type { Filters, Location } from './types'
+import type { EventStatus, Filters, Location } from './types'
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { Temporal } from 'temporal-polyfill'
@@ -162,4 +162,15 @@ export function labelForDateDiff(
     return `${diffHours} ${pluralize(diffHours, 'час', 'часа', 'часов')} назад`
   const diffDays = Math.floor(diffHours / 24)
   return `${diffDays} ${pluralize(diffDays, 'день', 'дня', 'дней')} назад`
+}
+
+export const STATUS_TEXT: Record<EventStatus, string> = {
+  draft: 'Черновик',
+  on_consideration: 'На рассмотрении',
+  accredited: 'Аккредитовано',
+  rejected: 'Отклонено',
+}
+
+export function getStatusText(status: EventStatus | string) {
+  return status in STATUS_TEXT ? STATUS_TEXT[status as EventStatus] : status
 }
