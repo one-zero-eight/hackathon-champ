@@ -2,6 +2,7 @@ import type { SchemaEvent, SchemaViewUser } from '@/api/types.ts'
 import { $api, apiFetch } from '@/api'
 import { useMe } from '@/api/me.ts'
 import { AccrediteDialog } from '@/components/event/AccrediteDialog.tsx'
+import { EditEventFormLevelField } from '@/components/event/EditEventFormLevelField.tsx'
 import { OnConsiderationDialog } from '@/components/event/OnConsiderationDialog.tsx'
 import { RejectDialog } from '@/components/event/RejectDialog.tsx'
 import { EventStatusBadge } from '@/components/EventStatusBadge.tsx'
@@ -67,20 +68,21 @@ export function EditEventForm({ eventId }: { eventId: string }) {
           description: data.description,
           start_date: data.start_date,
           end_date: data.end_date,
-          status: 'draft',
+          status: event.status,
           discipline: data.discipline,
           participant_count: data.participant_count,
           age_min: data.age_min,
           age_max: data.age_max,
           gender: data.gender,
           ekp_id: data.ekp_id,
+          level: data.level,
 
           // TODO
           location: [],
         },
       }, {
         onSuccess: () => {
-          toast({ description: 'Данные успешно изменены и отправлены на рассмотрение.' })
+          toast({ description: 'Данные успешно изменены.' })
         },
       })
     }
@@ -239,6 +241,7 @@ const EventGeneralInfoSchema = z.object({
     city: z.string().nullable(),
   })),
   gender: z.enum(['male', 'female']).nullable(),
+  level: z.enum(['local', 'regional', 'interregional', 'federal', 'international']).nullable(),
   discipline: z.array(z.string().min(1, 'Введите дисциплину')),
 })
 export type EventGeneralInfoType = z.infer<typeof EventGeneralInfoSchema>
@@ -259,6 +262,7 @@ function eventToDefaultValues(event: SchemaEvent): EventGeneralInfoType {
       city: v.city ?? null,
     })),
     gender: event.gender,
+    level: event.level,
     discipline: event.discipline,
   }
 }
@@ -316,6 +320,7 @@ function GeneralInfoCard({
 
             <EditEventFormDescriptionField form={form} />
             <EditEventFormDisciplineField form={form} />
+            <EditEventFormLevelField form={form} />
 
             <div className="flex gap-6">
               <EditEventFormParticipantCountField form={form} className="basis-2/5" />
