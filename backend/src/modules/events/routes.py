@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 import icalendar
 from beanie import PydanticObjectId
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, UploadFile
 from pydantic import BaseModel
 from starlette.responses import Response
 
@@ -13,7 +13,7 @@ from src.modules.events.schemas import DateFilter, Filters, Pagination, Sort
 from src.modules.federation.repository import federation_repository
 from src.modules.notify.repository import notify_repository
 from src.modules.users.repository import user_repository
-from src.storages.mongo.events import Event, EventSchema, EventStatusEnum
+from src.storages.mongo.events import Event, EventSchema, EventStatusEnum, Results, SoloPlace
 from src.storages.mongo.notify import AccreditationRequestEvent, AccreditedEvent, NotifySchema
 from src.storages.mongo.selection import Selection
 from src.storages.mongo.users import UserRole
@@ -72,6 +72,35 @@ async def update_event(id: PydanticObjectId, event: EventSchema, auth: USER_AUTH
         return updated
     else:
         raise HTTPException(status_code=403, detail="Only admin or related federation can update event")
+
+
+@router.post(
+    "/{id}",
+    responses={
+        200: {"description": "Hint for event results"},
+        400: {"description": "Cannot parse file"},
+    },
+)
+async def hint_results(file: UploadFile) -> Results:
+    return Results(
+        solo_places=[
+            SoloPlace(
+                place="1",
+                participant="Иванов Иван Иванович",
+                score=100,
+            ),
+            SoloPlace(
+                place="2",
+                participant="Петров Петр Петрович",
+                score=90,
+            ),
+            SoloPlace(
+                place="3-5",
+                participant="Сидоров Сидор Сидорович",
+                score=80,
+            ),
+        ]
+    )
 
 
 @router.post(
