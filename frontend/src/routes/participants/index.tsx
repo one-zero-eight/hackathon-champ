@@ -1,4 +1,6 @@
+import type { SchemaParticipation } from '@/api/types.ts'
 import { $api } from '@/api'
+import { EventDetailsDialog } from '@/components/EventDetailsDialog.tsx'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
@@ -108,11 +110,18 @@ function ParticipantCard({ participant, onClick, rank }: { participant: any, onC
   )
 }
 
-function ParticipationCard({ participation }: { participation: any }) {
+function ParticipationCard({ participation }: { participation: SchemaParticipation }) {
+  const { data: event } = $api.useQuery('get', '/events/{id}', {
+    params: { path: { id: participation.event_id } },
+  })
+
   return (
     <Card className="overflow-hidden">
-      <div className="border-b bg-muted/50 p-3">
-        <h3 className="font-medium">{participation.event_title}</h3>
+      <div className="flex justify-between border-b bg-muted/50 p-3">
+        <h3 className="font-medium">
+          {participation.event_title}
+        </h3>
+        {event && <EventDetailsDialog event={event} />}
       </div>
       <div className="space-y-2 p-4">
         {participation.solo_place && (
@@ -279,7 +288,7 @@ function ParticipantDialog({ participant, rank }: { participant: any, rank: numb
               )
             </h3>
             <div className="space-y-3">
-              {participant.participations.map((p: any) => (
+              {participant.participations.map((p: SchemaParticipation) => (
                 <ParticipationCard key={p.event_id} participation={p} />
               ))}
             </div>
