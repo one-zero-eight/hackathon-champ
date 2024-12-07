@@ -4,21 +4,30 @@ import { Button } from '@/components/ui/button.tsx'
 import { useState } from 'react'
 import CalendarPlus from '~icons/lucide/calendar-plus'
 
-export function ExportFiltersToCalButton({
-  filters,
-}: {
+interface ExportFiltersToCalButtonProps {
   filters: Filters | undefined
-}) {
-  const [open, setOpen] = useState(false)
+}
+
+export function ExportFiltersToCalButton({ filters }: ExportFiltersToCalButtonProps) {
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  const handleOpenDialog = () => setIsDialogOpen(true)
+  const handleCloseDialog = () => setIsDialogOpen(false)
+
   return (
     <>
-      <Button className="w-full" variant="default" onClick={() => setOpen(true)}>
-        <CalendarPlus />
-        Экспортировать подборку в календарь
+      <Button
+        className="w-full gap-2 transition-all duration-200 hover:opacity-90 focus:ring-2 focus:ring-primary/50 active:scale-[0.98] sm:text-base md:text-lg"
+        variant="default"
+        onClick={handleOpenDialog}
+      >
+        <CalendarPlus className="size-4 sm:size-5" />
+        <span className="truncate">Экспортировать в календарь</span>
       </Button>
+
       <ExportFiltersToCalDialog
-        open={open}
-        setOpen={setOpen}
+        open={isDialogOpen}
+        setOpen={handleCloseDialog}
         filters={filters}
       />
     </>

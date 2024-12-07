@@ -24,24 +24,25 @@ export function DatesFilter(props: FilterBaseProps<Filters['date']>) {
 
   return (
     <BaseFilter {...rest}>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-2">
         <DatePicker
           value={valueStartPlain}
           onChange={v => onChange(plainDatesForFilter(v, valueEndPlain))}
           placeholder="Не раньше"
-          className="max-w-[150px] flex-1 basis-0"
+          className="w-full"
         />
-        <span>—</span>
+        <span className="text-sm text-muted-foreground">до</span>
         <DatePicker
           value={valueEndPlain}
           onChange={v => onChange(plainDatesForFilter(valueStartPlain, v))}
           placeholder="Не позже"
-          className="max-w-[150px] flex-1 basis-0"
+          className="w-full"
         />
       </div>
     </BaseFilter>
   )
 }
+
 export function DatePicker({
   value,
   onChange,
@@ -63,13 +64,13 @@ export function DatePicker({
           id="date"
           variant="outline"
           className={cn(
-            'justify-start text-left font-normal flex-auto',
+            'h-9 justify-start text-left font-normal',
             !value && 'text-muted-foreground',
             className,
           )}
         >
-          <CalendarIcon />
-          <span>
+          <CalendarIcon className="mr-2 size-4 shrink-0" />
+          <span className="flex-1 truncate">
             {value
               ? plainToDate(value).toLocaleString('ru-RU', {
                 year: 'numeric',
@@ -80,20 +81,22 @@ export function DatePicker({
           </span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="center">
+      <PopoverContent className="w-auto p-0" align="start">
         <Calendar
           mode="single"
           defaultMonth={selectedDate}
           selected={selectedDate}
           onSelect={(newDate) => {
             onChange(newDate ? dateToPlain(newDate) : null)
+            setOpen(false)
           }}
           numberOfMonths={1}
           locale={ru}
         />
-        <div className="flex justify-end gap-2 px-4 pb-4">
+        <div className="flex justify-end gap-2 border-t p-3">
           <Button
             variant="default"
+            size="sm"
             onClick={() => {
               onChange(Temporal.Now.plainDateISO())
               setOpen(false)
@@ -103,6 +106,7 @@ export function DatePicker({
           </Button>
           <Button
             variant="outline"
+            size="sm"
             onClick={() => {
               onChange(null)
               setOpen(false)
