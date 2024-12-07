@@ -175,7 +175,7 @@ async def get_team(name: str):
 
 
 @router.get("/team/all")
-async def get_all_teams() -> list[TeamStats]:
+async def get_all_teams(limit: int = 100) -> list[TeamStats]:
     events = await events_repository.read_all()
     total = Counter()
     golds = Counter()
@@ -211,4 +211,4 @@ async def get_all_teams() -> list[TeamStats]:
 
     teams.sort(key=lambda t: (t.golds, t.silvers, t.bronzes, t.total, t.name), reverse=True)
 
-    return teams
+    return teams[:limit]
