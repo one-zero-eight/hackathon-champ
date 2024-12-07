@@ -1,4 +1,5 @@
 import { $api } from '@/api'
+import { useMe } from '@/api/me'
 import { ColoredBadge } from '@/components/ColoredBadge'
 import { EventCard } from '@/components/EventCard'
 import { Notifications } from '@/components/Notifications'
@@ -12,10 +13,11 @@ import {
 } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
-import { plainDatesForFilter } from '@/lib/utils'
+import * as eventsLib from '@/lib/events'
+import { cn, plainDatesForFilter } from '@/lib/utils'
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { useMemo } from 'react'
 import { Temporal } from 'temporal-polyfill'
-import ArrowUpRight from '~icons/lucide/arrow-up-right'
 import Award from '~icons/lucide/award'
 import CalendarIcon from '~icons/lucide/calendar'
 import ChevronRight from '~icons/lucide/chevron-right'
@@ -27,8 +29,12 @@ export const Route = createFileRoute('/manage/region/home')({
 })
 
 function RouteComponent() {
-  // Fetch upcoming events for the next month
-  const { data: upcomingEvents, isPending: eventsLoading } = $api.useQuery(
+  const { data: me, isPending: meLoading } = useMe()
+
+  const {
+    data: upcomingEvents,
+    isPending: upcomingEventsLoading_,
+  } = $api.useQuery(
     'post',
     '/events/search',
     {
@@ -38,6 +44,7 @@ function RouteComponent() {
             Temporal.Now.plainDateISO(),
             Temporal.Now.plainDateISO().add({ days: 30 }),
           ),
+          host_federation: me?.federation ?? '',
         },
         pagination: {
           page_no: 1,
@@ -46,7 +53,34 @@ function RouteComponent() {
         sort: { date: 'asc' },
       },
     },
+    { enabled: !!me?.federation },
   )
+  const { data: events } = $api.useQuery(
+    'post',
+    '/events/search',
+    {
+      body: {
+        filters: { host_federation: me?.federation ?? '' },
+        pagination: { page_no: 1, page_size: 1000 },
+        sort: {},
+      },
+    },
+    { enabled: !!me?.federation },
+  )
+  const { data: federationStats } = $api.useQuery(
+    'get',
+    '/federations/{id}/stats',
+    { params: { path: { id: me?.federation ?? '' } } },
+    { enabled: !!me?.federation },
+  )
+
+  const upcomingEventsLoading = meLoading || upcomingEventsLoading_
+
+  const eventsByStats = useMemo(() => {
+    if (!events)
+      return null
+    return eventsLib.eventsByStatus(events?.events ?? [])
+  }, [events])
 
   return (
     <div className="p-6">
@@ -75,48 +109,18 @@ function RouteComponent() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-500">
-                    Всего участников
+                    Мероприятий
                   </p>
-                  <p className="text-2xl font-bold">156</p>
-                </div>
-                <Users className="size-8 text-blue-500" />
-              </div>
-              <div className="mt-4 flex items-center text-sm text-gray-500">
-                <ArrowUpRight className="mr-1 size-4 text-green-500" />
-                +12 за последний месяц
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">
-                    Активных команд
-                  </p>
-                  <p className="text-2xl font-bold">12</p>
-                </div>
-                <Users className="size-8 text-purple-500" />
-              </div>
-              <div className="mt-4 flex items-center text-sm text-gray-500">
-                <ArrowUpRight className="mr-1 size-4 text-green-500" />
-                +2 новых команды
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">
-                    Соревнований
-                  </p>
-                  <p className="text-2xl font-bold">8</p>
+                  <span className="text-2xl font-bold">
+                    {federationStats?.total_competitions ?? (<Skeleton className="mr-2 h-8 w-12" />)}
+                  </span>
                 </div>
                 <Award className="size-8 text-yellow-500" />
               </div>
               <div className="mt-4 flex items-center text-sm text-gray-500">
-                2 в этом месяце
+                {federationStats?.competitions_for_last_month ?? (<Skeleton className="mr-2 size-6" />)}
+                {' '}
+                за последний месяц
               </div>
             </CardContent>
           </Card>
@@ -125,15 +129,38 @@ function RouteComponent() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-500">
-                    Средний результат
+                    Всего участников
                   </p>
-                  <p className="text-2xl font-bold">72.5%</p>
+                  <span className="text-2xl font-bold">
+                    {federationStats?.total_participations ?? (<Skeleton className="mr-2 h-8 w-12" />)}
+                  </span>
                 </div>
-                <Award className="size-8 text-green-500" />
+                <Users className="size-8 text-blue-500" />
               </div>
               <div className="mt-4 flex items-center text-sm text-gray-500">
-                <ArrowUpRight className="mr-1 size-4 text-green-500" />
-                +5.2% к прошлому году
+                {federationStats?.participations_for_last_month ?? (<Skeleton className="mr-2 size-6" />)}
+                {' '}
+                за последний месяц
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-500">
+                    Всего команд
+                  </p>
+                  <span className="text-2xl font-bold">
+                    {federationStats?.total_teams ?? (<Skeleton className="mr-2 h-8 w-12" />)}
+                  </span>
+                </div>
+                <Users className="size-8 text-purple-500" />
+              </div>
+              <div className="mt-4 flex items-center text-sm text-gray-500">
+                {federationStats?.teams_for_last_month ?? (<Skeleton className="mr-2 size-6" />)}
+                {' '}
+                за последний месяц
               </div>
             </CardContent>
           </Card>
@@ -144,7 +171,9 @@ function RouteComponent() {
           <Card>
             <CardHeader>
               <CardTitle>Статус заявок</CardTitle>
-              <CardDescription>Текущий статус всех заявок</CardDescription>
+              <CardDescription>
+                Текущий статус заявок по мероприятиям
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -153,30 +182,65 @@ function RouteComponent() {
                     <div className="size-2 rounded-full bg-blue-500"></div>
                     <span>Ожидают проверки</span>
                   </div>
-                  <ColoredBadge color="blue">
-                    2
-                  </ColoredBadge>
+                  {eventsByStats
+                    ? (
+                        <ColoredBadge color="blue">
+                          {eventsByStats.on_consideration ?? 0 }
+                        </ColoredBadge>
+                      )
+                    : (
+                        <Skeleton className="h-6 w-8" />
+                      )}
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="size-2 rounded-full bg-green-500"></div>
-                    <span>Одобрены</span>
+                    <span>Одобрено</span>
                   </div>
-                  <ColoredBadge color="green">
-                    5
-                  </ColoredBadge>
+                  {eventsByStats
+                    ? (
+                        <ColoredBadge color="green">
+                          {eventsByStats.accredited ?? 0}
+                        </ColoredBadge>
+                      )
+                    : (
+                        <Skeleton className="h-6 w-8" />
+                      )}
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="size-2 rounded-full bg-red-500"></div>
-                    <span>Отклонен</span>
+                    <span>Отклонено</span>
                   </div>
-                  <ColoredBadge color="red">
-                    1
-                  </ColoredBadge>
+                  {eventsByStats
+                    ? (
+                        <ColoredBadge color="red">
+                          {eventsByStats.rejected ?? 0}
+                        </ColoredBadge>
+                      )
+                    : (
+                        <Skeleton className="h-6 w-8" />
+                      )}
                 </div>
-                <Button variant="outline" className="mt-4 w-full">
-                  Просмотреть все заявки
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="size-2 rounded-full bg-gray-500"></div>
+                    <span>Черновик</span>
+                  </div>
+                  {eventsByStats
+                    ? (
+                        <ColoredBadge color="gray">
+                          {eventsByStats.draft ?? 0}
+                        </ColoredBadge>
+                      )
+                    : (
+                        <Skeleton className="h-6 w-8" />
+                      )}
+                </div>
+                <Button variant="outline" className="mt-4 w-full" asChild>
+                  <Link to="/manage/events/region">
+                    Просмотреть все заявки
+                  </Link>
                 </Button>
               </div>
             </CardContent>
@@ -211,9 +275,13 @@ function RouteComponent() {
             </Button>
           </CardHeader>
           <CardContent>
-            <ScrollArea className="h-[400px] pr-4">
+            <ScrollArea className={cn(
+              'pr-4',
+              upcomingEvents?.events.length !== 0 && 'h-[400px]',
+            )}
+            >
               <div className="space-y-4">
-                {eventsLoading
+                {upcomingEventsLoading
                   ? (
                       <>
                         <Skeleton className="h-[120px]" />

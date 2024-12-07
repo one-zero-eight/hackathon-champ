@@ -1199,7 +1199,14 @@ export interface components {
             page: number | null;
             /** @description Результаты мероприятия */
             results: components["schemas"]["Results"] | null;
+            /** @description Уровень мероприятия */
+            level: components["schemas"]["EventLevelEnum"] | null;
         };
+        /**
+         * EventLevelEnum
+         * @enum {string}
+         */
+        EventLevelEnum: "local" | "regional" | "interregional" | "federal" | "international";
         /** EventLocation */
         EventLocation: {
             /**
@@ -1301,6 +1308,8 @@ export interface components {
             page?: number | null;
             /** @description Результаты мероприятия */
             results?: components["schemas"]["Results"] | null;
+            /** @description Уровень мероприятия */
+            level?: components["schemas"]["EventLevelEnum"] | null;
         };
         /**
          * EventStatusEnum
@@ -1979,6 +1988,7 @@ export type SchemaEmailFlowReference = components['schemas']['EmailFlowReference
 export type SchemaEmailFlowResult = components['schemas']['EmailFlowResult'];
 export type SchemaEmailFlowVerificationStatus = components['schemas']['EmailFlowVerificationStatus'];
 export type SchemaEvent = components['schemas']['Event'];
+export type SchemaEventLevelEnum = components['schemas']['EventLevelEnum'];
 export type SchemaEventLocation = components['schemas']['EventLocation'];
 export type SchemaEventSchema = components['schemas']['EventSchema'];
 export type SchemaEventStatusEnum = components['schemas']['EventStatusEnum'];
