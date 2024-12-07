@@ -265,7 +265,7 @@ function RouteComponent() {
               {
                 value: participantsCount ?? 1000,
                 suffix: '',
-                label: 'Участников соревнований',
+                label: 'Приняли участие',
               },
             ].map((stat, index) => (
               <motion.div
