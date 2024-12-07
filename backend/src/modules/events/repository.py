@@ -156,6 +156,9 @@ class EventsRepository:
         # Return results
         return await query.to_list()
 
+    async def read_for_federation(self, federation_id: PydanticObjectId) -> list[Event]:
+        return await Event.find({"host_federation": federation_id}).to_list()
+
     async def read_for_participant(self, name: str) -> list[Event]:
         return await Event.find(
             {
@@ -170,7 +173,8 @@ class EventsRepository:
         return await Event.find({"results.team_places.team": name}).to_list()
 
     async def get_participant_count(self) -> int:
-        q = Event.find({"results": {"$ne": None}}).aggregate(
+        q = Event.find({"results": {"$ne": None}})
+        q = q.aggregate(
             [
                 {"$project": {"results": 1}},
             ]

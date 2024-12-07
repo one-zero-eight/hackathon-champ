@@ -4,9 +4,11 @@ from beanie import PydanticObjectId
 from fastapi import APIRouter, HTTPException
 
 from src.api.dependencies import USER_AUTH
+from src.modules.events.repository import events_repository
 from src.modules.federation.repository import federation_repository
 from src.modules.notify.repository import notify_repository
 from src.modules.users.repository import user_repository
+from src.pydantic_base import BaseSchema
 from src.storages.mongo import Federation
 from src.storages.mongo.federation import FederationSchema, StatusEnum
 from src.storages.mongo.notify import AccreditationRequestFederation, NotifySchema
@@ -21,6 +23,57 @@ async def get_all_federations() -> list[Federation]:
     Get info about all events.
     """
     return await federation_repository.read_all()
+
+
+class FederationStats(BaseSchema):
+    total_participations: int
+    "Сколько всего участий в мероприятиях этой федерации"
+    participations_for_last_month: int
+    "Сколько участников было на мероприятиях этой федерации за последний месяц"
+    total_teams: int
+    "Сколько всего команд участвует в мероприятиях этой федерации"
+    teams_for_last_month: int
+    "Сколько команд было на мероприятиях этой федерации за последний месяц"
+    total_competitions: int
+    "Сколько всего мероприятий провела эта федерация"
+    competitions_for_last_month: int
+    "Сколько мероприятий провела эта федерация за последний месяц"
+
+
+@router.get("/{id}/stats")
+async def stats_federation(id: PydanticObjectId) -> FederationStats:
+    events = await events_repository.read_for_federation(id)
+    now = datetime.datetime.now(datetime.UTC)
+    last_month = now - datetime.timedelta(days=30)
+
+    total_participation = participations_for_last_month = total_teams = teams_for_last_month = 0
+
+    for event in events:
+        if not event.results:
+            continue
+        if event.results.solo_places:
+            total_participation += len(event.results.solo_places)
+            if event.start_date > last_month:
+                participations_for_last_month += len(event.results.solo_places)
+        if event.results.team_places:
+            total_teams += len(event.results.team_places)
+            if event.start_date > last_month:
+                teams_for_last_month += len(event.results.team_places)
+
+            total_participation += sum(len(p.members) for p in event.results.team_places)
+            if event.start_date > last_month:
+                participations_for_last_month += sum(len(p.members) for p in event.results.team_places)
+    total_competitions = len(events)
+    competitions_for_last_month = sum(1 for e in events if e.start_date > last_month)
+
+    return FederationStats(
+        total_participations=total_participation,
+        participations_for_last_month=participations_for_last_month,
+        total_teams=total_teams,
+        teams_for_last_month=teams_for_last_month,
+        total_competitions=total_competitions,
+        competitions_for_last_month=competitions_for_last_month,
+    )
 
 
 @router.get(
