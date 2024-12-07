@@ -2,7 +2,7 @@ __all__ = ["events_repository"]
 
 from beanie import PydanticObjectId, SortDirection
 from beanie.odm.operators.find.comparison import GTE, LTE, Eq, In
-from beanie.odm.operators.find.logical import And, Or
+from beanie.odm.operators.find.logical import And, Nor, Or
 
 from src.modules.events.schemas import Filters, Pagination, Sort
 from src.storages.mongo.events import Event, EventSchema
@@ -87,8 +87,20 @@ class EventsRepository:
                 query = query.find(LTE(Event.participant_count, filters.participant_count.max))
         if filters.gender is not None:
             query = query.find(Or(Event.gender == filters.gender, Event.gender == None))  # noqa: E711
-        if filters.date and filters.date.start_date is not None:
-            query = query.find(Event.start_date >= filters.date.start_date)
+
+        if filters.date:
+            if filters.date.start_date is not None and filters.date.end_date is not None:
+                query = query.find(
+                    Nor(
+                        And(filters.date.start_date < Event.start_date, filters.date.end_date < Event.start_date),
+                        And(filters.date.start_date > Event.end_date, filters.date.end_date > Event.end_date),
+                    )
+                )
+            elif filters.date.start_date is not None:
+                query = query.find(Event.end_date >= filters.date.start_date)
+            elif filters.date.end_date is not None:
+                query = query.find(Event.start_date <= filters.date.end_date)
+
         if filters.date and filters.date.end_date is not None:
             query = query.find(Event.end_date <= filters.date.end_date)
         if filters.discipline:
