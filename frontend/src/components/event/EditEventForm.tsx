@@ -6,15 +6,14 @@ import { OnConsiderationDialog } from '@/components/event/OnConsiderationDialog.
 import { RejectDialog } from '@/components/event/RejectDialog.tsx'
 import { EventStatusBadge } from '@/components/EventStatusBadge.tsx'
 import { Button } from '@/components/ui/button.tsx'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.tsx'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card.tsx'
 import { Form } from '@/components/ui/form.tsx'
 import { useToast } from '@/components/ui/use-toast.ts'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import Loader from '~icons/lucide/loader'
 import { Skeleton } from '../ui/skeleton'
 import { EditEventFormAgesField } from './EditEventFormAgesField'
 import { EditEventFormDatesField } from './EditEventFormDatesField'
@@ -27,6 +26,7 @@ import { EditEventFormProtocols } from './EditEventFormProtocols'
 import { EditEventFormSoloPlaces } from './EditEventFormSoloPlaces'
 import { EditEventFormTeamPlaces } from './EditEventFormTeamPlaces'
 import { EditEventFormTitleField } from './EditEventFormTitleField'
+import { EventSuggestResultsButton } from './EventSuggestResultsButton'
 
 export function EditEventForm({ eventId }: { eventId: string }) {
   const { data: me } = useMe()
@@ -321,33 +321,26 @@ function GeneralInfoCard({
               <EditEventFormGenderField form={form} className="basis-[30%]" />
               <EditEventFormAgesField form={form} className="basis-[30%]" />
             </div>
-
-            <div className="mt-2 flex flex-col justify-end gap-3 sm:flex-row sm:gap-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleCancel}
-                disabled={isLoading || !hasChanges}
-                className="w-full sm:w-auto"
-              >
-                Отмена
-              </Button>
-              <Button
-                type="submit"
-                disabled={isLoading || !hasChanges}
-                className="w-full sm:w-auto"
-              >
-                {isLoading
-                  ? (
-                      <>
-                        <Loader className="mr-2 size-4 animate-spin" />
-                        Сохранение...
-                      </>
-                    )
-                  : ('Сохранить изменения')}
-              </Button>
-            </div>
           </CardContent>
+
+          <CardFooter className="sticky bottom-0 flex flex-col gap-3 rounded-b-lg border-t bg-white py-4 sm:flex-row sm:gap-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleCancel}
+              disabled={isLoading || !hasChanges}
+              className="w-full sm:ml-auto sm:w-auto"
+            >
+              Отмена
+            </Button>
+            <Button
+              type="submit"
+              disabled={isLoading || !hasChanges}
+              className="w-full sm:w-auto"
+            >
+              Сохранить изменения
+            </Button>
+          </CardFooter>
         </Card>
       </form>
     </Form>
@@ -373,19 +366,19 @@ const EventResultsSchema = z.object({
 })
 export type EventResultsType = z.infer<typeof EventResultsSchema>
 
-function eventResultsToDefaultValues(event: SchemaEvent): EventResultsType {
+function eventResultsToDefaultValues(results?: SchemaEvent['results']): EventResultsType {
   return {
-    protocols: (event.results?.protocols ?? []).map(v => ({
+    protocols: (results?.protocols ?? []).map(v => ({
       by_file: v.by_file ?? null,
       by_url: v.by_url ?? null,
     })),
-    team_places: (event.results?.team_places ?? []).map(v => ({
+    team_places: (results?.team_places ?? []).map(v => ({
       team: v.team,
       place: v.place,
       members: v.members,
       score: v.score ?? null,
     })),
-    solo_places: (event.results?.solo_places ?? []).map(v => ({
+    solo_places: (results?.solo_places ?? []).map(v => ({
       place: v.place,
       participant: v.participant,
       score: v.score ?? null,
@@ -403,10 +396,13 @@ function ResultsCard({
   onSubmit: (results: EventResultsType) => void
 }) {
   const { toast } = useToast()
+  const [isSuggesting, setIsSuggesting] = useState(false)
+  const disabled = isLoading || isSuggesting
+
   const form = useForm<EventResultsType>({
     resolver: zodResolver(EventResultsSchema),
-    defaultValues: eventResultsToDefaultValues(event),
-    disabled: isLoading,
+    defaultValues: eventResultsToDefaultValues(event.results),
+    disabled,
   })
 
   const hasChanges = Object.keys(form.formState.dirtyFields).length > 0
@@ -429,7 +425,7 @@ function ResultsCard({
 
   useEffect(() => {
     // Reset form to default values when event changes.
-    form.reset(eventResultsToDefaultValues(event))
+    form.reset(eventResultsToDefaultValues(event.results))
   }, [event, form])
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
@@ -470,26 +466,43 @@ function ResultsCard({
             <EditEventFormProtocols form={form} onDrop={onDrop} />
             <EditEventFormTeamPlaces form={form} />
             <EditEventFormSoloPlaces form={form} />
-
-            <div className="mt-2 flex flex-col justify-end gap-3 sm:flex-row sm:gap-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleCancel}
-                disabled={!hasChanges}
-                className="w-full sm:w-auto"
-              >
-                Отмена
-              </Button>
-              <Button
-                type="submit"
-                disabled={!hasChanges}
-                className="w-full sm:w-auto"
-              >
-                Сохранить изменения
-              </Button>
-            </div>
           </CardContent>
+          <CardFooter className="sticky bottom-0 flex flex-col gap-3 rounded-b-lg border-t bg-white py-4 sm:flex-row sm:gap-4">
+            <EventSuggestResultsButton
+              disabled={disabled}
+              onSuggestStart={() => setIsSuggesting(true)}
+              onSuggestSettled={(result) => {
+                setIsSuggesting(false)
+                if (result.ok) {
+                  const transformed = eventResultsToDefaultValues(result.results)
+                  form.setValue('team_places', transformed.team_places, { shouldDirty: true })
+                  form.setValue('solo_places', transformed.solo_places, { shouldDirty: true })
+                  toast({ description: 'Результаты предзаполнены по данным из файла' })
+                }
+                else {
+                  toast({ description: 'Не удалось предзаполнить результаты по данным из файла' })
+                  console.error('Failed to get results suggestions', result.error)
+                }
+              }}
+            />
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleCancel}
+              disabled={disabled || !hasChanges}
+              className="w-full sm:ml-auto sm:w-auto"
+            >
+              Отмена
+            </Button>
+            <Button
+              type="submit"
+              disabled={disabled || !hasChanges}
+              className="w-full sm:w-auto"
+            >
+              Сохранить изменения
+            </Button>
+          </CardFooter>
         </Card>
       </form>
     </Form>
