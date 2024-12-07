@@ -50,11 +50,11 @@ function RouteComponent() {
   }
 
   return (
-    <div className="p-6">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold">Региональные федерации</h1>
-        <p className="text-muted-foreground">
-          Список региональных федераций, их статус, контактная информация и описание
+    <div className="container mx-auto space-y-6 py-8">
+      <div>
+        <h1 className="text-3xl font-bold">Региональные федерации</h1>
+        <p className="mt-2 text-muted-foreground">
+          Список региональных федераций, их статус, контактная информация и описание.
         </p>
       </div>
 
@@ -106,7 +106,9 @@ function RouteComponent() {
                     params={{ federationId: federation.id }}
                     className="group"
                   >
-                    <Card className="flex h-full flex-col shadow-sm transition-colors group-hover:bg-muted/50 group-hover:shadow-none">
+                    <Card
+                      className="flex h-full flex-col shadow-sm transition-colors group-hover:bg-muted/50 group-hover:shadow-none"
+                    >
                       <CardHeader>
                         <div className="flex items-center gap-4">
                           <FederationLogo logoUrl={federation.logo} alt={federation.region} size="card" />
