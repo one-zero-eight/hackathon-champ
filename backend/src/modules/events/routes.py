@@ -1,5 +1,5 @@
 import re
-from datetime import datetime, timedelta
+from datetime import datetime
 from io import BytesIO
 
 import icalendar
@@ -370,12 +370,6 @@ async def get_selection_ics(selection_id: PydanticObjectId):
     selection = await events_repository.read_selection(selection_id)
     if selection is None:
         raise HTTPException(status_code=404, detail="Selection not found")
-
-    date_filter = DateFilter()
-    # week before and month after
-    date_filter.start_date = datetime.now() - timedelta(days=7)
-    date_filter.end_date = datetime.now() + timedelta(days=30)
-    selection.filters.date = date_filter
 
     events = await events_repository.read_with_filters(
         filters=selection.filters,
