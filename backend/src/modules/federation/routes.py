@@ -1,7 +1,8 @@
 import datetime
+from io import StringIO
 
 from beanie import PydanticObjectId
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response
 
 from src.api.dependencies import USER_AUTH
 from src.modules.events.repository import events_repository
@@ -23,6 +24,37 @@ async def get_all_federations() -> list[Federation]:
     Get info about all events.
     """
     return await federation_repository.read_all()
+
+
+@router.get("/.csv", responses={200: {"description": "Info about all federations"}})
+async def get_all_federations_as_csv() -> Response:
+    """
+    Get info about all events.
+    """
+    import csv
+
+    federations = await federation_repository.read_all()
+
+    with StringIO() as f:
+        fieldnames = list(FederationSchema.__pydantic_fields__.keys())
+        print(fieldnames)
+        for exclude in ["id", "last_interaction_at", "notified_about_interaction", "status", "status_comment"]:
+            try:
+                fieldnames.remove(exclude)
+            except ValueError:
+                pass
+        writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
+        writer.writeheader()
+        for federation in federations:
+            writer.writerow(federation.model_dump())
+        f.seek(0)
+        resp = f.getvalue()
+
+    return Response(
+        content=resp,
+        media_type="application/csv",
+        headers={"Content-Disposition": "attachment; filename=federations.csv"},
+    )
 
 
 class FederationStats(BaseSchema):

@@ -109,6 +109,7 @@ async def hint_results(file: UploadFile) -> Results:
             member_sub = re.findall(r"\((.*?)\)", team)
             if member_sub:
                 team = team.replace(member_sub[-1], "")
+                print(team, member_sub)
                 members = member_sub[-1].replace("(", "").replace(")", "").split(",")
                 members = [m.strip() for m in members]
                 members = [m for m in members if m]
