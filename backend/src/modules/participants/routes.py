@@ -111,7 +111,7 @@ async def get_all_participants(limit: int = 100) -> list[ParticipantStats]:
             silvers=silvers[name],
             bronzes=bronzes[name],
         )
-        for name in total[:limit]
+        for name in list(total.keys())[:limit]
     ]
 
 
