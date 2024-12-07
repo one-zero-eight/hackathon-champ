@@ -106,10 +106,10 @@ async def hint_results(file: UploadFile) -> Results:
         team_places = []
         for i, row in df.iterrows():
             team: str = row[team_column]  # one-zero-eight (Булгаков, Авхадеев, Бельков, Дерябкин, Полин)
-            member_sub = re.search(r"\((.*?)\)", team)
+            member_sub = re.findall(r"\((.*?)\)", team)
             if member_sub:
-                team = team.replace(member_sub.group(0), "")
-                members = member_sub.group(1).split(",")
+                team = team.replace(member_sub[-1].group(0), "")
+                members = member_sub[-1].group(1).split(",")
                 members = [m.strip() for m in members]
                 members = [m for m in members if m]
             else:
