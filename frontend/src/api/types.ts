@@ -1536,6 +1536,11 @@ export interface components {
              * @description Сколько мероприятий провела эта федерация за последний месяц
              */
             competitions_for_last_month: number;
+            /**
+             * Profile Fill Percentage
+             * @description Процент заполненности профиля федерации
+             */
+            profile_fill_percentage: number;
         };
         /** Feedback */
         Feedback: {
@@ -3799,7 +3804,9 @@ export interface operations {
     };
     participants_get_all_teams: {
         parameters: {
-            query?: never;
+            query?: {
+                limit?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -3813,6 +3820,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TeamStats"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
