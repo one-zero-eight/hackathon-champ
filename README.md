@@ -53,11 +53,19 @@
 
 1. Установить [Docker и Docker Compose](https://docs.docker.com/engine/install/) последней версии.
 2. Склонировать этот репозиторий (или скачать zip архив) и перейти в папку с проектом.
-3. Запустить проект.
+3. (Необязательно) Для активации отправки email-уведомлений необходимо отредактировать настройки `backend/settings.docker.yaml`:
+   ```yaml
+   smtp:
+     host: smtp.yandex.ru
+     port: 587
+     username: email@yandex.ru
+     password: password
+   ```
+4. Запустить проект:
    ```
    docker compose up -d --build
    ```
-4. Зайти на [http://localhost:8000](http://localhost:8000) в браузере.
+5. Зайти на [http://localhost:8000](http://localhost:8000) в браузере.
 
 ## Структура проекта
 
