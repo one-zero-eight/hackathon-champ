@@ -13,6 +13,7 @@ import {
 import { Link } from '@tanstack/react-router'
 import LinkIcon from '~icons/lucide/link'
 import MapPin from '~icons/lucide/map-pin'
+import Pencil from '~icons/lucide/pencil'
 import Users from '~icons/lucide/users'
 import { EventStatusBadge } from './EventStatusBadge'
 import { Badge } from './ui/badge'
@@ -146,24 +147,19 @@ export function EventCard({
         <Separator className="mt-auto" />
 
         <div className="flex items-center gap-2">
-          <EventExportToCalButton event={event} />
-          <EventDetailsDialog event={event} />
-          {((me?.federation && me.federation === event.host_federation)
-            || me?.role === 'admin') && (
-            <Button
-              asChild
-              className="h-7 w-fit rounded-md px-2 text-xs"
-              variant="secondary"
-            >
+          {((me?.federation && me.federation === event.host_federation) || me?.role === 'admin') && (
+            <Button asChild size="sm" className="mr-auto">
               <Link
                 to="/manage/events/$id"
                 params={{ id: event.id }}
-                className="!text-blue-500"
               >
+                <Pencil />
                 Редактировать
               </Link>
             </Button>
           )}
+          <EventExportToCalButton event={event} />
+          <EventDetailsDialog event={event} />
         </div>
       </div>
 

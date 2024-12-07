@@ -23,8 +23,8 @@ export function EventDetailsDialog({ event }: { event: SchemaEvent }) {
   return (
     <>
       <Button
-        className="h-7 w-fit rounded-md px-2"
         variant="secondary"
+        size="sm"
         onClick={() => setOpen(true)}
       >
         <NotebookText />
@@ -203,8 +203,8 @@ function EventTeamPlaces({ event }: { event: SchemaEvent }) {
         <div className="text-sm">Результаты командных соревнований</div>
       </div>
       <ul className="flex max-h-[200px] flex-col gap-2 overflow-auto">
-        {event.results.team_places.map((team, index) => (
-          <li key={index} className="flex items-center gap-2">
+        {event.results.team_places.map(team => (
+          <li key={team.team} className="flex items-center gap-2">
             <span className="min-w-8 shrink-0 rounded-md border bg-white px-4 py-2">
               {team.place}
             </span>
@@ -237,8 +237,8 @@ function EventSoloPlaces({ event }: { event: SchemaEvent }) {
         <div className="text-sm">Результаты личных дисциплин</div>
       </div>
       <ul className="flex max-h-[200px] flex-col gap-2 overflow-hidden">
-        {event.results.solo_places.map((solo, index) => (
-          <li key={index} className="flex items-center gap-2">
+        {event.results.solo_places.map(solo => (
+          <li key={solo.participant} className="flex items-center gap-2">
             <span className="grow rounded-md border bg-white px-4 py-2">
               {solo.place}
             </span>

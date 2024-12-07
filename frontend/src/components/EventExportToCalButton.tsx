@@ -16,7 +16,7 @@ export function EventExportToCalButton({
   return (
     <>
       <Button
-        className="h-7 w-fit rounded-md px-2"
+        size="sm"
         variant="secondary"
         onClick={() => setOpen(true)}
       >
