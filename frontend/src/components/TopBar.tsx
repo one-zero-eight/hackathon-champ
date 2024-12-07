@@ -9,12 +9,20 @@ import Menu from '~icons/lucide/menu'
 import X from '~icons/lucide/x'
 import { NavLink } from './NavLink'
 
+const NAVIGATION_ITEMS = [
+  { to: '/', label: 'Главная' },
+  { to: '/federations', label: 'Федерации' },
+  { to: '/disciplines', label: 'Дисциплины' },
+  { to: '/calendar', label: 'Календарь' },
+  { to: '/search', label: 'Мероприятия' },
+] as const
+
 export function TopBar() {
   const navigate = useNavigate()
   const { data: me, isLoading } = useMe()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-
   const queryClient = useQueryClient()
+
   const { mutate: performLogout } = $api.useMutation('post', '/users/logout', {
     onSettled: () => {
       queryClient.resetQueries()
@@ -22,41 +30,30 @@ export function TopBar() {
     },
   })
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen)
+  const handleLogout = () => {
+    performLogout({})
+    setIsMenuOpen(false)
   }
 
   return (
-    <header className="fixed top-0 z-10 flex h-[--header-height] w-full items-center border-b bg-white bg-opacity-95 backdrop-blur">
-      <div className="container mx-auto flex w-full justify-between px-4">
-        <div className="flex items-center gap-2">
+    <header className="fixed top-0 z-50 flex h-[--header-height] w-full items-center border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
+      <div className="container mx-auto flex w-full items-center justify-between px-4">
+        <div className="flex items-center gap-4">
           <Link to="/" className="flex items-center gap-2 whitespace-nowrap">
-            <img src="/favicon.png" className="size-8" />
+            <img src="/favicon.png" alt="Logo" className="size-8" />
             <span className="font-medium">ФСП ЛИНК</span>
           </Link>
 
           {/* Desktop navigation */}
-          <div className="hidden items-center gap-2 md:flex">
-            <NavLink to="/">Главная</NavLink>
-            <NavLink to="/federations">Федерации</NavLink>
-            <NavLink to="/disciplines">Дисциплины</NavLink>
-            <NavLink to="/calendar">Календарь</NavLink>
-            <NavLink to="/search">Мероприятия</NavLink>
-          </div>
+          <nav className="hidden items-center gap-1 sm:gap-2 md:flex">
+            {NAVIGATION_ITEMS.map(({ to, label }) => (
+              <NavLink key={to} to={to}>{label}</NavLink>
+            ))}
+          </nav>
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Mobile menu button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden"
-            onClick={toggleMenu}
-            aria-label={isMenuOpen ? 'Закрыть меню' : 'Открыть меню'}
-          >
-            {isMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-          </Button>
-
+          {/* Auth section */}
           {isLoading
             ? (
                 <div
@@ -64,71 +61,88 @@ export function TopBar() {
                 />
               )
             : (
-                <div className="hidden items-center gap-2 lg:flex">
+                <div className="hidden items-center gap-2 md:flex">
                   {(me?.role === 'admin' || me?.federation) && (
                     <NavLink to="/manage">Панель управления</NavLink>
                   )}
-                  {!me && <NavLink to="/auth/login">Войти</NavLink>}
-                  {me && (
-                    <Button
-                      variant="ghost"
-                      onClick={() => performLogout({})}
-                    >
-                      Выйти
-                    </Button>
-                  )}
+                  {!me
+                    ? (
+                        <NavLink to="/auth/login">
+                          Войти
+                        </NavLink>
+                      )
+                    : (
+                        <Button
+                          variant="ghost"
+                          onClick={handleLogout}
+                        >
+                          Выйти
+                        </Button>
+                      )}
                 </div>
               )}
-          <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+
+          {/* Help button */}
+          <Button
+            asChild
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground transition-colors hover:text-foreground"
+          >
             <Link to="/about" activeProps={{ className: 'text-foreground' }}>
-              <HelpCircle className="size-5" />
+              <HelpCircle className="size-5" aria-label="Помощь" />
             </Link>
+          </Button>
+
+          {/* Mobile menu button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label={isMenuOpen ? 'Закрыть меню' : 'Открыть меню'}
+            aria-expanded={isMenuOpen}
+          >
+            {isMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
           </Button>
         </div>
       </div>
 
       {/* Mobile navigation */}
       {isMenuOpen && (
-        <div className="absolute left-0 top-[--header-height] w-full border-b bg-white md:hidden">
-          <div className="flex flex-col gap-4 p-4">
-            <div onClick={toggleMenu}>
-              <NavLink to="/">Главная</NavLink>
-            </div>
-            <div onClick={toggleMenu}>
-              <NavLink to="/federations">Федерации</NavLink>
-            </div>
-            <div onClick={toggleMenu}>
-              <NavLink to="/disciplines">Дисциплины</NavLink>
-            </div>
-            <div onClick={toggleMenu}>
-              <NavLink to="/calendar">Календарь</NavLink>
-            </div>
-            <div onClick={toggleMenu}>
-              <NavLink to="/search">Мероприятия</NavLink>
-            </div>
+        <nav
+          className="absolute left-0 top-[--header-height] w-full border-b bg-white/95 backdrop-blur md:hidden"
+          aria-label="Мобильное меню"
+        >
+          <div className="flex flex-col gap-2 p-4">
+            {NAVIGATION_ITEMS.map(({ to, label }) => (
+              <div key={to} onClick={() => setIsMenuOpen(false)}>
+                <NavLink to={to}>{label}</NavLink>
+              </div>
+            ))}
             {(me?.role === 'admin' || me?.federation) && (
-              <div onClick={toggleMenu}>
+              <div onClick={() => setIsMenuOpen(false)}>
                 <NavLink to="/manage">Панель управления</NavLink>
               </div>
             )}
-            {!me && (
-              <div onClick={toggleMenu}>
-                <NavLink to="/auth/login">Войти</NavLink>
-              </div>
-            )}
-            {me && (
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  performLogout({})
-                  toggleMenu()
-                }}
-              >
-                Выйти
-              </Button>
-            )}
+            {!me
+              ? (
+                  <div onClick={() => setIsMenuOpen(false)}>
+                    <NavLink to="/auth/login">
+                      Войти
+                    </NavLink>
+                  </div>
+                )
+              : (
+                  <Button
+                    variant="ghost"
+                    onClick={handleLogout}
+                  >
+                    Выйти
+                  </Button>
+                )}
           </div>
-        </div>
+        </nav>
       )}
     </header>
   )
