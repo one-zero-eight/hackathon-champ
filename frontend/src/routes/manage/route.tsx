@@ -23,7 +23,7 @@ function RouteComponent() {
       <aside
         className="fixed bottom-0 left-0 top-[var(--header-height)] w-[var(--manage-sidebar-width)] overflow-y-auto border-r bg-white"
       >
-        <div>
+        <div className="flex min-h-full flex-col">
           {isLoading
             ? (
                 <SidebarSkeleton />
@@ -33,6 +33,7 @@ function RouteComponent() {
                   {me?.role === 'admin' && <AdminNav />}
                   {me?.role === 'admin' && me?.federation && <Separator />}
                   {me?.federation && <FederationNav />}
+                  <div className="grow" />
                   <nav className="flex flex-col gap-1 p-2">
                     <NavLink to="/manage/email" icon={Mail}>
                       Настройки email
