@@ -54,6 +54,8 @@ class Filters(BaseModel):
     "Фильтр по количеству участников соревнования"
     by_ids: list[PydanticObjectId] | None = None
     "Фильтр по ID событий (применяется только он, если указан)"
+    host_federation: PydanticObjectId | None = None
+    "Фильтр по ID федерации, организующей событие"
 
 
 class Order(StrEnum):

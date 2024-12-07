@@ -123,6 +123,10 @@ class EventsRepository:
                     )
             if conditions:
                 query = query.find(Or(*conditions))
+
+        if filters.host_federation:
+            query = query.find({"host_federation": filters.host_federation})
+
         if filters.query:
             query = query.find({"$text": {"$search": filters.query}})
 
