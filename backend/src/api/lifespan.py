@@ -39,8 +39,8 @@ async def notification_loop():
                 if emails:
                     href = f"https://champ.innohassle.ru/manage/federations/{federation.id}"
                     msg = f'Данные Федерации Спортивного Программирования `{federation.region}` не обновлялись более 30 дней. Пожалуйста, <a href="{href}">обновите их</a>.'
-                    smtp_repository.render_notify_message(msg)
-                    smtp_repository.send(msg, emails)
+                    message = smtp_repository.render_notify_message(msg)
+                    smtp_repository.send(message, emails)
                 await federation_repository.set_notified_about_interaction(federation.id)
 
             await asyncio.sleep(60 * 15)
