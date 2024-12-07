@@ -488,11 +488,16 @@ function ResultsCard({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)}>
-        <Card className="w-full print:border-0 print:p-0 print:shadow-none">
+        <Card className="relative w-full print:border-0 print:p-0 print:shadow-none">
           <CardHeader className="space-y-2 print:py-0">
-            <CardTitle className="flex flex-wrap items-end justify-between text-center text-xl font-semibold sm:text-left">
+            <CardTitle className="text-center text-xl font-semibold sm:text-left">
               Результаты соревнования
-              <Button variant="outline" onClick={() => print()}>
+              <Button
+                className="absolute right-6 top-6"
+                variant="outline"
+                onClick={() => window.print()}
+                type="button"
+              >
                 <Printer className="mr-2 size-4" />
                 Печать
               </Button>
