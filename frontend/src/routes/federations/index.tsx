@@ -50,110 +50,112 @@ function RouteComponent() {
   }
 
   return (
-    <div className="container mx-auto space-y-6 py-8">
-      <div>
-        <h1 className="text-3xl font-bold">Региональные федерации</h1>
-        <p className="mt-2 text-muted-foreground">
+    <div className="p-6">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold">Региональные федерации</h1>
+        <p className="text-muted-foreground">
           Список региональных федераций, их статус, контактная информация и описание
         </p>
       </div>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button variant="outline" className="w-full justify-start text-muted-foreground">
-            <Search />
-            Поиск федерации...
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
-          <Command>
-            <CommandInput placeholder="Введите название федерации или регион..." />
-            <CommandList>
-              <CommandEmpty>По вашему запросу ничего не найдено.</CommandEmpty>
-              {Array.from(byDistrict.entries()).map(([district, federations]) => (
-                <CommandGroup key={district} heading={district}>
-                  {federations.map(federation => (
-                    <CommandItem
-                      key={federation.id}
-                      value={`${district} ${federation.region}`}
-                      onSelect={() => handleFederationSelect(federation.id)}
-                    >
-                      {federation.region}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              ))}
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
 
-      {isPending
-        ? (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {Array.from({ length: 8 }).fill(null).map((_, i) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <Skeleton key={i} className="h-[200px]" />
-              ))}
-            </div>
-          )
-        : (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {federations.map(federation => (
-                <Link
-                  key={federation.id}
-                  to="/federations/$federationId"
-                  params={{ federationId: federation.id }}
-                  className="group"
-                >
-                  <Card className="flex h-full flex-col shadow-sm transition-colors group-hover:bg-muted/50 group-hover:shadow-none">
-                    <CardHeader>
-                      <div className="flex items-center gap-4">
-                        <FederationLogo logoUrl={federation.logo} alt={federation.region} size="card" />
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-semibold">{federation.region}</h3>
-                            <StatusIcon
-                              status={federation.status}
-                              className={cn(
-                                federation.status === 'on_consideration' && 'text-yellow-500',
-                                federation.status === 'accredited' && 'text-green-500',
-                                federation.status === 'rejected' && 'text-red-500',
-                              )}
-                            />
+      <div className="grid gap-6">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className="w-full justify-start text-muted-foreground">
+              <Search />
+              Поиск федерации...
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+            <Command>
+              <CommandInput placeholder="Введите название федерации или регион..." />
+              <CommandList>
+                <CommandEmpty>По вашему запросу ничего не найдено.</CommandEmpty>
+                {Array.from(byDistrict.entries()).map(([district, federations]) => (
+                  <CommandGroup key={district} heading={district}>
+                    {federations.map(federation => (
+                      <CommandItem
+                        key={federation.id}
+                        value={`${district} ${federation.region}`}
+                        onSelect={() => handleFederationSelect(federation.id)}
+                      >
+                        {federation.region}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                ))}
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+
+        {isPending
+          ? (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {Array.from({ length: 8 }).fill(null).map((_, i) => (
+                  <Skeleton key={i} className="h-[200px]" />
+                ))}
+              </div>
+            )
+          : (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {federations.map(federation => (
+                  <Link
+                    key={federation.id}
+                    to="/federations/$federationId"
+                    params={{ federationId: federation.id }}
+                    className="group"
+                  >
+                    <Card className="flex h-full flex-col shadow-sm transition-colors group-hover:bg-muted/50 group-hover:shadow-none">
+                      <CardHeader>
+                        <div className="flex items-center gap-4">
+                          <FederationLogo logoUrl={federation.logo} alt={federation.region} size="card" />
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-semibold">{federation.region}</h3>
+                              <StatusIcon
+                                status={federation.status}
+                                className={cn(
+                                  federation.status === 'on_consideration' && 'text-yellow-500',
+                                  federation.status === 'accredited' && 'text-green-500',
+                                  federation.status === 'rejected' && 'text-red-500',
+                                )}
+                              />
+                            </div>
+                            {federation.district && (
+                              <p className="text-sm text-muted-foreground">{federation.district}</p>
+                            )}
                           </div>
-                          {federation.district && (
-                            <p className="text-sm text-muted-foreground">{federation.district}</p>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="flex-1">
+                        {federation.head && (
+                          <div className="flex items-center gap-2 text-sm">
+                            <User className="size-4" />
+                            <span>{federation.head}</span>
+                          </div>
+                        )}
+                        <div className="mt-2 space-y-1">
+                          {federation.email && (
+                            <div className="flex items-center gap-2 text-sm">
+                              <Mail className="size-4" />
+                              <span>{federation.email}</span>
+                            </div>
+                          )}
+                          {federation.phone && (
+                            <div className="flex items-center gap-2 text-sm">
+                              <Phone className="size-4" />
+                              <span>{federation.phone}</span>
+                            </div>
                           )}
                         </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="flex-1">
-                      {federation.head && (
-                        <div className="flex items-center gap-2 text-sm">
-                          <User className="size-4" />
-                          <span>{federation.head}</span>
-                        </div>
-                      )}
-                      <div className="mt-2 space-y-1">
-                        {federation.email && (
-                          <div className="flex items-center gap-2 text-sm">
-                            <Mail className="size-4" />
-                            <span>{federation.email}</span>
-                          </div>
-                        )}
-                        {federation.phone && (
-                          <div className="flex items-center gap-2 text-sm">
-                            <Phone className="size-4" />
-                            <span>{federation.phone}</span>
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
-            </div>
-          )}
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            )}
+      </div>
     </div>
   )
 }

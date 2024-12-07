@@ -30,7 +30,7 @@ export function TopBar() {
     <header className="fixed top-0 z-10 flex h-[--header-height] w-full items-center border-b bg-white bg-opacity-95 backdrop-blur">
       <div className="container mx-auto flex w-full justify-between px-4">
         <div className="flex items-center gap-2">
-          <Link to="/" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2 whitespace-nowrap">
             <img src="/favicon.png" className="size-8" />
             <span className="font-medium">ФСП ЛИНК</span>
           </Link>
@@ -50,18 +50,21 @@ export function TopBar() {
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className="lg:hidden"
             onClick={toggleMenu}
+            aria-label={isMenuOpen ? 'Закрыть меню' : 'Открыть меню'}
           >
             {isMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
           </Button>
 
           {isLoading
             ? (
-                <div className="h-9 w-24 animate-pulse rounded bg-muted" />
+                <div
+                  className="h-9 w-24 animate-pulse rounded bg-muted"
+                />
               )
             : (
-                <div className="hidden items-center gap-2 md:flex">
+                <div className="hidden items-center gap-2 lg:flex">
                   {(me?.role === 'admin' || me?.federation) && (
                     <NavLink to="/manage">Панель управления</NavLink>
                   )}
@@ -69,9 +72,7 @@ export function TopBar() {
                   {me && (
                     <Button
                       variant="ghost"
-                      onClick={() => {
-                        performLogout({})
-                      }}
+                      onClick={() => performLogout({})}
                     >
                       Выйти
                     </Button>
