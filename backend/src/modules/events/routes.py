@@ -173,7 +173,8 @@ async def accredite_event(
     Accredit event.
     """
     user = await user_repository.read(auth.user_id)
-    if user.role == UserRole.ADMIN:
+    event = await events_repository.read_one(id)
+    if user.role == UserRole.ADMIN or event.host_federation and user.federation == event.host_federation:
         event = await events_repository.accredite(id, status, status_comment)
         if event is None:
             raise HTTPException(status_code=404, detail="Event not found")

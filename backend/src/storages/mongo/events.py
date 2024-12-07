@@ -58,6 +58,19 @@ class EventStatusEnum(StrEnum):
             return "red"
 
 
+class EventLevelEnum(StrEnum):
+    local = "local"
+    "Локальное"
+    regional = "regional"
+    "Региональное"
+    interregional = "interregional"
+    "Межрегиональное"
+    federal = "federal"
+    "Федеральное"
+    international = "international"
+    "Международное"
+
+
 class TeamPlace(BaseSchema):
     place: int
     "Место (1, 2, 3)"
@@ -129,6 +142,8 @@ class EventSchema(BaseSchema):
     "Страница в ЕКП"
     results: Results | None = None
     "Результаты мероприятия"
+    level: EventLevelEnum | None = None
+    "Уровень мероприятия"
 
 
 class Event(EventSchema, CustomDocument):
