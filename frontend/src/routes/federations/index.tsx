@@ -1,6 +1,5 @@
 import type { Federation } from '@/lib/types'
 import { $api } from '@/api'
-import { useMe } from '@/api/me'
 import { FederationLogo } from '@/components/FederationLogo'
 import { StatusIcon } from '@/components/StatusIcon'
 import { Button } from '@/components/ui/button'

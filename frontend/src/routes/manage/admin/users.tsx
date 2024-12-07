@@ -1,5 +1,5 @@
 import type { SchemaCreateUser, SchemaViewUser } from '@/api/types'
-
+import { $api } from '@/api'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -12,12 +12,19 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useToast } from '@/components/ui/use-toast'
 import { cn } from '@/lib/utils'
+
+import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Check from '~icons/lucide/check'
 import Edit from '~icons/lucide/pencil'
 import Plus from '~icons/lucide/plus'
-import Search from '~icons/lucide/search'
+
+type Federation = {
+  id: string
+  region: string
+  district: string | null
+}
 
 export const Route = createFileRoute('/manage/admin/users')({
   component: RouteComponent,
@@ -27,121 +34,101 @@ function RouteComponent() {
   const [selectedUser, setSelectedUser] = useState<SchemaViewUser | null>(null)
   const [newPassword, setNewPassword] = useState('')
   const { toast } = useToast()
-  const [users, setUsers] = useState<SchemaViewUser[]>([])
-  const [federations, setFederations] = useState<Array<{ id: string, region: string, district: string | null }>>([])
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [newUserData, setNewUserData] = useState({ login: '', email: '', password: '' })
-  const [isLoading, setIsLoading] = useState(true)
+  const queryClient = useQueryClient()
 
-  const fetchUsers = async () => {
-    try {
-      setIsLoading(true)
-      const response = await fetch('/api/users/')
-      if (!response.ok)
-        throw new Error('Не удалось загрузить пользователей')
-      const data = await response.json()
-      setUsers(data)
-    }
-    catch (error: any) {
-      toast({
-        title: 'Ошибка',
-        description: error?.message || 'Не удалось загрузить пользователей',
-        variant: 'destructive',
-      })
-    }
-    finally {
-      setIsLoading(false)
-    }
-  }
+  // Query hooks using $api
+  const { data: users = [], isPending: isLoading } = $api.useQuery('get', '/users/')
+  const { data: federations = [] } = $api.useQuery('get', '/federations/')
 
-  const fetchFederations = async () => {
-    try {
-      const response = await fetch('/api/federations/')
-      if (!response.ok)
-        throw new Error('Не удалось загрузить федерации')
-      const data = await response.json()
-      setFederations(data)
-    }
-    catch (error: any) {
-      toast({
-        title: 'Ошибка',
-        description: error?.message || 'Не удалось загрузить федерации',
-        variant: 'destructive',
-      })
-    }
-  }
+  // Mutation hooks using $api
+  const { mutate: updateUser } = $api.useMutation(
+    'post',
+    '/users/{id}',
+    {
+      onSuccess: () => {
+        toast({
+          title: 'Успешно',
+          description: 'Пароль обновлен',
+        })
+        setSelectedUser(null)
+        setNewPassword('')
+        queryClient.invalidateQueries({ queryKey: $api.queryOptions('get', '/users/').queryKey })
+      },
+      onError: (error) => {
+        toast({
+          title: 'Ошибка',
+          description: error?.detail?.toString() || 'Не удалось обновить пароль',
+          variant: 'destructive',
+        })
+      },
+    },
+  )
 
-  useEffect(() => {
-    fetchUsers()
-    fetchFederations()
-  }, [])
+  const { mutate: createUser } = $api.useMutation(
+    'post',
+    '/users/create',
+    {
+      onSuccess: () => {
+        toast({
+          title: 'Успешно',
+          description: 'Пользователь создан',
+        })
+        setIsCreateDialogOpen(false)
+        setNewUserData({ login: '', email: '', password: '' })
+        queryClient.invalidateQueries({ queryKey: $api.queryOptions('get', '/users/').queryKey })
+      },
+      onError: (error) => {
+        toast({
+          title: 'Ошибка',
+          description: error?.detail?.toString() || 'Не удалось создать пользователя',
+          variant: 'destructive',
+        })
+      },
+    },
+  )
 
-  const handleUserUpdate = async () => {
+  const { mutate: updateUserFederation } = $api.useMutation(
+    'post',
+    '/users/{id}',
+    {
+      onSuccess: () => {
+        toast({ title: 'Успешно', description: 'Федерация обновлена' })
+        queryClient.invalidateQueries({ queryKey: $api.queryOptions('get', '/users/').queryKey })
+      },
+      onError: (error) => {
+        toast({
+          title: 'Ошибка',
+          description: error?.detail?.toString() || 'Не удалось обновить федерацию',
+          variant: 'destructive',
+        })
+      },
+    },
+  )
+
+  const handleUserUpdate = () => {
     if (!selectedUser || !newPassword)
       return
 
-    try {
-      const response = await fetch(`/api/users/${selectedUser.id}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: newPassword }),
-      })
-
-      if (!response.ok)
-        throw new Error('Не удалось обновить пароль')
-
-      toast({
-        title: 'Успешно',
-        description: 'Пароль обновлен',
-      })
-
-      setSelectedUser(null)
-      setNewPassword('')
-    }
-    catch (error: any) {
-      toast({
-        title: 'Ошиб��а',
-        description: error?.message || 'Не удалось обновить пароль',
-        variant: 'destructive',
-      })
-    }
+    updateUser({
+      params: { path: { id: selectedUser.id } },
+      body: { password: newPassword },
+    })
   }
 
-  const handleCreateUser = async () => {
-    try {
-      const response = await fetch('/api/users/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          login: newUserData.login,
-          password: newUserData.password,
-          federation: null,
-        } satisfies SchemaCreateUser),
-      })
-
-      if (!response.ok)
-        throw new Error('Не удалось создать пользователя')
-
-      await response.json()
-      toast({
-        title: 'Успешно',
-        description: 'Пользователь создан',
-      })
-
-      setIsCreateDialogOpen(false)
-      setNewUserData({ login: '', email: '', password: '' })
-      fetchUsers()
-    }
-    catch (error: any) {
-      toast({
-        title: 'Ошибка',
-        description: error?.message || 'Не удалось создать пользователя',
-        variant: 'destructive',
-      })
-    }
+  const handleCreateUser = () => {
+    createUser({
+      body: {
+        login: newUserData.login,
+        password: newUserData.password,
+        federation: null,
+      },
+    })
   }
 
-  const byDistrict = new Map<string, typeof federations>()
+  // Group federations by district
+  const byDistrict = new Map<string, Federation[]>()
   for (const federation of federations) {
     const district = federation.district ?? ''
     const list = byDistrict.get(district) ?? []
@@ -179,7 +166,7 @@ function RouteComponent() {
               {isLoading
                 ? (
                     Array.from({ length: 5 }).map((_, index) => (
-                      <TableRow key={index}>
+                      <TableRow key={`skeleton-${index}`}>
                         <TableCell><Skeleton className="h-6 w-[120px]" /></TableCell>
                         <TableCell><Skeleton className="h-6 w-[180px]" /></TableCell>
                         <TableCell><Skeleton className="h-8 w-[200px]" /></TableCell>
@@ -189,7 +176,7 @@ function RouteComponent() {
                     ))
                   )
                 : (
-                    users.map(user => (
+                    users.map((user: SchemaViewUser) => (
                       <TableRow key={user.id}>
                         <TableCell>{user.login}</TableCell>
                         <TableCell>{user.email || '-'}</TableCell>
@@ -202,7 +189,7 @@ function RouteComponent() {
                                 role="combobox"
                               >
                                 <span className="truncate">
-                                  {federations.find(f => f.id === user.federation)?.region || 'Нет федерации'}
+                                  {federations.find((f: Federation) => f.id === user.federation)?.region || 'Нет федерации'}
                                 </span>
                                 <Edit className="ml-2 size-4 shrink-0 opacity-50" />
                               </Button>
@@ -224,7 +211,7 @@ function RouteComponent() {
                                           if (!response.ok)
                                             throw new Error('Не удалось обновить федерацию')
                                           toast({ title: 'Успешно', description: 'Федерация обновлена' })
-                                          fetchUsers()
+                                          queryClient.invalidateQueries({ queryKey: ['users'] })
                                         }
                                         catch (error: any) {
                                           toast({
@@ -241,28 +228,14 @@ function RouteComponent() {
                                   </CommandGroup>
                                   {Array.from(byDistrict.entries()).map(([district, feds]) => (
                                     <CommandGroup key={district} heading={district || 'Без округа'}>
-                                      {feds.map(federation => (
+                                      {feds.map((federation: Federation) => (
                                         <CommandItem
                                           key={federation.id}
-                                          onSelect={async () => {
-                                            try {
-                                              const response = await fetch(`/api/users/${user.id}`, {
-                                                method: 'POST',
-                                                headers: { 'Content-Type': 'application/json' },
-                                                body: JSON.stringify({ federation: federation.id }),
-                                              })
-                                              if (!response.ok)
-                                                throw new Error('Не удалось обновить федерацию')
-                                              toast({ title: 'Успешно', description: 'Федерация обновлена' })
-                                              fetchUsers()
-                                            }
-                                            catch (error: any) {
-                                              toast({
-                                                title: 'Ошибка',
-                                                description: error?.message || 'Не удалось обновить федерацию',
-                                                variant: 'destructive',
-                                              })
-                                            }
+                                          onSelect={() => {
+                                            updateUserFederation({
+                                              params: { path: { id: user.id } },
+                                              body: { federation: federation.id },
+                                            })
                                           }}
                                         >
                                           <Check className={cn('mr-2 h-4 w-4', user.federation === federation.id ? 'opacity-100' : 'opacity-0')} />
