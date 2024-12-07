@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button.tsx'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { useQueryClient } from '@tanstack/react-query'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import Loader2 from '~icons/lucide/loader'
 
@@ -90,7 +90,7 @@ function RouteComponent() {
 
   return (
     <main className="fixed inset-0 overflow-hidden bg-gradient-to-b from-white to-gray-50/50">
-      <div className="flex h-full items-center justify-center p-4 sm:p-8">
+      <div className="flex h-full flex-col items-center justify-center p-4 sm:p-8">
         <Card className="w-full max-w-[min(400px,calc(100vw-2rem))] transition-all duration-200 sm:shadow-lg">
           <CardHeader className="space-y-2 px-6 pb-4 pt-6 sm:px-8 sm:pb-6 sm:pt-8">
             <CardTitle className="text-center text-2xl font-bold tracking-tight sm:text-3xl">
@@ -170,6 +170,17 @@ function RouteComponent() {
             </form>
           </CardContent>
         </Card>
+
+        <Button
+          asChild
+          type="button"
+          variant="link"
+          className="h-11 w-full text-base font-normal hover:text-purple-600 sm:h-12"
+        >
+          <Link to="/auth/start-reset-password">
+            Забыли пароль?
+          </Link>
+        </Button>
       </div>
     </main>
   )

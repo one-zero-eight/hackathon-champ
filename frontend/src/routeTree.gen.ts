@@ -27,6 +27,8 @@ import { Route as FederationsIndexImport } from './routes/federations/index'
 import { Route as ManageEmailImport } from './routes/manage/email'
 import { Route as FederationsFederationIdImport } from './routes/federations/$federationId'
 import { Route as EventsEventIdImport } from './routes/events/$eventId'
+import { Route as AuthStartResetPasswordImport } from './routes/auth/start-reset-password'
+import { Route as AuthResetPasswordImport } from './routes/auth/reset-password'
 import { Route as AuthLoginImport } from './routes/auth/login'
 import { Route as ManageFederationsIndexImport } from './routes/manage/federations/index'
 import { Route as ManageAnalyticsIndexImport } from './routes/manage/analytics/index'
@@ -134,6 +136,18 @@ const FederationsFederationIdRoute = FederationsFederationIdImport.update({
 const EventsEventIdRoute = EventsEventIdImport.update({
   id: '/events/$eventId',
   path: '/events/$eventId',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthStartResetPasswordRoute = AuthStartResetPasswordImport.update({
+  id: '/auth/start-reset-password',
+  path: '/auth/start-reset-password',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthResetPasswordRoute = AuthResetPasswordImport.update({
+  id: '/auth/reset-password',
+  path: '/auth/reset-password',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -286,6 +300,20 @@ declare module '@tanstack/react-router' {
       path: '/auth/login'
       fullPath: '/auth/login'
       preLoaderRoute: typeof AuthLoginImport
+      parentRoute: typeof rootRoute
+    }
+    '/auth/reset-password': {
+      id: '/auth/reset-password'
+      path: '/auth/reset-password'
+      fullPath: '/auth/reset-password'
+      preLoaderRoute: typeof AuthResetPasswordImport
+      parentRoute: typeof rootRoute
+    }
+    '/auth/start-reset-password': {
+      id: '/auth/start-reset-password'
+      path: '/auth/start-reset-password'
+      fullPath: '/auth/start-reset-password'
+      preLoaderRoute: typeof AuthStartResetPasswordImport
       parentRoute: typeof rootRoute
     }
     '/events/$eventId': {
@@ -480,6 +508,8 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/terms': typeof TermsRoute
   '/auth/login': typeof AuthLoginRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/auth/start-reset-password': typeof AuthStartResetPasswordRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/federations/$federationId': typeof FederationsFederationIdRoute
   '/manage/email': typeof ManageEmailRoute
@@ -509,6 +539,8 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/terms': typeof TermsRoute
   '/auth/login': typeof AuthLoginRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/auth/start-reset-password': typeof AuthStartResetPasswordRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/federations/$federationId': typeof FederationsFederationIdRoute
   '/manage/email': typeof ManageEmailRoute
@@ -540,6 +572,8 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/terms': typeof TermsRoute
   '/auth/login': typeof AuthLoginRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/auth/start-reset-password': typeof AuthStartResetPasswordRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/federations/$federationId': typeof FederationsFederationIdRoute
   '/manage/email': typeof ManageEmailRoute
@@ -573,6 +607,8 @@ export interface FileRouteTypes {
     | '/search'
     | '/terms'
     | '/auth/login'
+    | '/auth/reset-password'
+    | '/auth/start-reset-password'
     | '/events/$eventId'
     | '/federations/$federationId'
     | '/manage/email'
@@ -601,6 +637,8 @@ export interface FileRouteTypes {
     | '/search'
     | '/terms'
     | '/auth/login'
+    | '/auth/reset-password'
+    | '/auth/start-reset-password'
     | '/events/$eventId'
     | '/federations/$federationId'
     | '/manage/email'
@@ -630,6 +668,8 @@ export interface FileRouteTypes {
     | '/search'
     | '/terms'
     | '/auth/login'
+    | '/auth/reset-password'
+    | '/auth/start-reset-password'
     | '/events/$eventId'
     | '/federations/$federationId'
     | '/manage/email'
@@ -662,6 +702,8 @@ export interface RootRouteChildren {
   SearchRoute: typeof SearchRoute
   TermsRoute: typeof TermsRoute
   AuthLoginRoute: typeof AuthLoginRoute
+  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
+  AuthStartResetPasswordRoute: typeof AuthStartResetPasswordRoute
   EventsEventIdRoute: typeof EventsEventIdRoute
   FederationsFederationIdRoute: typeof FederationsFederationIdRoute
   FederationsIndexRoute: typeof FederationsIndexRoute
@@ -678,6 +720,8 @@ const rootRouteChildren: RootRouteChildren = {
   SearchRoute: SearchRoute,
   TermsRoute: TermsRoute,
   AuthLoginRoute: AuthLoginRoute,
+  AuthResetPasswordRoute: AuthResetPasswordRoute,
+  AuthStartResetPasswordRoute: AuthStartResetPasswordRoute,
   EventsEventIdRoute: EventsEventIdRoute,
   FederationsFederationIdRoute: FederationsFederationIdRoute,
   FederationsIndexRoute: FederationsIndexRoute,
@@ -703,6 +747,8 @@ export const routeTree = rootRoute
         "/search",
         "/terms",
         "/auth/login",
+        "/auth/reset-password",
+        "/auth/start-reset-password",
         "/events/$eventId",
         "/federations/$federationId",
         "/federations/"
@@ -750,6 +796,12 @@ export const routeTree = rootRoute
     },
     "/auth/login": {
       "filePath": "auth/login.tsx"
+    },
+    "/auth/reset-password": {
+      "filePath": "auth/reset-password.tsx"
+    },
+    "/auth/start-reset-password": {
+      "filePath": "auth/start-reset-password.tsx"
     },
     "/events/$eventId": {
       "filePath": "events/$eventId.tsx"
