@@ -1,3 +1,4 @@
+import type { SchemaEventStatusEnum } from '@/api/types'
 import type { DateRange } from 'react-day-picker'
 import { $api } from '@/api'
 import { useMe } from '@/api/me'
@@ -28,7 +29,7 @@ import Map from '~icons/lucide/map'
 const COLORS = ['#0ea5e9', '#22c55e', '#eab308', '#ef4444']
 
 // Helper function to format status
-function formatStatus(status: string) {
+export function formatStatus(status: SchemaEventStatusEnum) {
   switch (status) {
     case 'accredited':
       return 'Аккредитована'
@@ -36,10 +37,6 @@ function formatStatus(status: string) {
       return 'На рассмотрении'
     case 'rejected':
       return 'Отклонена'
-    case 'completed':
-      return 'Завершено'
-    case 'in_progress':
-      return 'В процессе'
     case 'draft':
       return 'Черновик'
     default:
@@ -156,7 +153,7 @@ function RouteComponent() {
       }))
 
     const statusData = Object.entries(eventsByStatus).map(([name, value]) => ({
-      name: formatStatus(name),
+      name: formatStatus(name as any),
       value,
     }))
 

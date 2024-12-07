@@ -1,5 +1,6 @@
 import { $api } from '@/api'
 import { ColoredBadge } from '@/components/ColoredBadge'
+import { FederationPublicStats } from '@/components/federation/FederationPublicStats.tsx'
 import { FederationLogo } from '@/components/FederationLogo'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -9,8 +10,6 @@ import Globe from '~icons/lucide/globe'
 import Mail from '~icons/lucide/mail'
 import MapPin from '~icons/lucide/map-pin'
 import Phone from '~icons/lucide/phone'
-import Trophy from '~icons/lucide/trophy'
-import Users from '~icons/lucide/users'
 import Telegram from '~icons/ph/telegram-logo'
 
 const STATUS_LABELS = {
@@ -163,24 +162,7 @@ function RouteComponent() {
             <CardTitle>Статистика</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <SectionLabel>Участников</SectionLabel>
-                <div className="flex items-center gap-2 text-2xl font-bold">
-                  <Users className="size-5" />
-                  TODO
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <SectionLabel>Соревнований</SectionLabel>
-                <div className="flex items-center gap-2 text-2xl font-bold">
-                  <Trophy className="size-5" />
-                  TODO
-                </div>
-              </div>
-            </div>
-
+            <FederationPublicStats federationId={federationId} />
           </CardContent>
         </Card>
       </div>
