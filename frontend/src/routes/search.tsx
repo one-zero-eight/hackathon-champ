@@ -164,60 +164,47 @@ function RouteComponent() {
         </Card>
 
         <main className="order-1 flex-1 space-y-4 md:order-2 md:space-y-6">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    className="pl-9"
-                    value={query}
-                    onChange={e => handleQueryChange(e.target.value)}
-                    placeholder="Название, вид спорта, город..."
-                  />
-                </div>
-                <div className="flex items-center gap-2">
-                  <SortAsc className="size-4 text-muted-foreground" />
-                  <Select value={sortPreset} onValueChange={setSortPreset as any}>
-                    <SelectTrigger className="w-[180px] min-w-[180px] md:w-[200px] md:min-w-[200px]">
-                      <SelectValue placeholder="Сортировка" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {Object.keys(SORT_PRESETS).map(preset => (
-                          <SelectItem key={preset} value={preset}>
-                            {preset}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                className="pl-9"
+                value={query}
+                onChange={e => handleQueryChange(e.target.value)}
+                placeholder="Название, вид спорта, город..."
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <SortAsc className="size-4 text-muted-foreground" />
+              <Select value={sortPreset} onValueChange={setSortPreset as any}>
+                <SelectTrigger className="w-[180px] min-w-[180px] md:w-[200px] md:min-w-[200px]">
+                  <SelectValue placeholder="Сортировка" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {Object.keys(SORT_PRESETS).map(preset => (
+                      <SelectItem key={preset} value={preset}>
+                        {preset}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
           <div className="grid gap-3 md:gap-4">
             {loading
               ? (
                   <>
                     {Array.from({ length: 3 }).map((_, index) => (
-                      <Card key={`skeleton-${index}`} className="w-full overflow-hidden">
-                        <Skeleton className="h-[180px] w-full md:h-[200px]" />
-                      </Card>
+                      // eslint-disable-next-line react/no-array-index-key
+                      <Skeleton key={index} className="h-[180px] w-full md:h-[200px]" />
                     ))}
                   </>
                 )
               : data?.events.length
-                ? (
-                    data.events.map(event => (
-                      <Card key={event.id} className="w-full overflow-hidden">
-                        <div className="w-full">
-                          <EventCard event={event} />
-                        </div>
-                      </Card>
-                    ))
-                  )
+                ? data.events.map(event => (<EventCard key={event.id} event={event} />))
                 : (
                     <Card className="py-8 md:py-12">
                       <div className="text-center">
