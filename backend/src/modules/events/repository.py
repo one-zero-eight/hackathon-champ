@@ -152,6 +152,19 @@ class EventsRepository:
         # Return results
         return await query.to_list()
 
+    async def read_for_participant(self, name: str) -> list[Event]:
+        return await Event.find(
+            {
+                "$or": [
+                    {"results.solo_places.participant": name},
+                    {"results.team_places.members": name},
+                ]
+            }
+        ).to_list()
+
+    async def read_for_team(self, name: str) -> list[Event]:
+        return await Event.find({"results.team_places.team": name}).to_list()
+
     async def create_selection(self, filters: Filters, sort: Sort):
         selection = Selection(filters=filters, sort=sort)
         await selection.insert()
