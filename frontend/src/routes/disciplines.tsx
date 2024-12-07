@@ -1,5 +1,6 @@
 import type { SchemaEvent } from '@/api/types'
 import { $api } from '@/api'
+import { useMe } from '@/api/me'
 import { Separator } from '@/components/ui/separator'
 import AlgorithmIcon from '@/icons/Algorithm_Icon.svg'
 import DroneIcon from '@/icons/Drone_Icon.svg'
@@ -7,6 +8,7 @@ import ProductIcon from '@/icons/Product_Icon.svg'
 import RobotIcon from '@/icons/Robot_Icon.svg'
 import SecurityIcon from '@/icons/Security_Icon.svg'
 import { createFileRoute } from '@tanstack/react-router'
+import { useMemo } from 'react'
 import Calendar from '~icons/lucide/calendar'
 import GraduationCap from '~icons/lucide/graduation-cap'
 
@@ -56,7 +58,7 @@ const DISCIPLINES: Discipline[] = [
   {
     id: 'drones',
     name: 'Программирование БАС',
-    description: 'Написание кода для автономного полета дрона или роя дронов, а также выполнения им поставленных задач в условиях соревновательного полигона.',
+    description: 'Написание кода для автономного полета дрона или роя дронов, а также выполнения им поставленных задач в условиях соревноватеьного полигона.',
     type: 'drones',
     icon: DroneIcon,
     skills: [
@@ -112,7 +114,24 @@ function DisciplineEvents({ query }: { query: string }) {
       },
     },
   })
-  const events = (eventsData as { events: SchemaEvent[] } | undefined)?.events ?? []
+
+  // Get all federations to check their status
+  const { data: federations } = $api.useQuery('get', '/federations/')
+  const federationStatusMap = useMemo(() => {
+    if (!federations)
+      return new Map()
+    return new Map(federations.map(f => [f.id, f.status]))
+  }, [federations])
+
+  const events = useMemo(() => {
+    const allEvents = (eventsData as { events: SchemaEvent[] } | undefined)?.events ?? []
+    // Only show events from accredited federations
+    return allEvents.filter((event) => {
+      if (!event.host_federation)
+        return false
+      return federationStatusMap.get(event.host_federation) === 'accredited'
+    })
+  }, [eventsData, federationStatusMap])
 
   if (events.length === 0) {
     return (
@@ -151,7 +170,7 @@ function RouteComponent() {
       <div>
         <h1 className="text-3xl font-bold">Дисциплины</h1>
         <p className="mt-2 text-muted-foreground">
-          Ознакомьтесь с направлениями в спортивном программировании, представленными на платформе.
+          Узнакомьтесь с направлениями в спортивном программировании, представленными на платформе.
         </p>
       </div>
 

@@ -1,5 +1,6 @@
 import type { Federation } from '@/lib/types'
 import { $api } from '@/api'
+import { useMe } from '@/api/me'
 import { FederationLogo } from '@/components/FederationLogo'
 import { StatusIcon } from '@/components/StatusIcon'
 import { Button } from '@/components/ui/button'
@@ -29,7 +30,11 @@ export const Route = createFileRoute('/federations/')({
 function RouteComponent() {
   const navigate = useNavigate()
   const { data, isPending } = $api.useQuery('get', '/federations/')
-  const federations = useMemo(() => (data ?? []), [data])
+
+  const federations = useMemo(() => {
+    const allFederations = data ?? []
+    return allFederations.filter(federation => federation.status === 'accredited')
+  }, [data])
 
   const byDistrict = useMemo(() => {
     const map = new Map<string, Federation[]>()
