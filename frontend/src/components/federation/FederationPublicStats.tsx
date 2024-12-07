@@ -77,28 +77,26 @@ export function FederationPublicStats({ federationId }: { federationId: string }
   }, [events])
 
   return (
-    <>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-1">
-          <div className="text-sm font-semibold text-muted-foreground">
-            Всего мероприятий
-          </div>
-          <div className="flex items-center gap-2 text-2xl font-bold">
-            <Trophy className="size-5" />
-            {isPending ? '...' : stats.total}
-          </div>
+    <div className="grid grid-cols-2 gap-4">
+      <div className="space-y-1">
+        <div className="text-sm font-semibold text-muted-foreground">
+          Всего мероприятий
         </div>
-
-        <div className="space-y-1">
-          <div className="text-sm font-semibold text-muted-foreground">
-            Среднее число участников
-          </div>
-          <div className="flex items-center gap-2 text-2xl font-bold">
-            <Users className="size-5" />
-            {isPending ? '...' : stats.averageParticipants}
-          </div>
+        <div className="flex items-center gap-2 text-2xl font-bold">
+          <Trophy className="size-5" />
+          {isPending ? '...' : stats.total}
         </div>
       </div>
-    </>
+
+      <div className="space-y-1">
+        <div className="text-sm font-semibold text-muted-foreground">
+          Среднее число участников
+        </div>
+        <div className="flex items-center gap-2 text-2xl font-bold">
+          <Users className="size-5" />
+          {isPending ? '...' : stats.averageParticipants}
+        </div>
+      </div>
+    </div>
   )
 }

@@ -78,7 +78,7 @@ function RouteComponent() {
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid items-start gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Контактная информация</CardTitle>
