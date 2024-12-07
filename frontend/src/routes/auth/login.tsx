@@ -44,7 +44,6 @@ function RouteComponent() {
     isPending: isPendingLogin,
   } = $api.useMutation('post', '/users/login', {
     onSettled: () => queryClient.resetQueries(),
-    onSuccess: () => window.location.assign(redirectTo || '/'),
   })
   const {
     mutate: performRegister,
