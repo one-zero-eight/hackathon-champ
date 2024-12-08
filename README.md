@@ -14,7 +14,7 @@
 ```
 
 - Видео-презентация: [Яндекс Диск](https://disk.yandex.ru/i/UWnxAbQZyNJXPg) / [Google Drive](https://drive.google.com/file/d/1l6WP-095W0wXx3uVBJZURmXFaIC3IXf0/view) / [YouTube](https://youtu.be/dxPm3ub1uHY)
-- Видео-демонстрация: -
+- Видео-демонстрация: [mini-demo.mp4](./mini-demo.mp4)
 - Презентация: [presentation.pdf](./presentation.pdf)
 - Репозиторий: https://github.com/hackathonsrus/pp_final_50040_pfo_ta_onezeroeight_69
 
