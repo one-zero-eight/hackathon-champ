@@ -2,11 +2,13 @@ import type { DateRange } from 'react-day-picker'
 import { $api } from '@/api'
 import { useMe } from '@/api/me.ts'
 import { AnalyticsFilters } from '@/components/analytics/AnalyticsFilters'
+import { PredictionChart } from '@/components/analytics/PredictionChart'
 import { QuickStatsCard } from '@/components/analytics/QuickStatsCard'
 import { TrendAnalysis } from '@/components/analytics/TrendAnalysis'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { predictFutureValues } from '@/lib/transfers'
 import { eventTooltipFormatter, federationTooltipFormatter, getStatusText, pluralize } from '@/lib/utils'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
@@ -41,6 +43,7 @@ export const Route = createFileRoute('/manage/analytics/')({
 function RouteComponent() {
   const navigate = useNavigate()
   const { data: me, isError: meError } = useMe()
+  const [showPredictions, setShowPredictions] = useState(false)
 
   useEffect(() => {
     if (meError) {
@@ -222,6 +225,25 @@ function RouteComponent() {
         trend: index > 0 ? value - array[index - 1][1] : 0,
       }))
   }, [filteredEvents])
+
+  // Prepare data for predictions
+  const monthlyEventData = useMemo(() => {
+    const monthlyEvents = filteredEvents.reduce((acc, event) => {
+      const date = new Date(event.start_date)
+      const monthKey = date.toISOString().slice(0, 7) // YYYY-MM format
+      acc[monthKey] = (acc[monthKey] || 0) + 1
+      return acc
+    }, {} as Record<string, number>)
+
+    return Object.entries(monthlyEvents)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([date, value]) => ({ date, value }))
+  }, [filteredEvents])
+
+  // Generate predictions
+  const predictions = useMemo(() => {
+    return predictFutureValues(monthlyEventData, 6) // Predict next 6 months
+  }, [monthlyEventData])
 
   // Export function
   const handleExport = () => {
@@ -420,7 +442,6 @@ function RouteComponent() {
         </div>
 
         {/* Add trend analysis */}
-
         <TrendAnalysis
           data={trendData}
           title="Тренд мероприятий"
@@ -504,6 +525,37 @@ function RouteComponent() {
           </Card>
         </div>
 
+        {/* ML Predictions section at the bottom */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <span>ML Прогнозирование</span>
+              <Button
+                variant={showPredictions ? 'default' : 'outline'}
+                onClick={() => setShowPredictions(!showPredictions)}
+              >
+                {showPredictions ? 'Скрыть прогноз' : 'Показать прогноз'}
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              Мы используем машинное обучение для прогнозирования количества мероприятий на следующие месяцы.
+              Прогноз основан на исторических данных и учитывает сезонные тренды.
+              Точность прогноза зависит от количества и качества исторических данных.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Prediction chart - only show if user consented */}
+        {showPredictions && (
+          <PredictionChart
+            historicalData={monthlyEventData}
+            predictions={predictions}
+            title="Прогноз мероприятий"
+            valueLabel="Количество мероприятий"
+          />
+        )}
       </div>
     </div>
   )
