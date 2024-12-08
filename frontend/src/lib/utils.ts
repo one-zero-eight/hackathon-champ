@@ -1,3 +1,4 @@
+import type { SchemaProtocol } from '@/api/types'
 import type { EventStatus, Filters, Location } from './types'
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
@@ -202,4 +203,20 @@ export function eventTooltipFormatter(value: number) {
 }
 export function federationTooltipFormatter(value: number) {
   return [`${value} ${pluralize(value, 'федерация', 'федерации', 'федераций')}`, 'Количество']
+}
+
+export function getProtocolUrl(protocol: SchemaProtocol) {
+  if (protocol.by_file)
+    return `/api/file_worker/download?url=${encodeURIComponent(protocol.by_file)}`
+  if (protocol.by_url)
+    return protocol.by_url
+  return ''
+}
+
+export function getProtocolLabel(protocol: SchemaProtocol) {
+  if (protocol.by_file)
+    return protocol.by_file.split('/').pop()
+  if (protocol.by_url)
+    return protocol.by_url
+  return '—'
 }

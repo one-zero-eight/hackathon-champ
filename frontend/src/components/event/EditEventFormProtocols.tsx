@@ -1,11 +1,10 @@
-import type { SchemaProtocol } from '@/api/types'
 import type { DropzoneOptions } from 'react-dropzone'
 import type { UseFormReturn } from 'react-hook-form'
 import type { EventResultsType } from './EditEventForm'
 import { Button } from '@/components/ui/button'
 import { FormField, FormItem } from '@/components/ui/form'
 import { Label } from '@/components/ui/label'
-import { cn } from '@/lib/utils'
+import { cn, getProtocolLabel, getProtocolUrl } from '@/lib/utils'
 import { useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Download from '~icons/lucide/download'
@@ -130,20 +129,4 @@ export function EditEventFormProtocols({ form, onDrop, className }: EditEventFor
       )}
     />
   )
-}
-
-export function getProtocolUrl(protocol: SchemaProtocol) {
-  if (protocol.by_file)
-    return `/api/file_worker/download?url=${encodeURIComponent(protocol.by_file)}`
-  if (protocol.by_url)
-    return protocol.by_url
-  return ''
-}
-
-export function getProtocolLabel(protocol: SchemaProtocol) {
-  if (protocol.by_file)
-    return protocol.by_file.split('/').pop()
-  if (protocol.by_url)
-    return protocol.by_url
-  return '—'
 }

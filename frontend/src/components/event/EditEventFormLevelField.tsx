@@ -29,10 +29,7 @@ export function EditEventFormLevelField({
           <FormControl>
             <Select
               value={field.value ?? ''}
-              onValueChange={(e) => {
-                console.log(e)
-                field.onChange(e)
-              }}
+              onValueChange={field.onChange}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Выберите уровень" />

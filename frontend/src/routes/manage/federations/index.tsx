@@ -1,6 +1,6 @@
-import type { SchemaFederation, SchemaStatusEnum } from '../../../api/types'
+import type { SchemaFederation, SchemaStatusEnum } from '@/api/types'
 import { $api, apiFetch } from '@/api'
-import { useMe } from '@/api/me.ts'
+import { useMe } from '@/api/me'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -190,7 +190,7 @@ function RouteComponent() {
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
     })
-  }, [federations])
+  }, [])
 
   const getStatusBadgeVariant = (
     status: SchemaStatusEnum,

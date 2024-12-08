@@ -1,16 +1,15 @@
-import type { SchemaEvent } from '@/api/types.ts'
-import { getProtocolLabel, getProtocolUrl } from '@/components/event/EditEventFormProtocols.tsx'
-import { Badge } from '@/components/ui/badge.tsx'
-import { Button } from '@/components/ui/button.tsx'
+import type { SchemaEvent } from '@/api/types'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog.tsx'
-import { Separator } from '@/components/ui/separator.tsx'
-import { infoForDateRange, locationText, plainDateStr, urlToMaps } from '@/lib/utils.ts'
+} from '@/components/ui/dialog'
+import { Separator } from '@/components/ui/separator'
+import { getProtocolLabel, getProtocolUrl, infoForDateRange, locationText, plainDateStr, urlToMaps } from '@/lib/utils'
 import { useState } from 'react'
 import Download from '~icons/lucide/download'
 import MapPin from '~icons/lucide/map-pin'
