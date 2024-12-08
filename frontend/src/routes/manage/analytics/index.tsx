@@ -526,7 +526,7 @@ function RouteComponent() {
         </div>
 
         {/* ML Predictions section at the bottom */}
-        <Card>
+        <Card className="do-not-print">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span>ML Прогнозирование</span>
