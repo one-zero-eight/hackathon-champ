@@ -15,7 +15,7 @@
 
 - Видео-презентация: -
 - Видео-демонстрация: -
-- Презентация: -
+- Презентация: [presentation.pdf](./presentation.pdf)
 - Репозиторий: https://github.com/hackathonsrus/pp_final_50040_pfo_ta_onezeroeight_69
 
 ## Описание
