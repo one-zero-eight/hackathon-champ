@@ -1,11 +1,11 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { createFileRoute, Outlet, useNavigate } from '@tanstack/react-router'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 function RotatingLogo() {
   const logoRef = useRef<HTMLImageElement>(null)
   const [rotation, setRotation] = useState(20)
   const frameRef = useRef<number>()
-
+  const navigate = useNavigate()
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!logoRef.current)
       return
@@ -52,6 +52,7 @@ function RotatingLogo() {
           willChange: 'transform',
         }}
         className="relative size-48 object-contain drop-shadow-2xl"
+        onClick={() => navigate({ to: '/game' })}
       />
     </div>
   )

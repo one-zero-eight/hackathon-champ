@@ -25,6 +25,7 @@ import { Route as AuthRouteImport } from './routes/auth/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as ParticipantsIndexImport } from './routes/participants/index'
 import { Route as ManageIndexImport } from './routes/manage/index'
+import { Route as GameIndexImport } from './routes/game/index'
 import { Route as FederationsIndexImport } from './routes/federations/index'
 import { Route as ManageEmailImport } from './routes/manage/email'
 import { Route as FederationsFederationIdImport } from './routes/federations/$federationId'
@@ -129,6 +130,12 @@ const ManageIndexRoute = ManageIndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => ManageRouteRoute,
+} as any)
+
+const GameIndexRoute = GameIndexImport.update({
+  id: '/game/',
+  path: '/game/',
+  getParentRoute: () => rootRoute,
 } as any)
 
 const FederationsIndexRoute = FederationsIndexImport.update({
@@ -379,6 +386,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FederationsIndexImport
       parentRoute: typeof rootRoute
     }
+    '/game/': {
+      id: '/game/'
+      path: '/game'
+      fullPath: '/game'
+      preLoaderRoute: typeof GameIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/manage/': {
       id: '/manage/'
       path: '/'
@@ -591,6 +605,7 @@ export interface FileRoutesByFullPath {
   '/federations/$federationId': typeof FederationsFederationIdRoute
   '/manage/email': typeof ManageEmailRoute
   '/federations': typeof FederationsIndexRoute
+  '/game': typeof GameIndexRoute
   '/manage/': typeof ManageIndexRoute
   '/participants': typeof ParticipantsIndexRoute
   '/manage/admin/home': typeof ManageAdminHomeRoute
@@ -626,6 +641,7 @@ export interface FileRoutesByTo {
   '/federations/$federationId': typeof FederationsFederationIdRoute
   '/manage/email': typeof ManageEmailRoute
   '/federations': typeof FederationsIndexRoute
+  '/game': typeof GameIndexRoute
   '/manage': typeof ManageIndexRoute
   '/participants': typeof ParticipantsIndexRoute
   '/manage/admin/home': typeof ManageAdminHomeRoute
@@ -663,6 +679,7 @@ export interface FileRoutesById {
   '/federations/$federationId': typeof FederationsFederationIdRoute
   '/manage/email': typeof ManageEmailRoute
   '/federations/': typeof FederationsIndexRoute
+  '/game/': typeof GameIndexRoute
   '/manage/': typeof ManageIndexRoute
   '/participants/': typeof ParticipantsIndexRoute
   '/manage/admin/home': typeof ManageAdminHomeRoute
@@ -702,6 +719,7 @@ export interface FileRouteTypes {
     | '/federations/$federationId'
     | '/manage/email'
     | '/federations'
+    | '/game'
     | '/manage/'
     | '/participants'
     | '/manage/admin/home'
@@ -736,6 +754,7 @@ export interface FileRouteTypes {
     | '/federations/$federationId'
     | '/manage/email'
     | '/federations'
+    | '/game'
     | '/manage'
     | '/participants'
     | '/manage/admin/home'
@@ -771,6 +790,7 @@ export interface FileRouteTypes {
     | '/federations/$federationId'
     | '/manage/email'
     | '/federations/'
+    | '/game/'
     | '/manage/'
     | '/participants/'
     | '/manage/admin/home'
@@ -805,6 +825,7 @@ export interface RootRouteChildren {
   EventsEventIdRoute: typeof EventsEventIdRoute
   FederationsFederationIdRoute: typeof FederationsFederationIdRoute
   FederationsIndexRoute: typeof FederationsIndexRoute
+  GameIndexRoute: typeof GameIndexRoute
   ParticipantsIndexRoute: typeof ParticipantsIndexRoute
 }
 
@@ -822,6 +843,7 @@ const rootRouteChildren: RootRouteChildren = {
   EventsEventIdRoute: EventsEventIdRoute,
   FederationsFederationIdRoute: FederationsFederationIdRoute,
   FederationsIndexRoute: FederationsIndexRoute,
+  GameIndexRoute: GameIndexRoute,
   ParticipantsIndexRoute: ParticipantsIndexRoute,
 }
 
@@ -848,6 +870,7 @@ export const routeTree = rootRoute
         "/events/$eventId",
         "/federations/$federationId",
         "/federations/",
+        "/game/",
         "/participants/"
       ]
     },
@@ -925,6 +948,9 @@ export const routeTree = rootRoute
     },
     "/federations/": {
       "filePath": "federations/index.tsx"
+    },
+    "/game/": {
+      "filePath": "game/index.tsx"
     },
     "/manage/": {
       "filePath": "manage/index.tsx",
