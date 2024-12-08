@@ -70,11 +70,19 @@
      username: email@yandex.ru
      password: password
    ```
-4. Запустить проект:
+4. Запустить базу данных.
+   ```
+   docker compose up -d db
+   ```
+5. Загрузить дамп базы данных.
+   ```
+   docker compose exec db sh -c 'mongorestore "mongodb://$MONGO_INITDB_ROOT_USERNAME:$MONGO_INITDB_ROOT_PASSWORD@localhost:27017/db?authSource=admin" --drop /dump/db'
+   ```
+6. Запустить проект:
    ```
    docker compose up -d --build
    ```
-5. Зайти на [http://localhost:8000](http://localhost:8000) в браузере.
+7. Зайти на [http://localhost:8000](http://localhost:8000) в браузере.
 
 ## Структура проекта
 
