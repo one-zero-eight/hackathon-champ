@@ -4,6 +4,15 @@
 
 **Развернутый проект: https://champ.innohassle.ru**
 
+**Аккаунты:**
+```yaml
+- login: admin
+  password: admin108
+
+- login: tatarstan
+  password: tatarstan108
+```
+
 - Видео-презентация: -
 - Видео-демонстрация: -
 - Презентация: -
