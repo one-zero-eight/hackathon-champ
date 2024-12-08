@@ -61,14 +61,13 @@
 Протестировано на Ubuntu 22.04 с архитектурой amd64.
 
 1. Установить [Docker и Docker Compose](https://docs.docker.com/engine/install/) последней версии.
-2. Склонировать этот репозиторий (или скачать zip архив) и перейти в папку с проектом.
-3. (Необязательно) Для активации отправки email-уведомлений необходимо отредактировать настройки `backend/settings.docker.yaml`:
-   ```yaml
-   smtp:
-     host: smtp.yandex.ru
-     port: 587
-     username: email@yandex.ru
-     password: password
+2. Склонировать этот репозиторий.
+   ```
+   git clone https://github.com/hackathonsrus/pp_final_50040_pfo_ta_onezeroeight_69.git
+   ```
+3. Перейти в папку с проектом.
+   ```
+   cd pp_final_50040_pfo_ta_onezeroeight_69
    ```
 4. Запустить базу данных.
    ```
@@ -83,6 +82,17 @@
    docker compose up -d --build
    ```
 7. Зайти на [http://localhost:8000](http://localhost:8000) в браузере.
+
+> [!NOTE]
+> (Необязательно)
+> Для активации отправки email-уведомлений необходимо отредактировать настройки `backend/settings.docker.yaml`:
+> ```yaml
+> smtp:
+>   host: smtp.yandex.ru
+>   port: 587
+>   username: email@yandex.ru
+>   password: password
+> ```
 
 ## Структура проекта
 
