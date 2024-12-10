@@ -209,11 +209,14 @@ function NotificationTitle({
   className?: string
   isRead: boolean
 }) {
-  const federationId = notification.inner.notify_type === 'new_federation'
-    ? notification.inner.federation_id
-    : notification.inner.notify_type === 'accredited_federation'
-      ? notification.inner.federation_id
-      : ''
+  const federationId = (() => {
+    switch (notification.inner.notify_type) {
+      case 'new_federation':
+      case 'accredited_federation':
+        return notification.inner.federation_id
+    }
+    return ''
+  })()
 
   const { data: federation } = $api.useQuery(
     'get',
@@ -222,11 +225,14 @@ function NotificationTitle({
     { enabled: !!federationId },
   )
 
-  const eventId = notification.inner.notify_type === 'new_event'
-    ? notification.inner.event_id
-    : notification.inner.notify_type === 'accredited_event'
-      ? notification.inner.event_id
-      : ''
+  const eventId = (() => {
+    switch (notification.inner.notify_type) {
+      case 'new_event':
+      case 'accredited_event':
+        return notification.inner.event_id
+    }
+    return ''
+  })()
 
   const { data: event } = $api.useQuery(
     'get',
@@ -234,7 +240,7 @@ function NotificationTitle({
     { params: { path: { id: eventId } } },
     { enabled: !!eventId },
   )
-  const Inner = (() => {
+  const inner = (() => {
     switch (notification.inner.notify_type) {
       case 'new_federation':
         return (
@@ -276,7 +282,7 @@ function NotificationTitle({
       className,
     )}
     >
-      {Inner}
+      {inner}
     </h5>
   )
 }
