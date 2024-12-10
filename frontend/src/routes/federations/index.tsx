@@ -16,7 +16,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { useMemo } from 'react'
+import Fuse from 'fuse.js'
+import { useMemo, useState } from 'react'
 import Mail from '~icons/lucide/mail'
 import Phone from '~icons/lucide/phone'
 import Search from '~icons/lucide/search'
@@ -29,6 +30,7 @@ export const Route = createFileRoute('/federations/')({
 function RouteComponent() {
   const navigate = useNavigate()
   const { data, isPending } = $api.useQuery('get', '/federations/')
+  const [search, setSearch] = useState('')
 
   const federations = useMemo(() => {
     const allFederations = data ?? []
@@ -45,6 +47,21 @@ function RouteComponent() {
     }
     return map
   }, [federations])
+
+  const fuse = useMemo(() => {
+    return new Fuse(federations, {
+      threshold: 0.3,
+      shouldSort: true,
+      ignoreLocation: true,
+      keys: ['region', 'district'],
+    })
+  }, [federations])
+
+  const ranks = useMemo(() => {
+    const results = fuse.search(search)
+    const n = results.length
+    return new Map<string, number>(results.map((result, index) => [result.item.id, n - index]))
+  }, [fuse, search])
 
   const handleFederationSelect = (id: string) => {
     navigate({
@@ -71,19 +88,23 @@ function RouteComponent() {
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
-            <Command>
-              <CommandInput placeholder="Введите название федерации или регион..." />
+            <Command filter={id => ranks.get(id) ?? 0}>
+              <CommandInput
+                value={search}
+                onValueChange={setSearch}
+                placeholder="Введите название федерации или регион..."
+              />
               <CommandList>
                 <CommandEmpty>По вашему запросу ничего не найдено.</CommandEmpty>
-                {Array.from(byDistrict.entries()).map(([district, federations]) => (
+                {Array.from(byDistrict.entries()).map(([district, districtFeds]) => (
                   <CommandGroup key={district} heading={district}>
-                    {federations.map(federation => (
+                    {districtFeds.map(fed => (
                       <CommandItem
-                        key={federation.id}
-                        value={`${district} ${federation.region}`}
-                        onSelect={() => handleFederationSelect(federation.id)}
+                        key={fed.id}
+                        value={fed.id}
+                        onSelect={() => handleFederationSelect(fed.id)}
                       >
-                        {federation.region}
+                        {fed.region}
                       </CommandItem>
                     ))}
                   </CommandGroup>
