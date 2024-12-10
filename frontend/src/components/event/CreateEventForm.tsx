@@ -1,4 +1,5 @@
 import { $api } from '@/api'
+import { TelegramImport } from '@/components/event/TelegramImport.tsx'
 import { DatePicker } from '@/components/filters/DatesFilter.tsx'
 import { Button } from '@/components/ui/button.tsx'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.tsx'
@@ -153,21 +154,25 @@ export function CreateEventForm() {
               )}
             />
 
-            <div className="flex flex-col gap-4 pt-4 sm:flex-row sm:justify-end">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.history.back()}
-                className="order-2 w-full sm:order-1 sm:w-auto"
-              >
-                Отмена
-              </Button>
-              <Button
-                type="submit"
-                className="order-1 w-full sm:order-2 sm:w-auto"
-              >
-                Продолжить
-              </Button>
+            <div className="flex flex-wrap justify-between gap-4 pt-4">
+              <TelegramImport />
+
+              <div className="flex flex-wrap gap-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => router.history.back()}
+                  className="order-2 w-full sm:order-1 sm:w-auto"
+                >
+                  Отмена
+                </Button>
+                <Button
+                  type="submit"
+                  className="order-1 w-full sm:order-2 sm:w-auto"
+                >
+                  Продолжить
+                </Button>
+              </div>
             </div>
           </form>
         </Form>
