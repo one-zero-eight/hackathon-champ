@@ -1,5 +1,5 @@
-import { useMe } from '@/api/me.ts'
 import { CreateEventForm } from '@/components/event/CreateEventForm.tsx'
+import { useMe } from '@/hooks/useMe'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect } from 'react'
 

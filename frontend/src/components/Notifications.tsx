@@ -1,6 +1,6 @@
 import type { SchemaNotify as INotification } from '@/api/types'
 import { $api, apiFetch } from '@/api'
-import { useMe } from '@/api/me'
+import { useMe } from '@/hooks/useMe'
 import { cn, labelForDateDiff } from '@/lib/utils'
 import { useNavigate } from '@tanstack/react-router'
 import { useCallback, useEffect, useMemo } from 'react'
@@ -240,6 +240,7 @@ function NotificationTitle({
     { params: { path: { id: eventId } } },
     { enabled: !!eventId },
   )
+
   const inner = (() => {
     switch (notification.inner.notify_type) {
       case 'new_federation':

@@ -1,5 +1,5 @@
-import { useMe } from '@/api/me.ts'
 import { TopBar } from '@/components/TopBar.tsx'
+import { useMe } from '@/hooks/useMe'
 import {
   createRootRoute,
   Outlet,

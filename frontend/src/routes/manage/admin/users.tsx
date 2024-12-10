@@ -1,6 +1,5 @@
 import type { SchemaViewUser } from '@/api/types'
 import { $api } from '@/api'
-import { useMe } from '@/api/me.ts'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -12,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Skeleton } from '@/components/ui/skeleton'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useToast } from '@/components/ui/use-toast'
+import { useMe } from '@/hooks/useMe'
 import { cn } from '@/lib/utils'
 
 import { useQueryClient } from '@tanstack/react-query'

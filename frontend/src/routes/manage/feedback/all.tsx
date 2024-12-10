@@ -1,5 +1,5 @@
 import { $api } from '@/api'
-import { useMe } from '@/api/me.ts'
+import { useMe } from '@/hooks/useMe'
 
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect } from 'react'

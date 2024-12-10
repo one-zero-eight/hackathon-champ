@@ -1,5 +1,4 @@
 import { $api } from '@/api'
-import { useMe } from '@/api/me.ts'
 import { QuickStatsCard } from '@/components/analytics/QuickStatsCard'
 import { EventCard } from '@/components/EventCard'
 import { Notifications } from '@/components/Notifications'
@@ -14,6 +13,7 @@ import {
 } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useMe } from '@/hooks/useMe'
 import { plainDatesForFilter } from '@/lib/utils'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useEffect } from 'react'

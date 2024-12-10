@@ -1,6 +1,5 @@
 import type { SchemaFeedbackSchema } from '@/api/types'
 import { $api } from '@/api'
-import { useMe, useMyFederation } from '@/api/me'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -11,6 +10,7 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
+import { useMe, useMyFederation } from '@/hooks/useMe'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import Loader2 from '~icons/lucide/loader-2'

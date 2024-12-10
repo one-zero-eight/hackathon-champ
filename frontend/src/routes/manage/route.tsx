@@ -1,7 +1,7 @@
-import { useMe, useMyFederation } from '@/api/me.ts'
 import { NavLink } from '@/components/NavLink'
 import { Separator } from '@/components/ui/separator.tsx'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useMe, useMyFederation } from '@/hooks/useMe'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import Award from '~icons/lucide/award'
 import BarChart from '~icons/lucide/bar-chart-2'

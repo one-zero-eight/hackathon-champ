@@ -1,6 +1,5 @@
 import type { SchemaFederation, SchemaStatusEnum } from '@/api/types'
 import { $api, apiFetch } from '@/api'
-import { useMe } from '@/api/me'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -34,6 +33,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useMe } from '@/hooks/useMe'
 import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useCallback, useEffect, useMemo, useState } from 'react'

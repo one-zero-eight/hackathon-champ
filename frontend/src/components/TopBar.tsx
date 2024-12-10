@@ -1,6 +1,6 @@
 import { $api } from '@/api'
-import { useMe } from '@/api/me.ts'
 import { Button } from '@/components/ui/button.tsx'
+import { useMe } from '@/hooks/useMe'
 import { useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
