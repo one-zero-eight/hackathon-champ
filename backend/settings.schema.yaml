@@ -1,5 +1,15 @@
 $schema: https://json-schema.org/draft-07/schema
 $defs:
+  AI:
+    additionalProperties: false
+    properties:
+      ollama_host:
+        default: http://localhost:11434
+        description: Ollama host
+        title: Ollama Host
+        type: string
+    title: AI
+    type: object
   Environment:
     enum:
     - development
@@ -123,6 +133,12 @@ properties:
     - type: 'null'
     default: null
     description: SMTP settings
+  ai:
+    anyOf:
+    - $ref: '#/$defs/AI'
+    - type: 'null'
+    default: null
+    description: AI settings
 required:
 - database_uri
 - session_secret_key

@@ -1,5 +1,6 @@
 import datetime
 from enum import StrEnum
+from typing import Literal
 
 import pymongo
 from beanie import PydanticObjectId
@@ -11,7 +12,7 @@ from src.storages.mongo.__base__ import CustomDocument
 
 
 class EventLocation(BaseSchema):
-    country: str
+    country: str = "Россия"
     "Название страны"
     region: str | None = None
     "Название региона"
@@ -71,6 +72,15 @@ class EventLevelEnum(StrEnum):
     "Международное"
 
 
+type Disciplines = Literal[
+    "программирование алгоритмическое",
+    "программирование продуктовое",
+    "программирование беспилотных авиационных систем",
+    "программирование робототехники",
+    "программирование систем информационной безопасности",
+]
+
+
 class TeamPlace(BaseSchema):
     place: int
     "Место (1, 2, 3)"
@@ -126,7 +136,7 @@ class EventSchema(BaseSchema):
     "Минимальный возраст участников"
     age_max: int | None = None
     "Максимальный возраст участников"
-    discipline: list[str]
+    discipline: list[Disciplines]
     "Названия дисциплин"
     start_date: datetime.datetime
     "Дата начала"

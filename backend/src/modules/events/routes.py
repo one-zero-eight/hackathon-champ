@@ -1,25 +1,38 @@
+import datetime
 import re
-from datetime import datetime
 from io import BytesIO
+from typing import Literal
 
+import bs4
+import httpx
 import icalendar
 import magic
 import pandas as pd
 import pdfplumber
 from beanie import PydanticObjectId
-from fastapi import APIRouter, HTTPException, UploadFile
+from fastapi import APIRouter, Body, HTTPException, UploadFile
 from pydantic import BaseModel
 from starlette.responses import Response
 
 from src.api.dependencies import USER_AUTH
 from src.logging_ import logger
+from src.modules.ai.repository import ai_repository
 from src.modules.events.ics_utils import get_base_calendar
 from src.modules.events.repository import events_repository
 from src.modules.events.schemas import DateFilter, Filters, Pagination, Sort
 from src.modules.federation.repository import federation_repository
 from src.modules.notify.repository import notify_repository
 from src.modules.users.repository import user_repository
-from src.storages.mongo.events import Event, EventSchema, EventStatusEnum, Results, TeamPlace
+from src.pydantic_base import BaseSchema
+from src.storages.mongo.events import (
+    Disciplines,
+    Event,
+    EventLocation,
+    EventSchema,
+    EventStatusEnum,
+    Results,
+    TeamPlace,
+)
 from src.storages.mongo.notify import AccreditationRequestEvent, AccreditedEvent, NotifySchema
 from src.storages.mongo.selection import Selection
 from src.storages.mongo.users import UserRole
@@ -109,7 +122,6 @@ async def hint_results(file: UploadFile) -> Results:
             member_sub = re.findall(r"\((.*?)\)", team)
             if member_sub:
                 team = team.replace(member_sub[-1], "").replace("(", "").replace(")", "").strip()
-                print(team, member_sub)
                 members = member_sub[-1].replace("(", "").replace(")", "").split(",")
                 members = [m.strip() for m in members]
                 members = [m for m in members if m]
@@ -152,6 +164,83 @@ async def create_many_events(events: list[EventSchema], auth: USER_AUTH) -> bool
         return await events_repository.create_many(events)
     else:
         raise HTTPException(status_code=403, detail="Only admin can create events")
+
+
+class ShortenEvent(BaseSchema):
+    title: str
+    "Наименование спортивного мероприятия"
+    description: str
+    "Описание"
+    discipline: list[Disciplines]
+    "Названия дисциплин"
+    start_date: datetime.datetime
+    "Дата начала"
+    end_date: datetime.datetime
+    "Дата конца"
+    location: EventLocation
+    "Места проведения"
+
+
+@router.post(
+    "/hint-event",
+    responses={
+        200: {"description": "Hint for event creation"},
+        400: {"description": "Cannot parse telegram post"},
+    },
+)
+async def hint_event(
+    telegram_post_link: str = Body(examples=["https://t.me/one_zero_eight/125"], embed=True),
+) -> ShortenEvent | None:
+    # check if proper link
+    if not re.match(r"https://t.me/[^/]+/\d+", telegram_post_link):
+        logger.warning(f"Cannot parse telegram post because of invalid link: {telegram_post_link}")
+        raise HTTPException(status_code=400, detail="Cannot parse telegram post because of invalid link")
+
+    # get post
+    try:
+        async with httpx.AsyncClient(
+            timeout=10,
+            headers={
+                "User-Agent": (
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                    "(KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
+                )
+            },
+        ) as client:
+            response = await client.get(telegram_post_link)
+            response.raise_for_status()  # Raise exception if the status code is not 200
+            soup = bs4.BeautifulSoup(response.text, "html.parser")
+            with open("telegram_post.html", "w") as f:
+                f.write(response.text)
+
+            post = soup.find("meta", property="og:description")
+
+            if post is None:
+                logger.warning(f"Cannot parse telegram post: {telegram_post_link}")
+                raise HTTPException(status_code=400, detail="Cannot parse telegram post")
+            content = post["content"]
+            logger.info(f"Telegram post content: {content}")
+
+            if not ai_repository:
+                raise HTTPException(status_code=400, detail="AI service is not available")
+
+            event, message = await ai_repository.get_event_from_text(content)
+
+            if event:
+                return ShortenEvent(
+                    title=event.title,
+                    description=content,
+                    discipline=event.discipline,
+                    start_date=event.start_date,
+                    end_date=event.end_date,
+                    location=event.location,
+                )
+            else:
+                raise HTTPException(status_code=400, detail=message)
+
+    except httpx.RequestError as e:
+        logger.error(f"Cannot get telegram post: {e}")
+        raise HTTPException(status_code=400, detail="Cannot parse telegram post because of request error")
 
 
 @router.post("/suggest", responses={200: {"description": "Suggest event"}})
@@ -244,14 +333,14 @@ async def count_events_by_month(filters: Filters) -> dict[str, int]:
     if filters.date and filters.date.start_date:
         current_year = filters.date.start_date.year
     else:
-        current_year = datetime.now().year
+        current_year = datetime.datetime.now().year
     for i in range(1, 13):
         date_filter = DateFilter()
-        date_filter.start_date = datetime(current_year, month=i, day=1)
+        date_filter.start_date = datetime.datetime(current_year, month=i, day=1)
         if i == 12:
-            date_filter.end_date = datetime(current_year + 1, month=1, day=1)
+            date_filter.end_date = datetime.datetime(current_year + 1, month=1, day=1)
         else:
-            date_filter.end_date = datetime(current_year, month=i + 1, day=1)
+            date_filter.end_date = datetime.datetime(current_year, month=i + 1, day=1)
         filters.date = date_filter
         count = await events_repository.read_with_filters(
             filters, Sort(), Pagination(page_size=0, page_no=0), count=True
@@ -317,9 +406,9 @@ async def get_all_filters_locations() -> list[LocationsFilterVariants]:
 
 
 class DisciplinesFilterVariants(BaseModel):
-    sport: str
+    sport: Literal["Спортивное программирование"]
     "Название вида спорта"
-    disciplines: list[str]
+    disciplines: list[Disciplines]
     "Названия дисциплин"
 
 

@@ -36,6 +36,11 @@ class MinioSettings(SettingBaseModel):
     "Secret key (password) for the user account."
 
 
+class AI(SettingBaseModel):
+    ollama_host: str = "http://localhost:11434"
+    "Ollama host"
+
+
 class Settings(SettingBaseModel):
     """Settings for the application."""
 
@@ -63,6 +68,8 @@ class Settings(SettingBaseModel):
     "Minio settings"
     smtp: SMTP | None = None
     "SMTP settings"
+    ai: AI | None = None
+    "AI settings"
 
     @classmethod
     def from_yaml(cls, path: Path) -> "Settings":
