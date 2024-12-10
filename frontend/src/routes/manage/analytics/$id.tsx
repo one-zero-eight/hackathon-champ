@@ -1,4 +1,4 @@
-import type { Federation } from '@/lib/types'
+import type { EventStatus, Federation } from '@/lib/types'
 import type { DateRange } from 'react-day-picker'
 import { $api } from '@/api'
 import { useMe } from '@/api/me'
@@ -8,7 +8,7 @@ import { TrendAnalysis } from '@/components/analytics/TrendAnalysis'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import * as eventsLib from '@/lib/events'
+import * as statsLib from '@/lib/stats'
 import { eventTooltipFormatter, getStatusText } from '@/lib/utils'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -29,7 +29,12 @@ import CheckCircle from '~icons/lucide/check-circle'
 import Clock from '~icons/lucide/clock'
 import Map from '~icons/lucide/map'
 
-const COLORS = ['#0ea5e9', '#22c55e', '#eab308', '#ef4444']
+const EVENT_COLOR_BY_STATUS = {
+  draft: statsLib.COLOR_NEUTRAL,
+  on_consideration: statsLib.COLOR_INFO,
+  accredited: statsLib.COLOR_SUCCESS,
+  rejected: statsLib.COLOR_DESTRUCTIVE,
+}
 
 // Helper function to format month
 function formatMonth(date: string) {
@@ -93,7 +98,13 @@ function RouteComponent() {
 
   // Calculate statistics
   const stats = useMemo(() => {
-    const eventsByStatus = eventsLib.eventsByStatus(events)
+    const eventsByStatusMap = statsLib.eventsByStatus(events)
+    const eventsByStatusArray = Object
+      .entries(eventsByStatusMap)
+      .map(([status, count]) => ({
+        status: status as EventStatus,
+        count,
+      }))
 
     const eventsByMonth = events.reduce((acc, event) => {
       const date = new Date(event.start_date)
@@ -135,17 +146,13 @@ function RouteComponent() {
         value,
       }))
 
-    const statusData = Object.entries(eventsByStatus).map(([name, value]) => ({
-      name: getStatusText(name),
-      value,
-    }))
-
     return {
       total: events.length,
-      byStatus: eventsByStatus,
-      statusData,
       monthlyData,
-      averageParticipants: eventsLib.participantsAverage(events),
+      averageParticipants: statsLib.participantsAverage(events),
+
+      byStatusMap: eventsByStatusMap,
+      byStatusArray: eventsByStatusArray,
     }
   }, [events])
 
@@ -294,18 +301,18 @@ function RouteComponent() {
                                 <ResponsiveContainer width="100%" height="100%">
                                   <PieChart>
                                     <Pie
-                                      data={stats.statusData}
+                                      data={stats.byStatusArray}
                                       cx="50%"
                                       cy="50%"
                                       innerRadius={60}
                                       outerRadius={80}
                                       paddingAngle={5}
-                                      dataKey="value"
-                                      nameKey="name"
-                                      label={entry => entry.name}
+                                      dataKey="count"
+                                      nameKey="status"
+                                      label={entry => getStatusText(entry.status)}
                                     >
-                                      {stats.statusData.map(entry => (
-                                        <Cell key={entry.name} fill={COLORS[stats.statusData.indexOf(entry) % COLORS.length]} />
+                                      {stats.byStatusArray.map(({ status }) => (
+                                        <Cell key={status} fill={EVENT_COLOR_BY_STATUS[status]} />
                                       ))}
                                     </Pie>
                                     <Tooltip
@@ -316,18 +323,14 @@ function RouteComponent() {
                                 </ResponsiveContainer>
                               </div>
                               <div className="mt-4 flex flex-wrap gap-2 md:gap-4">
-                                {stats.statusData.map((entry, index) => (
-                                  <div key={entry.name} className="flex items-center gap-2">
+                                {stats.byStatusArray.map(({ status, count }) => (
+                                  <div key={status} className="flex items-center gap-2">
                                     <div
                                       className="size-2 rounded-full md:size-3"
-                                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                                      style={{ backgroundColor: EVENT_COLOR_BY_STATUS[status] }}
                                     />
                                     <span className="text-xs text-muted-foreground md:text-sm">
-                                      {entry.name}
-                                      {' '}
-                                      (
-                                      {entry.value}
-                                      )
+                                      {`${getStatusText(status)} (${count})`}
                                     </span>
                                   </div>
                                 ))}

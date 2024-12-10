@@ -1,3 +1,4 @@
+import type { FederationStatus } from '@/lib/types'
 import type { DateRange } from 'react-day-picker'
 import { $api } from '@/api'
 import { useMe } from '@/api/me.ts'
@@ -8,6 +9,7 @@ import { TrendAnalysis } from '@/components/analytics/TrendAnalysis'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import * as statsLib from '@/lib/stats'
 import { predictFutureValues } from '@/lib/transfers'
 import { eventTooltipFormatter, federationTooltipFormatter, getStatusText, pluralize } from '@/lib/utils'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
@@ -29,7 +31,11 @@ import Building from '~icons/lucide/building'
 import Calendar from '~icons/lucide/calendar'
 import Map from '~icons/lucide/map'
 
-const COLORS = ['#0ea5e9', '#22c55e', '#eab308', '#ef4444']
+const FEDERATION_COLOR_BY_STATUS: Record<FederationStatus, string> = {
+  accredited: statsLib.COLOR_SUCCESS,
+  rejected: statsLib.COLOR_DESTRUCTIVE,
+  on_consideration: statsLib.COLOR_INFO,
+}
 
 // Helper function to format month
 function formatMonth(date: string) {
@@ -120,10 +126,13 @@ function RouteComponent() {
 
   // Calculate statistics based on filtered data
   const stats = useMemo(() => {
-    const federationsByStatus = filteredFederations.reduce((acc, fed) => {
-      acc[fed.status] = (acc[fed.status] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
+    const federationsByStatus = statsLib.federationsByStatus(filteredFederations)
+    const federationsCountByStatus = Object
+      .entries(federationsByStatus)
+      .map(([status, count]) => ({
+        status: status as FederationStatus,
+        count,
+      }))
 
     const federationsByDistrict = filteredFederations.reduce((acc, fed) => {
       if (fed.district) {
@@ -183,11 +192,6 @@ function RouteComponent() {
       ? Object.values(eventsByFederation).reduce((a, b) => a + b, 0) / Object.keys(eventsByFederation).length
       : 0
 
-    const statusData = Object.entries(federationsByStatus).map(([name, value]) => ({
-      name: getStatusText(name),
-      value,
-    }))
-
     const districtData = Object.entries(federationsByDistrict)
       .sort(([, a], [, b]) => b - a)
       .map(([name, value]) => ({
@@ -197,14 +201,15 @@ function RouteComponent() {
 
     return {
       total: filteredFederations.length,
-      byStatus: federationsByStatus,
       byDistrict: federationsByDistrict,
       avgEventsPerFederation: Math.round(avgEventsPerFederation * 10) / 10,
       activeDistricts: Object.keys(federationsByDistrict).length,
       totalEvents: filteredEvents.length,
-      statusData,
       districtData,
       monthlyData,
+
+      byStatusMap: federationsByStatus,
+      byStatusArray: federationsCountByStatus,
     }
   }, [filteredFederations, filteredEvents])
 
@@ -330,7 +335,7 @@ function RouteComponent() {
             title="Всего федераций"
             icon={Building}
             value={stats.total}
-            secondaryValue={stats.byStatus.on_consideration}
+            secondaryValue={stats.byStatusMap.on_consideration}
             color="blue"
           />
           <QuickStatsCard
@@ -364,18 +369,21 @@ function RouteComponent() {
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={stats.statusData}
+                      data={stats.byStatusArray}
                       cx="50%"
                       cy="50%"
                       innerRadius={60}
                       outerRadius={80}
                       paddingAngle={5}
-                      dataKey="value"
-                      nameKey="name"
-                      label={entry => entry.name}
+                      dataKey="count"
+                      nameKey="status"
+                      label={entry => getStatusText(entry.status)}
                     >
-                      {stats.statusData.map(entry => (
-                        <Cell key={entry.name} fill={COLORS[stats.statusData.indexOf(entry) % COLORS.length]} />
+                      {stats.byStatusArray.map(({ status }) => (
+                        <Cell
+                          key={status}
+                          fill={FEDERATION_COLOR_BY_STATUS[status]}
+                        />
                       ))}
                     </Pie>
                     <Tooltip
@@ -386,18 +394,14 @@ function RouteComponent() {
                 </ResponsiveContainer>
               </div>
               <div className="mt-4 flex flex-wrap gap-4">
-                {stats.statusData.map((entry, index) => (
-                  <div key={entry.name} className="flex items-center gap-2">
+                {stats.byStatusArray.map(({ status, count }) => (
+                  <div key={status} className="flex items-center gap-2">
                     <div
                       className="size-3 rounded-full"
-                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                      style={{ backgroundColor: FEDERATION_COLOR_BY_STATUS[status] }}
                     />
                     <span className="text-sm text-muted-foreground">
-                      {entry.name}
-                      {' '}
-                      (
-                      {entry.value}
-                      )
+                      {`${getStatusText(status)} (${count})`}
                     </span>
                   </div>
                 ))}

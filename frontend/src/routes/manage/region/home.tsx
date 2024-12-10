@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
-import * as eventsLib from '@/lib/events'
+import * as statsLib from '@/lib/stats'
 import { cn, plainDatesForFilter } from '@/lib/utils'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo } from 'react'
@@ -122,7 +122,7 @@ function RouteComponent() {
   const eventsByStats = useMemo(() => {
     if (!events)
       return null
-    return eventsLib.eventsByStatus(events?.events ?? [])
+    return statsLib.eventsByStatus(events?.events ?? [])
   }, [events])
 
   return (
