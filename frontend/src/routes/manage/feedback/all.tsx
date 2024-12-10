@@ -10,11 +10,14 @@ export const Route = createFileRoute('/manage/feedback/all')({
 
 function RouteComponent() {
   const navigate = useNavigate()
-  const { isError: meError } = useMe()
+  const { data: me, isError: meError } = useMe()
 
   useEffect(() => {
     if (meError) {
       navigate({ to: '/auth/login' })
+    }
+    if (me && me.role !== 'admin') {
+      navigate({ to: me.federation ? '/manage/feedback/region' : '/auth/login' })
     }
   }, [meError, navigate])
 

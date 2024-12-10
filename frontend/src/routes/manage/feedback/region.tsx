@@ -29,7 +29,7 @@ function FederationFeedbackPage() {
       navigate({ to: '/auth/login' })
     }
     else if (me && !me.federation) {
-      navigate({ to: me.role === 'admin' ? '/manage/admin/home' : '/' })
+      navigate({ to: me.role === 'admin' ? '/manage/feedback/all' : '/' })
     }
   }, [me, meError, navigate])
 
