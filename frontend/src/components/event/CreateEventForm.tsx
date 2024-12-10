@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input.tsx'
 import { Label } from '@/components/ui/label.tsx'
 import { Textarea } from '@/components/ui/textarea.tsx'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useNavigate } from '@tanstack/react-router'
+import { useRouter } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { Temporal } from 'temporal-polyfill'
@@ -26,7 +26,7 @@ export function CreateEventForm() {
   const { data: me } = useMe()
   const { mutate } = $api.useMutation('post', '/events/suggest')
 
-  const navigate = useNavigate()
+  const router = useRouter()
   const form = useForm<CreateEventFormTypes>({
     resolver: zodResolver(createEventForm),
     defaultValues: {
@@ -53,7 +53,7 @@ export function CreateEventForm() {
       }, {
         onSuccess: (data) => {
           toast.success('Мероприятие успешно создано!')
-          navigate({ to: '/manage/events/$id', params: { id: data.id } })
+          router.navigate({ to: '/manage/events/$id', params: { id: data.id } })
         },
       })
     }
@@ -157,7 +157,7 @@ export function CreateEventForm() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => navigate({ to: '/manage/events' })}
+                onClick={() => router.history.back()}
                 className="order-2 w-full sm:order-1 sm:w-auto"
               >
                 Отмена
