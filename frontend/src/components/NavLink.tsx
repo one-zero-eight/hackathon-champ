@@ -19,7 +19,7 @@ export function NavLink({
     <Button
       asChild
       variant="ghost"
-      className={cn('flex items-center gap-2 justify-start', className)}
+      className={cn('flex items-center gap-2 justify-start hover:text-purple-700', className)}
     >
       <Link
         to={to}
