@@ -385,18 +385,10 @@ function RouteComponent() {
                 Навигация
               </h3>
               <ul className="space-y-2">
-                <li>
-                  <Link to="/search" className="text-sm hover:text-white">Поиск соревнований</Link>
-                </li>
-                <li>
-                  <Link to="/calendar" className="text-sm hover:text-white">Календарь</Link>
-                </li>
-                <li>
-                  <Link to="/disciplines" className="text-sm hover:text-white">Дисциплины</Link>
-                </li>
-                <li>
-                  <Link to="/feedback" className="text-sm hover:text-white">Обратная связь</Link>
-                </li>
+                <li><Link to="/search" className="text-sm hover:text-white">Поиск соревнований</Link></li>
+                <li><Link to="/calendar" className="text-sm hover:text-white">Календарь</Link></li>
+                <li><Link to="/disciplines" className="text-sm hover:text-white">Дисциплины</Link></li>
+                <li><Link to="/feedback" className="text-sm hover:text-white">Обратная связь</Link></li>
               </ul>
             </div>
 
@@ -406,18 +398,10 @@ function RouteComponent() {
                 Информация
               </h3>
               <ul className="space-y-2">
-                <li>
-                  <Link to="/about" className="text-sm hover:text-white">О платформе</Link>
-                </li>
-                <li>
-                  <Link to="/federations" className="text-sm hover:text-white">Федерации</Link>
-                </li>
-                <li>
-                  <Link to="/participants" className="text-sm hover:text-white">Участники</Link>
-                </li>
-                <li>
-                  <Link to="/auth/login" className="text-sm hover:text-white">Вход в систему</Link>
-                </li>
+                <li><Link to="/about" className="text-sm hover:text-white">О платформе</Link></li>
+                <li><Link to="/federations" className="text-sm hover:text-white">Федерации</Link></li>
+                <li><Link to="/participants" className="text-sm hover:text-white">Участники</Link></li>
+                <li><Link to="/auth/login" className="text-sm hover:text-white">Вход в систему</Link></li>
               </ul>
             </div>
 
@@ -427,21 +411,9 @@ function RouteComponent() {
                 Связаться с нами
               </h3>
               <ul className="space-y-2">
-                <li>
-                  <a href="mailto:support@fsplink.ru" className="text-sm hover:text-white">
-                    support@fsplink.ru
-                  </a>
-                </li>
-                <li>
-                  <a href="https://t.me/fsplink" className="text-sm hover:text-white">
-                    Telegram-канал
-                  </a>
-                </li>
-                <li>
-                  <a href="https://vk.com/fsplink" className="text-sm hover:text-white">
-                    Группа ВКонтакте
-                  </a>
-                </li>
+                <li><a href="mailto:contact@fsplink.ru" className="text-sm hover:text-white">contact@fsplink.ru</a></li>
+                <li><a href="https://t.me/one_zero_eight" target="_blank" rel="noreferrer" className="text-sm hover:text-white">Telegram-канал</a></li>
+                <li><a href="https://vk.com/russiafsp" target="_blank" rel="noreferrer" className="text-sm hover:text-white">Группа ВКонтакте</a></li>
               </ul>
             </div>
           </div>
@@ -457,12 +429,8 @@ function RouteComponent() {
                 ФСП Линк. Все права защищены.
               </p>
               <div className="flex flex-col space-y-2 text-center sm:flex-row sm:space-x-6 sm:space-y-0 sm:text-left">
-                <Link to="/terms" className="text-xs hover:text-white">
-                  Пользовательское соглашение
-                </Link>
-                <Link to="/privacy" className="text-xs hover:text-white">
-                  Политика конфиденциальности
-                </Link>
+                <Link to="/terms" className="text-xs hover:text-white">Пользовательское соглашение</Link>
+                <Link to="/privacy" className="text-xs hover:text-white">Политика конфиденциальности</Link>
               </div>
             </div>
           </div>
