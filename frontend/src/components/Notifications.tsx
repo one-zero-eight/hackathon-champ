@@ -141,7 +141,7 @@ function NotificationItem({
 }) {
   const navigate = useNavigate()
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     onRead(notification.id)
     switch (notification.inner.notify_type) {
       case 'new_federation':
@@ -164,7 +164,7 @@ function NotificationItem({
         })
         break
     }
-  }
+  }, [notification, onRead, navigate])
 
   return (
     <div className="flex items-start gap-4 py-3 [&:not(:last-child)]:border-b">
