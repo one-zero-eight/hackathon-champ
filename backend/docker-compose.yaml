@@ -12,6 +12,8 @@ services:
     environment:
       TZ: "Europe/Moscow"
       FORWARDED_ALLOW_IPS: "*"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   db:
     # See more: https://registry.hub.docker.com/_/mongo
