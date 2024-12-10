@@ -1,0 +1,17 @@
+{
+  "name": "ФСП Линк",
+  "short_name": "ФСП Линк",
+  "description": "Единая платформа для организации и проведения соревнований по спортивному программированию",
+  "start_url": "/?from=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#fefefe",
+  "theme_color": "#3b0764",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
