@@ -1,15 +1,9 @@
-import type { Event } from '@/lib/types'
-import { useMe } from '@/api/me.ts'
-import { EventDetailsDialog } from '@/components/EventDetailsDialog.tsx'
+import type { Event, Location } from '@/lib/types'
+import { useMe } from '@/api/me'
+import { EventDetailsDialog } from '@/components/EventDetailsDialog'
 import { EventExportToCalButton } from '@/components/EventExportToCalButton'
-import { Button } from '@/components/ui/button.tsx'
-import {
-  cn,
-  infoForDateRange,
-  locationText,
-  plainDateStr,
-  urlToMaps,
-} from '@/lib/utils.ts'
+import { Button } from '@/components/ui/button'
+import { cn, infoForDateRange, locationText, plainDateStr, urlToMaps } from '@/lib/utils'
 import { Link } from '@tanstack/react-router'
 import LinkIcon from '~icons/lucide/link'
 import MapPin from '~icons/lucide/map-pin'
@@ -93,20 +87,10 @@ export function EventCard({
         <h4 className="text-xl font-bold">{event.title}</h4>
         <div className="flex flex-wrap gap-1">
           {event.location.map(loc => (
-            <a
+            <LocationBadge
               key={locationText(loc)}
-              href={urlToMaps(loc)}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <Badge
-                className="flex items-center gap-1 text-xs underline hover:text-blue-700"
-                variant="outline"
-              >
-                <MapPin className="text-[18px]" />
-                <span>{locationText(loc)}</span>
-              </Badge>
-            </a>
+              location={loc}
+            />
           ))}
           {event.participant_count && (
             <Badge
@@ -168,5 +152,33 @@ export function EventCard({
         status={event.status}
       />
     </div>
+  )
+}
+
+export function LocationBadge({ location }: { location: Location }) {
+  const text = locationText(location)
+
+  const inner = (
+    <Badge
+      className="flex items-center gap-1 text-xs underline hover:text-blue-700"
+      variant="outline"
+    >
+      <MapPin className="text-[18px]" />
+      <span>{text}</span>
+    </Badge>
+  )
+
+  if (text.match(/ПО МЕСТУ НАХОЖДЕНИЯ/i)) {
+    return inner
+  }
+
+  return (
+    <a
+      href={urlToMaps(location)}
+      target="_blank"
+      rel="noreferrer"
+    >
+      {inner}
+    </a>
   )
 }
