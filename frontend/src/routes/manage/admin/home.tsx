@@ -2,6 +2,7 @@ import { $api } from '@/api'
 import { QuickStatsCard } from '@/components/analytics/QuickStatsCard'
 import { EventCard } from '@/components/EventCard'
 import { Notifications } from '@/components/Notifications'
+import { NotificationsUnreadBadge } from '@/components/NotificationsUnreadBadge'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -235,7 +236,10 @@ function RouteComponent() {
           {/* Notifications */}
           <Card className="col-span-2 flex flex-col">
             <CardHeader>
-              <CardTitle>Уведомления</CardTitle>
+              <CardTitle className="flex items-end gap-2">
+                Уведомления
+                <NotificationsUnreadBadge type="admin" />
+              </CardTitle>
               <CardDescription>Уведомления о новых заявках и мероприятиях</CardDescription>
             </CardHeader>
             <CardContent className="flex max-h-[300px] grow flex-col overflow-y-auto">

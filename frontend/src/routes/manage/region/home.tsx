@@ -4,6 +4,7 @@ import { QuickStatsCard } from '@/components/analytics/QuickStatsCard'
 import { ColoredBadge } from '@/components/ColoredBadge'
 import { EventCard } from '@/components/EventCard'
 import { Notifications } from '@/components/Notifications'
+import { NotificationsUnreadBadge } from '@/components/NotificationsUnreadBadge'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -262,7 +263,10 @@ function RouteComponent() {
           {/* Notifications */}
           <Card className="col-span-2 flex flex-col">
             <CardHeader>
-              <CardTitle>Уведомления</CardTitle>
+              <CardTitle className="flex items-end gap-2">
+                Уведомления
+                <NotificationsUnreadBadge type="my-federation" />
+              </CardTitle>
               <CardDescription>Уведомления о новых заявках и мероприятиях</CardDescription>
             </CardHeader>
             <CardContent className="flex max-h-[300px] grow flex-col overflow-y-auto">

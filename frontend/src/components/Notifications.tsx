@@ -1,9 +1,9 @@
 import type { SchemaNotify as INotification } from '@/api/types'
-import { $api, apiFetch } from '@/api'
-import { useMe } from '@/hooks/useMe'
+import { $api } from '@/api'
+import { useNotifications } from '@/hooks/useNotifications'
 import { cn, labelForDateDiff } from '@/lib/utils'
 import { useNavigate } from '@tanstack/react-router'
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback } from 'react'
 import Building from '~icons/lucide/building'
 import Calendar from '~icons/lucide/calendar'
 import Check from '~icons/lucide/check'
@@ -12,90 +12,18 @@ import { StatusIcon } from './StatusIcon'
 import { Button } from './ui/button'
 import { Skeleton } from './ui/skeleton'
 
-export function Notifications({
-  type,
-}: {
-  type: 'admin' | 'my-federation'
-}) {
+export function Notifications({ type }: { type: 'admin' | 'my-federation' }) {
   const {
-    data: me,
-    isLoading: meLoading,
-    error: meError,
-  } = useMe()
-
-  const adminEnabled = type === 'admin' && me?.role === 'admin'
-  const myFederationEnabled = type === 'my-federation' && !!me?.federation
-
-  const {
-    data: adminNotifications,
-    isLoading: adminNotificationsLoading,
-    error: adminNotificationsError,
-    refetch: adminNotificationsRefetch,
-  } = $api.useQuery(
-    'get',
-    '/notify/admin',
-    {},
-    { enabled: adminEnabled },
-  )
-  const {
-    data: myFederationNotifications,
-    isLoading: myFederationNotificationsLoading,
-    error: myFederationNotificationsError,
-    refetch: myFederationNotificationsRefetch,
-  } = $api.useQuery(
-    'get',
-    '/notify/federation/{federation_id}',
-    { params: { path: { federation_id: me?.federation || '' } } },
-    { enabled: myFederationEnabled },
-  )
-
-  // Log errors.
-  useEffect(() => {
-    if (meError)
-      console.error(meError)
-  }, [meError])
-  useEffect(() => {
-    if (adminNotificationsError)
-      console.error(adminNotificationsError)
-  }, [adminNotificationsError])
-  useEffect(() => {
-    if (myFederationNotificationsError)
-      console.error(myFederationNotificationsError)
-  }, [myFederationNotificationsError])
-
-  const isRead = (notification: INotification) => {
-    return me?.id ? notification.read_by.includes(me.id) : false
-  }
-
-  const notificationsLoading = (
-    meLoading
-    || (adminEnabled && adminNotificationsLoading)
-    || (myFederationEnabled && myFederationNotificationsLoading)
-  )
-
-  const someError = meError ?? (adminEnabled && adminNotificationsError) ?? (myFederationEnabled && myFederationNotificationsError)
-  const actualNotifications = useMemo(() => (
-    (adminEnabled ? adminNotifications : myFederationNotifications) ?? []
-  ), [adminEnabled, adminNotifications, myFederationNotifications])
-
-  // Sort notifications by created_at in descending order (most recent first)
-  const sortedNotifications = useMemo(() => [...actualNotifications].sort((a, b) =>
-    new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-  ), [actualNotifications])
-
-  const handleRead = useCallback((notificationId: string) => {
-    apiFetch
-      .PUT('/notify/{notify_id}/read', { params: { path: { notify_id: notificationId } } })
-      .finally(() => {
-        // Invalidate queries to refresh data.
-        adminNotificationsRefetch()
-        myFederationNotificationsRefetch()
-      })
-  }, [adminNotificationsRefetch, myFederationNotificationsRefetch])
+    notifications,
+    isLoading,
+    error,
+    isRead,
+    handleRead,
+  } = useNotifications(type)
 
   return (
     <div className="flex grow flex-col">
-      {notificationsLoading
+      {isLoading
         ? (
             Array.from({ length: 3 }).fill(null).map((_, i) => (
               // eslint-disable-next-line react/no-array-index-key
@@ -103,9 +31,9 @@ export function Notifications({
             ))
           )
         : (
-            sortedNotifications.length > 0
+            notifications.length > 0
               ? (
-                  sortedNotifications.map(notification => (
+                  notifications.map(notification => (
                     <NotificationItem
                       key={notification.id}
                       notification={notification}
@@ -114,7 +42,7 @@ export function Notifications({
                     />
                   ))
                 )
-              : someError
+              : error
                 ? (
                     <p className="my-auto text-center text-lg text-red-500">
                       Ошибка загрузки уведомлений
