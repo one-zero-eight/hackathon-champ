@@ -17,7 +17,7 @@ import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { normalizeFilters, plainDatesForFilter } from '@/lib/utils'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useDebounce } from 'react-use'
 import { Temporal } from 'temporal-polyfill'
 
@@ -133,6 +133,11 @@ function RouteComponent() {
     },
     { enabled: !filtersChanging && !sharedLoading },
   )
+  const accreditedEvents = useMemo(() => {
+    return data
+      ?.events
+      .filter(event => event.status === 'accredited') ?? []
+  }, [data])
 
   const loading = dataLoading || filtersChanging || sharedLoading
 
@@ -192,12 +197,8 @@ function RouteComponent() {
                   <Skeleton className="h-[200px] bg-stone-200" />
                 </>
               )
-            : data?.events.length
-              ? (
-                  data.events
-                    .filter(event => event.status === 'accredited')
-                    .map(event => <EventCard key={event.id} event={event} />)
-                )
+            : accreditedEvents.length
+              ? (accreditedEvents.map(event => <EventCard key={event.id} event={event} />))
               : (
                   <div className="flex h-[200px] w-full items-center justify-center">
                     Ничего не найдено
