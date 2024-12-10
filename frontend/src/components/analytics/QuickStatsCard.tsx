@@ -41,7 +41,7 @@ export function QuickStatsCard({
           <>
             <span className="mb-4 w-full"></span>
             <div className="mt-auto flex items-center text-sm text-gray-500">
-              {secondaryValue === null ? (<Skeleton className="mr-2 size-6" />) : secondaryValue}
+              {secondaryValue === null ? (<Skeleton className="mr-2 h-4 w-6" />) : secondaryValue}
               {' '}
               {secondaryText}
             </div>
