@@ -9,10 +9,20 @@ export function MinMaxFilter(
   const { disabled, value, onChange, ...rest } = props
 
   const handleMinChange = (v: number | null) => {
-    onChange({ ...value, min: v })
+    onChange({
+      ...value,
+      min: v == null
+        ? null
+        : Math.min(Math.max(v, 0), value?.max || Infinity),
+    })
   }
   const handleMaxChange = (v: number | null) => {
-    onChange({ ...value, max: v })
+    onChange({
+      ...value,
+      max: v == null
+        ? null
+        : Math.max(Math.min(v, 1000000), value?.min || 0),
+    })
   }
 
   return (
@@ -22,9 +32,12 @@ export function MinMaxFilter(
           disabled={disabled}
           type="number"
           min={0}
-          value={value?.min || ''}
+          value={value?.min ?? ''}
           onChange={(e) => {
-            handleMinChange(e.target.value ? Number(e.target.value) : null)
+            const int = e.target.value
+              ? Number.parseInt(e.target.value)
+              : null
+            handleMinChange(Number.isNaN(int) ? null : int)
           }}
           placeholder="от"
           className="w-fit max-w-[90px]"
@@ -34,9 +47,12 @@ export function MinMaxFilter(
           disabled={disabled}
           type="number"
           min={0}
-          value={value?.max || ''}
+          value={value?.max ?? ''}
           onChange={(e) => {
-            handleMaxChange(e.target.value ? Number(e.target.value) : null)
+            const int = e.target.value
+              ? Number.parseInt(e.target.value)
+              : null
+            handleMaxChange(Number.isNaN(int) ? null : int)
           }}
           placeholder="до"
           className="w-fit max-w-[90px]"
