@@ -81,7 +81,11 @@ function RouteComponent() {
       <div className="flex flex-col gap-12">
         {DISCIPLINES.map((discipline) => {
           return (
-            <div key={discipline.name} className="border-b pb-12">
+            <div
+              key={discipline.name}
+              id={discipline.slug}
+              className="scroll-mt-[calc(var(--header-height)+1rem)] border-b pb-12"
+            >
               <div className="grid items-start gap-8 md:grid-cols-2">
                 <div>
                   <div className="flex items-start gap-4">

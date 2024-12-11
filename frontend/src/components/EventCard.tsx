@@ -1,10 +1,13 @@
 import type { Event, Location } from '@/lib/types'
+import type { LinkProps } from '@tanstack/react-router'
 import { EventDetailsDialog } from '@/components/EventDetailsDialog'
 import { EventExportToCalButton } from '@/components/EventExportToCalButton'
 import { Button } from '@/components/ui/button'
 import { useMe } from '@/hooks/useMe'
+import { DISCIPLINES } from '@/lib/disciplines'
 import { cn, infoForDateRange, locationText, plainDateStr, urlToMaps } from '@/lib/utils'
 import { Link } from '@tanstack/react-router'
+import React from 'react'
 import LinkIcon from '~icons/lucide/link'
 import MapPin from '~icons/lucide/map-pin'
 import Pencil from '~icons/lucide/pencil'
@@ -32,6 +35,9 @@ export function EventCard({
   )
 
   const singleDay = start.toString() === end.toString()
+  const disciplines = event.discipline
+    .map(d1 => DISCIPLINES.find(d2 => d2.name === d1))
+    .filter(d => d != null)
 
   return (
     <div
@@ -93,13 +99,9 @@ export function EventCard({
             />
           ))}
           {event.participant_count && (
-            <Badge
-              className="flex items-center gap-1 text-xs"
-              variant="outline"
-            >
-              <Users className="text-[18px]" />
+            <EventCardBadge icon={Users}>
               <span>{`${event.participant_count} чел.`}</span>
-            </Badge>
+            </EventCardBadge>
           )}
         </div>
 
@@ -114,15 +116,18 @@ export function EventCard({
             <Separator />
             <div className="flex flex-wrap gap-2">
               <span className="text-sm font-bold">Дисциплины:</span>
-              {event.discipline.slice(0, 3).map(d => (
-                <Badge className="text-xs" variant="outline" key={d}>
-                  {d}
-                </Badge>
+              {disciplines.slice(0, 3).map(d => (
+                <EventCardBadge
+                  key={d.name}
+                  url={{ to: '/disciplines', hash: d.slug }}
+                >
+                  {d.name}
+                </EventCardBadge>
               ))}
               {event.discipline.length > 3 && (
-                <Badge className="text-xs" variant="outline">
+                <EventCardBadge>
                   {`+${event.discipline.length - 3}`}
-                </Badge>
+                </EventCardBadge>
               )}
             </div>
           </>
@@ -155,30 +160,37 @@ export function EventCard({
   )
 }
 
-export function LocationBadge({ location }: { location: Location }) {
+function LocationBadge({ location }: { location: Location }) {
   const text = locationText(location)
+  const mapUrl = text.match(/ПО МЕСТУ НАХОЖДЕНИЯ/i) ? undefined : urlToMaps(location)
+  return <EventCardBadge url={mapUrl} icon={MapPin}>{text}</EventCardBadge>
+}
 
-  const inner = (
+function EventCardBadge({
+  children,
+  icon: Icon,
+  url,
+}: {
+  children: React.ReactNode
+  icon?: React.ComponentType<{ className?: string }>
+  url?: string | LinkProps
+}) {
+  const badge = (
     <Badge
-      className="flex items-center gap-1 text-xs underline hover:text-blue-700"
+      className={cn(
+        'flex items-center gap-1 text-xs',
+        !!url && 'underline hover:text-blue-700',
+      )}
       variant="outline"
     >
-      <MapPin className="text-[18px]" />
-      <span>{text}</span>
+      {Icon && <Icon className="text-[18px]" />}
+      <span>{children}</span>
     </Badge>
   )
 
-  if (text.match(/ПО МЕСТУ НАХОЖДЕНИЯ/i)) {
-    return inner
-  }
-
-  return (
-    <a
-      href={urlToMaps(location)}
-      target="_blank"
-      rel="noreferrer"
-    >
-      {inner}
-    </a>
-  )
+  return url
+    ? typeof url === 'string'
+      ? <a href={url} target="_blank" rel="noreferrer">{badge}</a>
+      : <Link {...url}>{badge}</Link>
+    : badge
 }
