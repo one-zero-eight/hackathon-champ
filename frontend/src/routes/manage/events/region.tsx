@@ -24,7 +24,7 @@ function RouteComponent() {
     }
   }, [me, meError, navigate])
 
-  const [sort, setSort] = useState<Sort>({ date: 'desc' })
+  const [sort, setSort] = useState<Sort>({ type: 'date', direction: -1 })
   const { data: myFederation, isLoading: myFederationLoading } = useMyFederation()
   const { data: eventsData, isLoading: eventsLoading } = $api.useQuery(
     'post',

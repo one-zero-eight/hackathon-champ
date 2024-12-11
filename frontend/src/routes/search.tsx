@@ -1,3 +1,4 @@
+import type { SchemaSort } from '@/api/types.ts'
 import type { Filters } from '@/lib/types'
 import { $api } from '@/api'
 import { EventCard } from '@/components/EventCard.tsx'
@@ -15,11 +16,10 @@ import {
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
-import { normalizeFilters, plainDatesForFilter } from '@/lib/utils'
+import { normalizeFilters } from '@/lib/utils'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
 import { useDebounce } from 'react-use'
-import { Temporal } from 'temporal-polyfill'
 
 export const Route = createFileRoute('/search')({
   component: RouteComponent,
@@ -31,25 +31,27 @@ export const Route = createFileRoute('/search')({
   },
 })
 
-const getInitialFilters: () => Filters = () => ({
-  date: plainDatesForFilter(Temporal.Now.plainDateISO(), null),
-  accreditation: true,
-})
+const getInitialFilters: () => Filters | undefined = () => undefined
 
 const SORT_PRESETS = {
+  'По умолчанию': null,
   'Сначала ранние': {
-    date: 'asc',
+    type: 'date',
+    direction: 1,
   },
   'Сначала поздние': {
-    date: 'desc',
+    type: 'date',
+    direction: -1,
   },
   'Больше участников': {
-    participant_count: 'desc',
+    type: 'participant_count',
+    direction: -1,
   },
   'Меньше участников': {
-    participant_count: 'asc',
+    type: 'participant_count',
+    direction: 1,
   },
-}
+} satisfies { [k: string]: SchemaSort | null }
 
 function RouteComponent() {
   const navigate = useNavigate()
@@ -70,7 +72,7 @@ function RouteComponent() {
   )
   const [sortPreset, setSortPreset] = useState<
     keyof typeof SORT_PRESETS | undefined
-  >('Сначала ранние')
+  >('По умолчанию')
 
   useEffect(() => {
     const newFilters = shareFilters?.filters ?? routeFilters
@@ -122,13 +124,13 @@ function RouteComponent() {
       body: {
         filters: {
           ...normalizeFilters(debouncedFilters || {}),
-          accreditation: true,
+          status: ['accredited'],
         },
         pagination: {
           page_no: 1,
           page_size: 100,
         },
-        sort: sortPreset ? SORT_PRESETS[sortPreset] : {},
+        sort: sortPreset ? SORT_PRESETS[sortPreset] : null,
       },
     },
     { enabled: !filtersChanging && !sharedLoading },

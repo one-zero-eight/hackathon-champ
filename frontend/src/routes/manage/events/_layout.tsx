@@ -20,7 +20,7 @@ export const Route = createFileRoute('/manage/events/_layout')({
   component: LayoutComponent,
 })
 
-const DEFAULT_SORT: Sort = { date: 'desc' }
+const DEFAULT_SORT: Sort = { type: 'date', direction: -1 }
 
 // TODO: Improve this.
 const encodeSort = (sort: Sort) => JSON.stringify(sort)
@@ -60,13 +60,13 @@ export function LayoutWrapper({
 
                   По дате
                 </SelectLabel>
-                <SelectItem value={encodeSort({ date: 'desc' })}>
+                <SelectItem value={encodeSort({ type: 'date', direction: -1 })}>
                   <div className="flex items-center gap-2">
                     <ArrowDown className="size-4" />
                     <span>Сначала новые</span>
                   </div>
                 </SelectItem>
-                <SelectItem value={encodeSort({ date: 'asc' })}>
+                <SelectItem value={encodeSort({ type: 'date', direction: 1 })}>
                   <div className="flex items-center gap-2">
                     <ArrowUp className="size-4" />
                     <span>Сначала старые</span>
@@ -76,13 +76,13 @@ export function LayoutWrapper({
               <SelectSeparator />
               <SelectGroup>
                 <SelectLabel>По количеству участников</SelectLabel>
-                <SelectItem value={encodeSort({ participant_count: 'desc' })}>
+                <SelectItem value={encodeSort({ type: 'participant_count', direction: -1 })}>
                   <div className="flex items-center gap-2">
                     <ArrowDown className="size-4" />
                     <span>Сначала больше участников</span>
                   </div>
                 </SelectItem>
-                <SelectItem value={encodeSort({ participant_count: 'asc' })}>
+                <SelectItem value={encodeSort({ type: 'participant_count', direction: 1 })}>
                   <div className="flex items-center gap-2">
                     <ArrowUp className="size-4" />
                     <span>Сначала меньше участников</span>

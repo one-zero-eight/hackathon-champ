@@ -10,7 +10,10 @@ export function FederationPublicStats({ federationId }: { federationId: string }
     '/events/',
   )
   const events = useMemo(
-    () => eventsData?.filter(event => event.host_federation === federationId) ?? [],
+    () => eventsData?.filter(
+      event => event.host_federation === federationId
+        && event.status === 'accredited',
+    ) ?? [],
     [eventsData, federationId],
   )
 

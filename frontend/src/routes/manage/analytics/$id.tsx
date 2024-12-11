@@ -89,7 +89,6 @@ function RouteComponent() {
             : {}),
         },
         pagination: { page_no: 1, page_size: 10000 },
-        sort: {},
       },
     },
   )

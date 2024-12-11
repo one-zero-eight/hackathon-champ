@@ -45,12 +45,13 @@ function RouteComponent() {
       body: {
         filters: {
           host_federation: federationId,
+          status: ['accredited'],
         },
         pagination: {
           page_no: 1,
           page_size: 100,
         },
-        sort: { date: 'desc' },
+        sort: { type: 'date', direction: -1 },
       },
     },
   )

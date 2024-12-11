@@ -65,7 +65,7 @@ function RouteComponent() {
           page_no: 1,
           page_size: 5,
         },
-        sort: { date: 'asc' },
+        sort: { type: 'date', direction: 1 },
       },
     },
   )

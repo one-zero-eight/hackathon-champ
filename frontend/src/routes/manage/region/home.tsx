@@ -64,7 +64,7 @@ function RouteComponent() {
           page_no: 1,
           page_size: 5,
         },
-        sort: { date: 'asc' },
+        sort: { type: 'date', direction: 1 },
       },
     },
     { enabled: !!me?.federation },
@@ -76,7 +76,7 @@ function RouteComponent() {
       body: {
         filters: { host_federation: me?.federation ?? '' },
         pagination: { page_no: 1, page_size: 1000 },
-        sort: {},
+        sort: null,
       },
     },
     { enabled: !!me?.federation },

@@ -1092,13 +1092,13 @@ export interface components {
         /** Body_events_search_events */
         Body_events_search_events: {
             filters: components["schemas"]["Filters"];
-            sort: components["schemas"]["Sort"];
-            pagination: components["schemas"]["Pagination"];
+            sort?: components["schemas"]["Sort"] | null;
+            pagination?: components["schemas"]["Pagination"] | null;
         };
         /** Body_events_share_selection */
         Body_events_share_selection: {
             filters: components["schemas"]["Filters"];
-            sort: components["schemas"]["Sort"];
+            sort?: components["schemas"]["Sort"] | null;
         };
         /** Body_fileworker_upload_file */
         Body_fileworker_upload_file: {
@@ -1642,6 +1642,8 @@ export interface components {
             by_ids?: string[] | null;
             /** Host Federation */
             host_federation?: string | null;
+            /** Status */
+            status?: components["schemas"]["EventStatusEnum"][] | null;
         };
         /**
          * Gender
@@ -1763,11 +1765,6 @@ export interface components {
              */
             inner: components["schemas"]["AccreditationRequestFederation"] | components["schemas"]["AccreditationRequestEvent"] | components["schemas"]["AccreditedFederation"] | components["schemas"]["AccreditedEvent"] | components["schemas"]["NewFeedback"];
         };
-        /**
-         * Order
-         * @enum {string}
-         */
-        Order: "asc" | "desc";
         /** Pagination */
         Pagination: {
             /** Page Size */
@@ -1865,10 +1862,8 @@ export interface components {
         /** SearchEventsResponse */
         SearchEventsResponse: {
             filters: components["schemas"]["Filters"];
-            sort: components["schemas"]["Sort"];
-            pagination: components["schemas"]["Pagination"];
-            /** Page */
-            page: number;
+            sort: components["schemas"]["Sort"] | null;
+            pagination: components["schemas"]["Pagination"] | null;
             /** Pages Total */
             pages_total: number;
             /** Events */
@@ -1886,11 +1881,8 @@ export interface components {
             id: string;
             /** @description Filter for the selection. */
             filters: components["schemas"]["Filters"];
-            /**
-             * @description Sort for the selection.
-             * @default {}
-             */
-            sort: components["schemas"]["Sort"];
+            /** @description Sort for the selection. */
+            sort: components["schemas"]["Sort"] | null;
         };
         /** ShortenEvent */
         ShortenEvent: {
@@ -1944,10 +1936,21 @@ export interface components {
         };
         /** Sort */
         Sort: {
-            date?: components["schemas"]["Order"] | null;
-            age?: components["schemas"]["Order"] | null;
-            participant_count?: components["schemas"]["Order"] | null;
+            /** @default default */
+            type: components["schemas"]["SortingCriteria"];
+            direction: components["schemas"]["SortDirection"];
         };
+        /**
+         * SortDirection
+         * @description Sorting directions
+         * @enum {integer}
+         */
+        SortDirection: 1 | -1;
+        /**
+         * SortingCriteria
+         * @enum {string}
+         */
+        SortingCriteria: "date" | "age" | "participant_count" | "default";
         /**
          * StatusEnum
          * @enum {string}
@@ -1969,7 +1972,7 @@ export interface components {
              * Members
              * @description Состав команды
              */
-            members: string[];
+            members: (string)[];
             /**
              * Score
              * @description Очки
@@ -2096,7 +2099,6 @@ export type SchemaMinMaxFilter = components['schemas']['MinMaxFilter'];
 export type SchemaNewFeedback = components['schemas']['NewFeedback'];
 export type SchemaNotify = components['schemas']['Notify'];
 export type SchemaNotifySchema = components['schemas']['NotifySchema'];
-export type SchemaOrder = components['schemas']['Order'];
 export type SchemaPagination = components['schemas']['Pagination'];
 export type SchemaParticipantStats = components['schemas']['ParticipantStats'];
 export type SchemaParticipation = components['schemas']['Participation'];
@@ -2108,6 +2110,8 @@ export type SchemaSelection = components['schemas']['Selection'];
 export type SchemaShortenEvent = components['schemas']['ShortenEvent'];
 export type SchemaSoloPlace = components['schemas']['SoloPlace'];
 export type SchemaSort = components['schemas']['Sort'];
+export type SchemaSortDirection = components['schemas']['SortDirection'];
+export type SchemaSortingCriteria = components['schemas']['SortingCriteria'];
 export type SchemaStatusEnum = components['schemas']['StatusEnum'];
 export type SchemaTeamPlace = components['schemas']['TeamPlace'];
 export type SchemaTeamStats = components['schemas']['TeamStats'];

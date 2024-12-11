@@ -33,7 +33,7 @@ export function ExportFiltersToCalDialog({
       return
     if (open) {
       mutate({
-        body: { filters, sort: {} },
+        body: { filters },
       })
     }
   }, [filters, mutate, open])

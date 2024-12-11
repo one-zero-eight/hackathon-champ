@@ -105,7 +105,8 @@ function DisciplineEvents({ query }: { query: string }) {
         query,
       },
       sort: {
-        date: 'asc',
+        type: 'date',
+        direction: 1,
       },
       pagination: {
         page_size: 3,

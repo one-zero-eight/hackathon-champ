@@ -236,7 +236,7 @@ function RouteComponent() {
           >
             <EventSelection
               title=""
-              sort={{ date: 'asc' }}
+              sort={{ type: 'date', direction: 1 }}
               filters={{
                 date: plainDatesForFilter(Temporal.Now.plainDateISO(), null),
               }}

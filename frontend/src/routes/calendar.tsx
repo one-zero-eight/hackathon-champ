@@ -45,7 +45,10 @@ function RouteComponent() {
     'post',
     '/events/search/count-by-month',
     {
-      body: normalizeFilters(completeFilters),
+      body: {
+        ...normalizeFilters(completeFilters),
+        status: ['accredited'],
+      },
     },
   )
 
