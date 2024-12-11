@@ -209,38 +209,37 @@ async def hint_event(
         ) as client:
             response = await client.get(telegram_post_link)
             response.raise_for_status()  # Raise exception if the status code is not 200
-            soup = bs4.BeautifulSoup(response.text, "html.parser")
-            with open("telegram_post.html", "w") as f:
-                f.write(response.text)
-
-            post = soup.find("meta", property="og:description")
-
-            if post is None:
-                logger.warning(f"Cannot parse telegram post: {telegram_post_link}")
-                raise HTTPException(status_code=400, detail="Cannot parse telegram post")
-            content = post["content"]
-            logger.info(f"Telegram post content: {content}")
-
-            if not ai_repository:
-                raise HTTPException(status_code=400, detail="AI service is not available")
-
-            event, message = await ai_repository.get_event_from_text(content)
-
-            if event:
-                return ShortenEvent(
-                    title=event.title,
-                    description=content,
-                    discipline=event.discipline,
-                    start_date=event.start_date,
-                    end_date=event.end_date,
-                    location=event.location,
-                )
-            else:
-                raise HTTPException(status_code=400, detail=message)
 
     except httpx.RequestError as e:
-        logger.error(f"Cannot get telegram post: {e}")
+        logger.error(f"Cannot get telegram post: {e}", exc_info=True)
         raise HTTPException(status_code=400, detail="Cannot parse telegram post because of request error")
+
+    soup = bs4.BeautifulSoup(response.text, "html.parser")
+    post = soup.find("meta", property="og:description")
+
+    if post is None:
+        logger.warning(f"Cannot parse telegram post: {telegram_post_link}")
+        raise HTTPException(status_code=400, detail="Cannot parse telegram post")
+
+    content = post["content"]
+    logger.info(f"Telegram post content: {content}")
+
+    if not ai_repository:
+        raise HTTPException(status_code=400, detail="AI service is not available")
+
+    event, message = await ai_repository.get_event_from_text(content)
+
+    if event:
+        return ShortenEvent(
+            title=event.title,
+            description=content,
+            discipline=event.discipline,
+            start_date=event.start_date,
+            end_date=event.end_date,
+            location=event.location,
+        )
+    else:
+        raise HTTPException(status_code=400, detail=message)
 
 
 @router.post("/suggest", responses={200: {"description": "Suggest event"}})
