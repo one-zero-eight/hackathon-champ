@@ -48,6 +48,7 @@ app = FastAPI(
     docs_url=None,
     redoc_url=None,
     swagger_ui_oauth2_redirect_url=None,
+    separate_input_output_schemas=True,
 )
 patch_fastapi(app)
 
