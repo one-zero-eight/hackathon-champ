@@ -327,7 +327,7 @@ async def search_events(
 
         return 4  # ?
 
-    if sort or sort.type == SortingCriteria.default:
+    if sort is None or sort.type == SortingCriteria.default:
         events.sort(key=key)
 
     return SearchEventsResponse(
