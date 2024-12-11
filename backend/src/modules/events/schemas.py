@@ -1,7 +1,7 @@
 import datetime
 from enum import StrEnum
 
-from beanie import PydanticObjectId
+from beanie import PydanticObjectId, SortDirection
 from pydantic import BaseModel
 
 
@@ -58,20 +58,21 @@ class Filters(BaseModel):
     "Фильтр по ID федерации, организующей событие"
 
 
-class Order(StrEnum):
-    asc = "asc"
-    "По возрастанию"
-    desc = "desc"
-    "По убыванию"
+class SortingCriteria(StrEnum):
+    date = "date"
+    "По дате"
+    age = "age"
+    "По возрасту"
+    participant_count = "participant_count"
+    "По количеству участников"
+    default = "default"
+    "По умолчанию (сначала текущие события, потом будущие, потом прошедшие)"
 
 
 class Sort(BaseModel):
-    date: Order | None = None
-    "Сортировка по дате"
-    age: Order | None = None
-    "Сортировка по возрасту"
-    participant_count: Order | None = None
-    "Сортировка по количеству участников"
+    type: SortingCriteria = SortingCriteria.default
+    direction: SortDirection
+    "1 - по возрастанию, -1 - по убыванию"
 
 
 class Pagination(BaseModel):

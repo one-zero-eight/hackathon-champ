@@ -282,9 +282,9 @@ async def accredite_event(
 class SearchEventsResponse(BaseModel):
     filters: Filters
     "Заданные фильтры"
-    sort: Sort
+    sort: Sort | None
     "Заданная сортировка"
-    pagination: Pagination
+    pagination: Pagination | None
     "Заданная пагинация"
 
     page: int
@@ -297,7 +297,7 @@ class SearchEventsResponse(BaseModel):
 
 
 @router.post("/search", responses={200: {"description": "Search events"}})
-async def search_events(filters: Filters, sort: Sort, pagination: Pagination) -> SearchEventsResponse:
+async def search_events(filters: Filters, sort: Sort | None, pagination: Pagination | None) -> SearchEventsResponse:
     """
     Search events.
     """

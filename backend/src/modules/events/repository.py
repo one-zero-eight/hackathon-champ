@@ -1,10 +1,15 @@
 __all__ = ["events_repository"]
 
-from beanie import PydanticObjectId, SortDirection
+from beanie import PydanticObjectId
 from beanie.odm.operators.find.comparison import GTE, LTE, Eq, In
 from beanie.odm.operators.find.logical import And, Nor, Or
 
-from src.modules.events.schemas import Filters, Pagination, Sort
+from src.modules.events.schemas import (
+    Filters,
+    Pagination,
+    Sort,
+    SortingCriteria,
+)
 from src.storages.mongo.events import Event, EventSchema
 from src.storages.mongo.selection import Selection
 
@@ -49,7 +54,7 @@ class EventsRepository:
         return random_docs[0] if random_docs else None
 
     async def read_with_filters(
-        self, filters: Filters, sort: Sort, pagination: Pagination, count: bool = False
+        self, filters: Filters, sort: Sort | None, pagination: Pagination | None, count: bool = False
     ) -> list[Event] | int:
         if filters.by_ids:
             query = Event.find({"_id": {"$in": filters.by_ids}})
@@ -128,30 +133,21 @@ class EventsRepository:
             query = query.find({"host_federation": filters.host_federation})
 
         if filters.query:
-            query = query.find({"$text": {"$search": filters.query}})
+            query = query.find({"$regex": filters.query, "$options": "i"})
 
         if count:
             return await query.count()
 
-        # Apply sorting
-        if sort.date:
-            query = query.sort(
-                ("start_date", SortDirection.ASCENDING if sort.date == "asc" else SortDirection.DESCENDING)
-            )
+        if sort:
+            if sort.type == SortingCriteria.date:
+                query = query.sort(("start_date", sort.direction))
+            elif sort.type == SortingCriteria.date:
+                query = query.sort(("age_min", sort.direction))
+            elif sort.type == SortingCriteria.date:
+                query = query.sort(("participant_count", sort.direction))
 
-        if sort.participant_count:
-            query = query.sort(
-                (
-                    "participant_count",
-                    SortDirection.ASCENDING if sort.participant_count == "asc" else SortDirection.DESCENDING,
-                )
-            )
-
-        if sort.age:
-            query = query.sort(("age_min", SortDirection.ASCENDING if sort.age == "asc" else SortDirection.DESCENDING))
-
-        # Apply pagination
-        query = query.skip(pagination.page_size * (pagination.page_no - 1)).limit(pagination.page_size)
+        if pagination:
+            query = query.skip(pagination.page_size * (pagination.page_no - 1)).limit(pagination.page_size)
 
         # Return results
         return await query.to_list()

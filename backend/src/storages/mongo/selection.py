@@ -6,7 +6,7 @@ from src.storages.mongo.__base__ import CustomDocument
 class SelectionSchema(BaseSchema):
     filters: Filters
     "Filter for the selection."
-    sort: Sort = Sort()
+    sort: Sort | None = None
     "Sort for the selection."
 
 
