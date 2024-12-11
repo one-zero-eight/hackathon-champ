@@ -19,7 +19,7 @@ from src.logging_ import logger
 from src.modules.ai.repository import ai_repository
 from src.modules.events.ics_utils import get_base_calendar
 from src.modules.events.repository import events_repository
-from src.modules.events.schemas import DateFilter, Filters, Pagination, Sort
+from src.modules.events.schemas import DateFilter, Filters, Pagination, Sort, SortingCriteria
 from src.modules.federation.repository import federation_repository
 from src.modules.notify.repository import notify_repository
 from src.modules.users.repository import user_repository
@@ -310,6 +310,23 @@ async def search_events(
     else:
         total_pages = 1
 
+    now_ = datetime.datetime.now(datetime.UTC)
+
+    def key(event: Event):
+        if event.end_date < now_ and event.start_date < now_:  # past
+            return 3
+
+        if event.start_date > now_:  # future
+            return 2
+
+        if event.start_date < now_ < event.end_date:  # current
+            return 1
+
+        return 4  # ?
+
+    if sort or sort.type == SortingCriteria.default:
+        events.sort(key=key)
+
     return SearchEventsResponse(
         filters=filters,
         sort=sort,
@@ -436,7 +453,7 @@ async def get_all_filters_disciplines() -> DisciplinesFilterVariants:
 
 
 @router.post("/search/share", responses={200: {"description": "Share selection"}})
-async def share_selection(filters: Filters, sort: Sort) -> Selection:
+async def share_selection(filters: Filters, sort: Sort | None = None) -> Selection:
     """
     Share selection. Use this for .ics too.
     """
