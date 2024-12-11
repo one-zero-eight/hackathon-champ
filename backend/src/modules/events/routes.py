@@ -289,8 +289,6 @@ class SearchEventsResponse(BaseModel):
     pagination: Pagination | None
     "Заданная пагинация"
 
-    page: int
-    "Текущая страница"
     pages_total: int
     "Всего страниц"
 
@@ -299,18 +297,24 @@ class SearchEventsResponse(BaseModel):
 
 
 @router.post("/search", responses={200: {"description": "Search events"}})
-async def search_events(filters: Filters, sort: Sort | None, pagination: Pagination | None) -> SearchEventsResponse:
+async def search_events(
+    filters: Filters, sort: Sort | None = None, pagination: Pagination | None = None
+) -> SearchEventsResponse:
     """
     Search events.
     """
     events = await events_repository.read_with_filters(filters, sort, pagination)
+    if pagination:
+        total = await events_repository.read_with_filters(filters, sort=None, pagination=None, count=True)
+        total_pages = (total + pagination.page_size - 1) // pagination.page_size
+    else:
+        total_pages = 1
 
     return SearchEventsResponse(
         filters=filters,
         sort=sort,
         pagination=pagination,
-        page=pagination.page_no,
-        pages_total=1,
+        pages_total=total_pages,
         events=events,
     )
 
