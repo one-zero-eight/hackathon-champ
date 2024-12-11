@@ -156,6 +156,9 @@ async def create_many_events(events: list[EventSchema], auth: USER_AUTH) -> bool
         federations = await federation_repository.read_all()
         region_x_federation = {f.region.upper(): f.id for f in federations}
         for event in events:
+            event.status = EventStatusEnum.ACCREDITED
+            event.status_comment = "Загружено администратором"
+
             if len(event.location) == 1:
                 location = event.location[0]
                 if location.region:
