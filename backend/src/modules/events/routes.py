@@ -344,7 +344,7 @@ async def count_events(filters: Filters) -> int:
     """
     Count filtered events.
     """
-    count = await events_repository.read_with_filters(filters, Sort(), Pagination(page_size=0, page_no=0), count=True)
+    count = await events_repository.read_with_filters(filters, None, Pagination(page_size=0, page_no=0), count=True)
     return count
 
 
