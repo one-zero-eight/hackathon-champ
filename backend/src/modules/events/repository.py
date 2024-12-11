@@ -10,7 +10,7 @@ from src.modules.events.schemas import (
     Sort,
     SortingCriteria,
 )
-from src.storages.mongo.events import Event, EventSchema
+from src.storages.mongo.events import Event, EventSchema, EventStatusEnum
 from src.storages.mongo.selection import Selection
 
 
@@ -36,7 +36,9 @@ class EventsRepository:
     async def suggest(self, event: EventSchema) -> Event:
         return await Event.model_validate(event, from_attributes=True).insert()
 
-    async def accredite(self, id_: PydanticObjectId, status: str, status_comment: str | None) -> Event | None:
+    async def accredite(
+        self, id_: PydanticObjectId, status: EventStatusEnum, status_comment: str | None
+    ) -> Event | None:
         event = await Event.get(id_)
         if event is None:
             return None
@@ -110,6 +112,8 @@ class EventsRepository:
             query = query.find(Event.end_date <= filters.date.end_date)
         if filters.discipline:
             query = query.find(In(Event.discipline, filters.discipline))
+        if filters.status:
+            query = query.find(In(Event.status, filters.status))
 
         if filters.location:
             conditions = []

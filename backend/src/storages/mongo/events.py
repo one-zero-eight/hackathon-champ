@@ -6,7 +6,6 @@ import pymongo
 from beanie import PydanticObjectId
 from pymongo import IndexModel
 
-from src.modules.events.schemas import Gender
 from src.pydantic_base import BaseSchema
 from src.storages.mongo.__base__ import CustomDocument
 
@@ -89,7 +88,7 @@ class TeamPlace(BaseSchema):
     "Место (1, 2, 3)"
     team: str
     "Название команды"
-    members: list[str]
+    members: list[PydanticObjectId | str]
     "Состав команды"
     score: float | None = None
     "Очки"
@@ -98,7 +97,7 @@ class TeamPlace(BaseSchema):
 class SoloPlace(BaseSchema):
     place: int
     "Место (1, 2, 3)"
-    participant: str
+    participant: PydanticObjectId | str
     "ФИО участника"
     score: float | None = None
     "Очки"
@@ -118,6 +117,13 @@ class Results(BaseSchema):
     "Места команд"
     solo_places: list[SoloPlace] | None = None
     "Места участников"
+
+
+class Gender(StrEnum):
+    male = "male"
+    "Мужской пол"
+    female = "female"
+    "Женский пол"
 
 
 class EventSchema(BaseSchema):

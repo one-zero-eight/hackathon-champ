@@ -4,6 +4,8 @@ from enum import StrEnum
 from beanie import PydanticObjectId, SortDirection
 from pydantic import BaseModel
 
+from src.storages.mongo.events import EventStatusEnum, Gender
+
 
 class DateFilter(BaseModel):
     start_date: datetime.datetime | None = None
@@ -28,13 +30,6 @@ class MinMaxFilter(BaseModel):
     "Не более"
 
 
-class Gender(StrEnum):
-    male = "male"
-    "Мужской пол"
-    female = "female"
-    "Женский пол"
-
-
 class Filters(BaseModel):
     """Список фильтров, которые применяются через И"""
 
@@ -56,6 +51,8 @@ class Filters(BaseModel):
     "Фильтр по ID событий (применяется только он, если указан)"
     host_federation: PydanticObjectId | None = None
     "Фильтр по ID федерации, организующей событие"
+    status: list[EventStatusEnum] | None = None
+    "Фильтр по статусу события"
 
 
 class SortingCriteria(StrEnum):
