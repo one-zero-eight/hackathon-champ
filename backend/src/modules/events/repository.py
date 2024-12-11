@@ -133,7 +133,7 @@ class EventsRepository:
             query = query.find({"host_federation": filters.host_federation})
 
         if filters.query:
-            query = query.find({"$regex": filters.query, "$options": "i"})
+            query = query.find({"title": {"$regex": filters.query, "$options": "i"}})
 
         if count:
             return await query.count()
