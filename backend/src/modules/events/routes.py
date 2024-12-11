@@ -138,6 +138,8 @@ async def hint_results(file: UploadFile) -> Results:
             )
 
         return Results(team_places=team_places)
+    else:
+        raise HTTPException(status_code=400, detail="Cannot parse file (no team column)")
 
 
 @router.post(
