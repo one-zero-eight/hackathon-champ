@@ -206,6 +206,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/events/hint-event": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Hint Event */
+        post: operations["events_hint_event"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/events/suggest": {
         parameters: {
             query?: never;
@@ -1059,6 +1076,11 @@ export interface components {
              */
             email: string;
         };
+        /** Body_events_hint_event */
+        Body_events_hint_event: {
+            /** Telegram Post Link */
+            telegram_post_link: string;
+        };
         /** Body_events_hint_results */
         Body_events_hint_results: {
             /**
@@ -1104,12 +1126,16 @@ export interface components {
             /** End Date */
             end_date?: string | null;
         };
+        Disciplines: ("программирование алгоритмическое" | "программирование продуктовое" | "программирование беспилотных авиационных систем" | "программирование робототехники" | "программирование систем информационной безопасности") | string;
         /** DisciplinesFilterVariants */
         DisciplinesFilterVariants: {
-            /** Sport */
-            sport: string;
+            /**
+             * Sport
+             * @constant
+             */
+            sport: "Спортивное программирование";
             /** Disciplines */
-            disciplines: string[];
+            disciplines: components["schemas"]["Disciplines"][];
         };
         /** EmailFlowReference */
         EmailFlowReference: {
@@ -1186,7 +1212,7 @@ export interface components {
              * Discipline
              * @description Названия дисциплин
              */
-            discipline: string[];
+            discipline: components["schemas"]["Disciplines"][];
             /**
              * Start Date
              * Format: date-time
@@ -1234,6 +1260,7 @@ export interface components {
             /**
              * Country
              * @description Название страны
+             * @default Россия
              */
             country: string;
             /**
@@ -1295,7 +1322,7 @@ export interface components {
              * Discipline
              * @description Названия дисциплин
              */
-            discipline: string[];
+            discipline: components["schemas"]["Disciplines"][];
             /**
              * Start Date
              * Format: date-time
@@ -1865,6 +1892,38 @@ export interface components {
              */
             sort: components["schemas"]["Sort"];
         };
+        /** ShortenEvent */
+        ShortenEvent: {
+            /**
+             * Title
+             * @description Наименование спортивного мероприятия
+             */
+            title: string;
+            /**
+             * Description
+             * @description Описание
+             */
+            description: string;
+            /**
+             * Discipline
+             * @description Названия дисциплин
+             */
+            discipline: components["schemas"]["Disciplines"][];
+            /**
+             * Start Date
+             * Format: date-time
+             * @description Дата начала
+             */
+            start_date: string;
+            /**
+             * End Date
+             * Format: date-time
+             * @description Дата конца
+             */
+            end_date: string;
+            /** @description Места проведения */
+            location: components["schemas"]["EventLocation"];
+        };
         /** SoloPlace */
         SoloPlace: {
             /**
@@ -2006,12 +2065,14 @@ export type SchemaAccreditationRequestFederation = components['schemas']['Accred
 export type SchemaAccreditedEvent = components['schemas']['AccreditedEvent'];
 export type SchemaAccreditedFederation = components['schemas']['AccreditedFederation'];
 export type SchemaBodyEmailStartEmailFlow = components['schemas']['Body_email_start_email_flow'];
+export type SchemaBodyEventsHintEvent = components['schemas']['Body_events_hint_event'];
 export type SchemaBodyEventsHintResults = components['schemas']['Body_events_hint_results'];
 export type SchemaBodyEventsSearchEvents = components['schemas']['Body_events_search_events'];
 export type SchemaBodyEventsShareSelection = components['schemas']['Body_events_share_selection'];
 export type SchemaBodyFileworkerUploadFile = components['schemas']['Body_fileworker_upload_file'];
 export type SchemaCreateUser = components['schemas']['CreateUser'];
 export type SchemaDateFilter = components['schemas']['DateFilter'];
+export type SchemaDisciplines = components['schemas']['Disciplines'];
 export type SchemaDisciplinesFilterVariants = components['schemas']['DisciplinesFilterVariants'];
 export type SchemaEmailFlowReference = components['schemas']['EmailFlowReference'];
 export type SchemaEmailFlowResult = components['schemas']['EmailFlowResult'];
@@ -2044,6 +2105,7 @@ export type SchemaRegionsFilterVariants = components['schemas']['RegionsFilterVa
 export type SchemaResults = components['schemas']['Results'];
 export type SchemaSearchEventsResponse = components['schemas']['SearchEventsResponse'];
 export type SchemaSelection = components['schemas']['Selection'];
+export type SchemaShortenEvent = components['schemas']['ShortenEvent'];
 export type SchemaSoloPlace = components['schemas']['SoloPlace'];
 export type SchemaSort = components['schemas']['Sort'];
 export type SchemaStatusEnum = components['schemas']['StatusEnum'];
@@ -2423,6 +2485,46 @@ export interface operations {
                 };
             };
             /** @description Cannot parse file */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    events_hint_event: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Body_events_hint_event"];
+            };
+        };
+        responses: {
+            /** @description Hint for event creation */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShortenEvent"] | null;
+                };
+            };
+            /** @description Cannot parse telegram post */
             400: {
                 headers: {
                     [name: string]: unknown;

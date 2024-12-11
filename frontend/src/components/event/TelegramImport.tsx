@@ -1,3 +1,4 @@
+import { $api } from '@/api'
 import { TelegramPostWidget } from '@/components/TelegramPostWidget.tsx'
 import { Button } from '@/components/ui/button.tsx'
 import {
@@ -9,15 +10,35 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog.tsx'
 import { Input } from '@/components/ui/input.tsx'
+import { useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
+import Loader2 from '~icons/lucide/loader'
 
 export function TelegramImport() {
   const [url, setUrl] = useState('')
-
   const telegramPost = urlToTelegramPost(url)
 
-  const submit = () => {
-    console.log(telegramPost)
+  const navigate = useNavigate()
+  const { mutateAsync: hint, isPending } = $api.useMutation('post', '/events/hint-event')
+  const { mutate: create, isPending: createIsPending } = $api.useMutation('post', '/events/suggest', {
+    onSuccess: (data) => {
+      navigate({ to: '/manage/events/$id', params: { id: data.id } })
+    },
+  })
+
+  const submit = async () => {
+    const res = await hint({ body: { telegram_post_link: `https://t.me/${telegramPost}` } })
+    if (res) {
+      create({ body: {
+        status: 'draft',
+        location: [res.location],
+        title: res.title,
+        description: res.description,
+        start_date: res.start_date,
+        end_date: res.end_date,
+        discipline: res.discipline,
+      } })
+    }
   }
 
   return (
@@ -27,7 +48,7 @@ export function TelegramImport() {
           Импорт из Telegram
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl">
+      <DialogContent className="max-h-full max-w-4xl overflow-auto">
         <DialogHeader className="text-left">
           <DialogTitle>Импорт из Telegram</DialogTitle>
 
@@ -41,7 +62,13 @@ export function TelegramImport() {
                 value={url}
                 onChange={e => setUrl(e.target.value)}
               />
-              <Button type="button" variant="default" disabled={!telegramPost} onClick={() => submit()}>
+              <Button
+                type="button"
+                variant="default"
+                disabled={!telegramPost || isPending || createIsPending}
+                onClick={() => submit()}
+              >
+                {(isPending || createIsPending) && <Loader2 />}
                 Импортировать
               </Button>
             </div>
