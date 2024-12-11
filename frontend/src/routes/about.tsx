@@ -10,7 +10,7 @@ export const Route = createFileRoute('/about')({
 
 function AboutPage() {
   return (
-    <main className="min-h-screen bg-gray-50 px-4 pb-16 pt-[calc(var(--header-height)+2rem)]">
+    <main className="min-h-screen bg-gray-50 p-4 md:py-12">
       <div className="mx-auto max-w-4xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -37,7 +37,7 @@ function AboutPage() {
                 </div>
                 <h2 className="text-2xl font-semibold text-gray-900">Что такое ФСП Линк?</h2>
               </div>
-              <div className="ml-16">
+              <div className="sm:ml-16">
                 <p className="text-lg leading-relaxed text-gray-600">
                   ФСП Линк - это современная цифровая платформа, созданная для удобной организации и проведения соревнований по спортивному программированию. Мы стремимся объединить все федерации, участников и организаторов в одном информационном пространстве.
                 </p>
@@ -51,7 +51,7 @@ function AboutPage() {
                 </div>
                 <h2 className="text-2xl font-semibold text-gray-900">Наши дисциплины</h2>
               </div>
-              <div className="ml-16 space-y-4">
+              <div className="space-y-4 sm:ml-16">
                 <p className="text-lg leading-relaxed text-gray-600">
                   Мы поддерживаем различные направления спортивного программирования:
                 </p>
@@ -97,7 +97,7 @@ function AboutPage() {
                 </div>
                 <h2 className="text-2xl font-semibold text-gray-900">Возможности платформы</h2>
               </div>
-              <div className="ml-16 space-y-4">
+              <div className="space-y-4 sm:ml-16">
                 <p className="text-lg leading-relaxed text-gray-600">
                   ФСП Линк предоставляет широкий спектр функций:
                 </p>
@@ -129,7 +129,7 @@ function AboutPage() {
                 </div>
                 <h2 className="text-2xl font-semibold text-gray-900">Начните работу</h2>
               </div>
-              <div className="ml-16">
+              <div className="sm:ml-16">
                 <p className="text-lg leading-relaxed text-gray-600">
                   Присоединяйтесь к нашей платформе и станьте частью сообщества спортивного программирования.
                 </p>
