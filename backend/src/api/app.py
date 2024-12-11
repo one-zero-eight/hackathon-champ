@@ -85,6 +85,7 @@ from src.modules.feedback.routes import router as router_feedback  # noqa: E402
 from src.modules.files.routes import router as router_files  # noqa: E402
 from src.modules.notify.routes import router as router_notify  # noqa: E402
 from src.modules.participants.routes import router as router_participants  # noqa: E402
+from src.modules.results.routes import router as router_results  # noqa: E402
 from src.modules.users.routes import router as router_users  # noqa: E402
 
 app.include_router(router_users)
@@ -95,3 +96,4 @@ app.include_router(router_files)
 app.include_router(router_notify)
 app.include_router(router_email)
 app.include_router(router_participants)
+app.include_router(router_results)

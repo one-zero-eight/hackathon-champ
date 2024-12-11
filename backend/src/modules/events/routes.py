@@ -22,7 +22,6 @@ from src.modules.events.repository import events_repository
 from src.modules.events.schemas import DateFilter, Filters, Pagination, Sort, SortingCriteria
 from src.modules.federation.repository import federation_repository
 from src.modules.notify.repository import notify_repository
-from src.modules.results.repository import result_repository
 from src.modules.users.repository import user_repository
 from src.pydantic_base import BaseSchema
 from src.storages.mongo.events import (
@@ -33,7 +32,7 @@ from src.storages.mongo.events import (
     EventStatusEnum,
 )
 from src.storages.mongo.notify import AccreditationRequestEvent, AccreditedEvent, NotifySchema
-from src.storages.mongo.results import Results, ResultsSchema, TeamPlace
+from src.storages.mongo.results import Results, TeamPlace
 from src.storages.mongo.selection import Selection
 from src.storages.mongo.users import UserRole
 
@@ -143,7 +142,8 @@ async def hint_results(file: UploadFile) -> Results:
 
 
 @router.post(
-    "/", responses={200: {"description": "Create many events"}, 403: {"description": "Only admin can create events"}}
+    "/create-many",
+    responses={200: {"description": "Create many events"}, 403: {"description": "Only admin can create events"}},
 )
 async def create_many_events(events: list[EventSchema], auth: USER_AUTH) -> bool:
     """
@@ -367,9 +367,7 @@ async def count_events_by_month(filters: Filters) -> dict[str, int]:
         else:
             date_filter.end_date = datetime.datetime(current_year, month=i + 1, day=1)
         filters.date = date_filter
-        count = await events_repository.read_with_filters(
-            filters, None, Pagination(page_size=0, page_no=0), count=True
-        )
+        count = await events_repository.read_with_filters(filters, None, Pagination(page_size=0, page_no=0), count=True)
         counts[f"{current_year}-{i:02d}"] = count
 
     return counts
@@ -530,29 +528,6 @@ async def get_event(id: PydanticObjectId) -> Event:
     if e is None:
         raise HTTPException(status_code=404, detail="Event not found")
     return e
-
-
-@router.post(
-    "/results",
-    responses={
-        200: {"description": "Results uploaded"},
-        403: {"description": "Only admin or related federation can update event"},
-        404: {"description": "Event not found"},
-    },
-)
-async def upload_results(results: ResultsSchema, auth: USER_AUTH) -> Results:
-    """
-    Update event.
-    """
-    user = await user_repository.read(auth.user_id)
-    event = await events_repository.read_one(results.event_id)
-    if not event:
-        raise HTTPException(status_code=404, detail="Event not found")
-
-    if user.role == UserRole.ADMIN or (event.host_federation and user.federation == event.host_federation):
-        return await result_repository.create(results)
-    else:
-        raise HTTPException(status_code=403, detail="Only admin or related federation can update event")
 
 
 @router.put(

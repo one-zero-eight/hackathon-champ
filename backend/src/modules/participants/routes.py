@@ -66,10 +66,15 @@ async def get_participant(id: PydanticObjectId) -> Participant:
 async def get_participant_stats(name: str | None = None, id: PydanticObjectId | None = None) -> ParticipantStats:
     if id:
         results = await result_repository.read_for_participant(name_or_id=id)
+        participant = await Participant.get(id)
     elif name:
         results = await result_repository.read_for_participant(name_or_id=name)
+        participant = None
     else:
         raise HTTPException(status_code=400, detail="Either name or id should be provided")
+
+    if not results and not participant:
+        raise HTTPException(status_code=404, detail="Participant not found")
 
     participations = []
     for result in results:

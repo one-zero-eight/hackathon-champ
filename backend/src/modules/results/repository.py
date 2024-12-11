@@ -8,6 +8,12 @@ class ResultRepository:
     async def create(self, results: ResultsSchema) -> Results:
         return await Results.model_validate(results, from_attributes=True).insert()
 
+    async def read(self, result_id: PydanticObjectId) -> Results | None:
+        return await Results.get(result_id)
+
+    async def update(self, result_id: PydanticObjectId, results: ResultsSchema) -> Results | None:
+        return await Results.find({"_id": result_id}).update({"$set": results.model_dump()})
+
     async def read_all(self) -> list[Results]:
         return await Results.all().to_list()
 
@@ -45,6 +51,9 @@ class ResultRepository:
 
     async def read_for_team(self, name: str) -> list[Results]:
         return await Results.find({"team_places.team": name}).to_list()
+
+    async def read_for_event(self, event_id: PydanticObjectId) -> Results | None:
+        return await Results.find({"event_id": event_id}).first_or_none()
 
 
 result_repository: ResultRepository = ResultRepository()

@@ -1,4 +1,5 @@
 from beanie import PydanticObjectId
+from pymongo import IndexModel
 
 from src.pydantic_base import BaseSchema
 from src.storages.mongo.__base__ import CustomDocument
@@ -50,4 +51,5 @@ class ResultsSchema(BaseSchema):
 
 
 class Results(ResultsSchema, CustomDocument):
-    pass
+    class Settings:
+        indexes = [IndexModel("event_id", unique=True)]
