@@ -22,6 +22,7 @@ from src.modules.events.repository import events_repository
 from src.modules.events.schemas import DateFilter, Filters, Pagination, Sort, SortingCriteria
 from src.modules.federation.repository import federation_repository
 from src.modules.notify.repository import notify_repository
+from src.modules.results.repository import result_repository
 from src.modules.users.repository import user_repository
 from src.pydantic_base import BaseSchema
 from src.storages.mongo.events import (
@@ -30,10 +31,9 @@ from src.storages.mongo.events import (
     EventLocation,
     EventSchema,
     EventStatusEnum,
-    Results,
-    TeamPlace,
 )
 from src.storages.mongo.notify import AccreditationRequestEvent, AccreditedEvent, NotifySchema
+from src.storages.mongo.results import Results, ResultsSchema, TeamPlace
 from src.storages.mongo.selection import Selection
 from src.storages.mongo.users import UserRole
 
@@ -530,6 +530,29 @@ async def get_event(id: PydanticObjectId) -> Event:
     if e is None:
         raise HTTPException(status_code=404, detail="Event not found")
     return e
+
+
+@router.post(
+    "/results",
+    responses={
+        200: {"description": "Results uploaded"},
+        403: {"description": "Only admin or related federation can update event"},
+        404: {"description": "Event not found"},
+    },
+)
+async def upload_results(results: ResultsSchema, auth: USER_AUTH) -> Results:
+    """
+    Update event.
+    """
+    user = await user_repository.read(auth.user_id)
+    event = await events_repository.read_one(results.event_id)
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    if user.role == UserRole.ADMIN or (event.host_federation and user.federation == event.host_federation):
+        return await result_repository.create(results)
+    else:
+        raise HTTPException(status_code=403, detail="Only admin or related federation can update event")
 
 
 @router.put(

@@ -1,16 +1,19 @@
 from collections import Counter, defaultdict
 
 from beanie import PydanticObjectId
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
-from src.modules.events.repository import events_repository
+from src.modules.participants.repository import participant_repository
+from src.modules.results.repository import result_repository
 from src.pydantic_base import BaseSchema
-from src.storages.mongo.events import SoloPlace, TeamPlace
+from src.storages.mongo import Participant
+from src.storages.mongo.results import SoloPlace, TeamPlace
 
 router = APIRouter(prefix="/participants", tags=["Participants"])
 
 
 class Participation(BaseSchema):
+    result_id: PydanticObjectId
     event_id: PydanticObjectId
     event_title: str
     solo_place: SoloPlace | None = None
@@ -18,6 +21,8 @@ class Participation(BaseSchema):
 
 
 class ParticipantStats(BaseSchema):
+    id: PydanticObjectId | None = None
+    "ID участника"
     name: str
     "Имя участника"
     participations: list[Participation]
@@ -34,24 +39,47 @@ class ParticipantStats(BaseSchema):
 
 @router.get("/person/count")
 async def get_participant_count() -> int:
-    return await events_repository.get_participant_count()
+    return await result_repository.get_participant_count()
 
 
-@router.get("/person/")
-async def get_participant(name: str) -> ParticipantStats:
+@router.get("/person/hint")
+async def get_participant_hint(name: str) -> list[Participant | str]:
     if not name:
-        return ParticipantStats(name=name, participations=[])
+        return []
 
-    events = await events_repository.read_for_participant(name)
+    participants_in_registry = await Participant.find({"name": {"$regex": name, "$options": "i"}}).to_list(10)
+    return participants_in_registry
+
+
+@router.get(
+    "/person/get/{id}",
+    responses={200: {"description": "Info about participant"}, 404: {"description": "Participant not found"}},
+)
+async def get_participant(id: PydanticObjectId) -> Participant:
+    participant = await Participant.get(id)
+    if participant is None:
+        raise HTTPException(status_code=404, detail="Participant not found")
+    return participant
+
+
+@router.get("/person/stats/")
+async def get_participant_stats(name: str | None = None, id: PydanticObjectId | None = None) -> ParticipantStats:
+    if id:
+        results = await result_repository.read_for_participant(name_or_id=id)
+    elif name:
+        results = await result_repository.read_for_participant(name_or_id=name)
+    else:
+        raise HTTPException(status_code=400, detail="Either name or id should be provided")
 
     participations = []
-    for event in events:
+    for result in results:
         participations.append(
             Participation(
-                event_id=event.id,
-                event_title=event.title,
-                solo_place=next((p for p in event.results.solo_places or [] if p.participant == name), None),
-                team_place=next((p for p in event.results.team_places or [] if name in p.members), None),
+                result_id=result.id,
+                event_id=result.event_id,
+                event_title=result.event_title,
+                solo_place=next((p for p in result.solo_places or [] if p.participant == name), None),
+                team_place=next((p for p in result.team_places or [] if name in p.members), None),
             )
         )
 
@@ -73,59 +101,99 @@ async def get_participant(name: str) -> ParticipantStats:
     )
 
 
-@router.get("/person/all")
-async def get_all_participants(limit: int = 100) -> list[ParticipantStats]:
-    events = await events_repository.read_all()
+@router.get("/person/stats/all")
+async def get_all_participants_stats(limit: int = 100, skip: int = 0) -> list[tuple[int, ParticipantStats]]:
+    """
+    Список статистик участников: список кортежей (место в рейтинге, ParticipantStats)
+    """
+
+    def key(participant_id_or_name):
+        if isinstance(participant_id_or_name, PydanticObjectId):
+            return participant_id_or_name
+        return (participant_id_or_name["name"],)
+
+    results = await result_repository.read_all()
     total = Counter()
     golds = Counter()
     silvers = Counter()
     bronzes = Counter()
     participations = defaultdict(list)
 
-    for event in events:
-        if not event.results:
-            continue
-        for solo in event.results.solo_places or []:
-            total[solo.participant] += 1
+    for result in results:
+        for solo in result.solo_places or []:
+            key_ = key(solo.participant)
+            total[key_] += 1
             if solo.place == 1:
-                golds[solo.participant] += 1
+                golds[key_] += 1
             elif solo.place == 2:
-                silvers[solo.participant] += 1
+                silvers[key_] += 1
             elif solo.place == 3:
-                bronzes[solo.participant] += 1
-            participations[solo.participant].append(
-                Participation(event_id=event.id, event_title=event.title, solo_place=solo)
+                bronzes[key_] += 1
+            participations[key_].append(
+                Participation(
+                    result_id=result.id,
+                    event_id=result.event_id,
+                    event_title=result.event_title,
+                    solo_place=solo,
+                )
             )
 
-        for team in event.results.team_places or []:
+        for team in result.team_places or []:
             for member in team.members:
-                total[member] += 1
+                key_ = key(member)
+                total[key_] += 1
                 if team.place == 1:
-                    golds[member] += 1
+                    golds[key_] += 1
                 elif team.place == 2:
-                    silvers[member] += 1
+                    silvers[key_] += 1
                 elif team.place == 3:
-                    bronzes[member] += 1
-                participations[member].append(
-                    Participation(event_id=event.id, event_title=event.title, team_place=team)
+                    bronzes[key_] += 1
+                participations[key_].append(
+                    Participation(
+                        result_id=result.id,
+                        event_id=result.event_id,
+                        event_title=result.event_title,
+                        team_place=team,
+                    )
                 )
+    participant_in_registry = await participant_repository.read_all()
+    id_to_name = {p.id: p.name for p in participant_in_registry}
 
-    participants = [
-        ParticipantStats(
-            name=name,
-            participations=participations[name],
-            total=total[name],
-            golds=golds[name],
-            silvers=silvers[name],
-            bronzes=bronzes[name],
+    participants = []
+    for key_ in total:
+        if isinstance(key_, PydanticObjectId):
+            name = id_to_name.get(key_, "")
+            id = key_
+        else:
+            name = key_[0]
+            id = None
+
+        participants.append(
+            ParticipantStats(
+                id=id,
+                name=name,
+                participations=participations[name],
+                total=total[name],
+                golds=golds[name],
+                silvers=silvers[name],
+                bronzes=bronzes[name],
+            )
         )
-        for name in total
-        if name
-    ]
 
-    participants.sort(key=lambda p: (p.golds, p.silvers, p.bronzes, p.total, p.name), reverse=True)
+    def score(p: ParticipantStats):
+        return p.golds, p.silvers, p.bronzes, p.total
 
-    return participants[:limit]
+    participants.sort(key=lambda p: (*score(p), p.name), reverse=True)
+
+    # same score should have the same place
+    place = 1
+    places = []
+    for i in range(len(participants)):
+        if i > 0 and score(participants[i]) != score(participants[i - 1]):
+            place = i + 1
+        places.append(place)
+
+    return list(zip(places, participants[skip : skip + limit]))
 
 
 class TeamStats(BaseSchema):
@@ -147,15 +215,16 @@ class TeamStats(BaseSchema):
 async def get_team(name: str):
     if not name:
         return TeamStats(name=name, participations=[])
-    events = await events_repository.read_for_team(name)
+    results = await result_repository.read_for_team(name)
 
     participations = []
-    for event in events:
+    for result in results:
         participations.append(
             Participation(
-                event_id=event.id,
-                event_title=event.title,
-                team_place=next((p for p in event.results.team_places or [] if p.team == name), None),
+                result_id=result.id,
+                event_id=result.event_id,
+                event_title=result.event_title,
+                team_place=next((p for p in result.team_places or [] if p.team == name), None),
             )
         )
 
@@ -175,18 +244,19 @@ async def get_team(name: str):
 
 
 @router.get("/team/all")
-async def get_all_teams(limit: int = 100) -> list[TeamStats]:
-    events = await events_repository.read_all()
+async def get_all_teams(limit: int = 100, skip: int = 0) -> list[tuple[int, TeamStats]]:
+    """
+    Список статистик команд: список кортежей (место в рейтинге, ParticipantStats)
+    """
+    results = await result_repository.read_all()
     total = Counter()
     golds = Counter()
     silvers = Counter()
     bronzes = Counter()
     participations = defaultdict(list)
 
-    for event in events:
-        if not event.results:
-            continue
-        for team in event.results.team_places or []:
+    for result in results:
+        for team in result.team_places or []:
             total[team.team] += 1
             if team.place == 1:
                 golds[team.team] += 1
@@ -194,7 +264,14 @@ async def get_all_teams(limit: int = 100) -> list[TeamStats]:
                 silvers[team.team] += 1
             elif team.place == 3:
                 bronzes[team.team] += 1
-            participations[team.team].append(Participation(event_id=event.id, event_title=event.title, team_place=team))
+            participations[team.team].append(
+                Participation(
+                    result_id=result.id,
+                    event_id=result.event_id,
+                    event_title=result.event_title,
+                    team_place=team,
+                )
+            )
 
     teams = [
         TeamStats(
@@ -209,6 +286,17 @@ async def get_all_teams(limit: int = 100) -> list[TeamStats]:
         if team
     ]
 
-    teams.sort(key=lambda t: (t.golds, t.silvers, t.bronzes, t.total, t.name), reverse=True)
+    def score(t: TeamStats):
+        return t.golds, t.silvers, t.bronzes, t.total
 
-    return teams[:limit]
+    teams.sort(key=lambda t: (*score(t), t.name), reverse=True)
+
+    # same score should have the same place
+    place = 1
+    places = []
+    for i in range(len(teams)):
+        if i > 0 and score(teams[i]) != score(teams[i - 1]):
+            place = i + 1
+        places.append(place)
+
+    return list(zip(places, teams))[skip : skip + limit]

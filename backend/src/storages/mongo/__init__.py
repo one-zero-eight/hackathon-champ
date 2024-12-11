@@ -7,10 +7,12 @@ from src.storages.mongo.events import Event
 from src.storages.mongo.federation import Federation
 from src.storages.mongo.feedback import Feedback
 from src.storages.mongo.notify import Notify
+from src.storages.mongo.participant import Participant
+from src.storages.mongo.results import Results
 from src.storages.mongo.selection import Selection
 from src.storages.mongo.users import User
 
 document_models = cast(
     list[type[Document] | type[View] | str],
-    [User, Federation, Event, Selection, Feedback, Notify, EmailFlow],
+    [User, Federation, Event, Results, Selection, Feedback, Notify, EmailFlow, Participant],
 )

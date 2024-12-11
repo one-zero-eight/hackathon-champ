@@ -83,42 +83,6 @@ type Disciplines = (
 )
 
 
-class TeamPlace(BaseSchema):
-    place: int
-    "Место (1, 2, 3)"
-    team: str
-    "Название команды"
-    members: list[PydanticObjectId | str]
-    "Состав команды"
-    score: float | None = None
-    "Очки"
-
-
-class SoloPlace(BaseSchema):
-    place: int
-    "Место (1, 2, 3)"
-    participant: PydanticObjectId | str
-    "ФИО участника"
-    score: float | None = None
-    "Очки"
-
-
-class Protocol(BaseSchema):
-    by_url: str | None = None
-    "Ссылка на протокол"
-    by_file: str | None = None
-    "Путь к файлу в S3"
-
-
-class Results(BaseSchema):
-    protocols: list[Protocol] | None = None
-    "Протоколы зачёта, список ссылок"
-    team_places: list[TeamPlace] | None = None
-    "Места команд"
-    solo_places: list[SoloPlace] | None = None
-    "Места участников"
-
-
 class Gender(StrEnum):
     male = "male"
     "Мужской пол"
@@ -159,8 +123,6 @@ class EventSchema(BaseSchema):
     "№ СМ в ЕКП"
     page: int | None = None
     "Страница в ЕКП"
-    results: Results | None = None
-    "Результаты мероприятия"
     level: EventLevelEnum | None = None
     "Уровень мероприятия"
 
