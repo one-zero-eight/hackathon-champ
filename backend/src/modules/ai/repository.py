@@ -188,6 +188,7 @@ class AIRepository:
                 },
             ],
             format=schema,
+            options={"temperature": 0},  # Set temperature to 0 for more deterministic output
             stream=False,
         )
 

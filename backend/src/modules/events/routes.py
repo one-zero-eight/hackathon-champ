@@ -189,7 +189,7 @@ class ShortenEvent(BaseSchema):
     },
 )
 async def hint_event(
-    telegram_post_link: str = Body(examples=["https://t.me/one_zero_eight/125"], embed=True),
+    telegram_post_link: str = Body(examples=["https://t.me/fsp_RT/67"], embed=True),
 ) -> ShortenEvent | None:
     # check if proper link
     if not re.match(r"https://t.me/[^/]+/\d+", telegram_post_link):
