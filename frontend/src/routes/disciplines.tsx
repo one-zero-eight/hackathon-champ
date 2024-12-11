@@ -1,11 +1,7 @@
 import type { SchemaEvent } from '@/api/types'
 import { $api } from '@/api'
-import { Separator } from '@/components/ui/separator'
-import AlgorithmIcon from '@/icons/Algorithm_Icon.svg'
-import DroneIcon from '@/icons/Drone_Icon.svg'
-import ProductIcon from '@/icons/Product_Icon.svg'
-import RobotIcon from '@/icons/Robot_Icon.svg'
-import SecurityIcon from '@/icons/Security_Icon.svg'
+import { DISCIPLINES } from '@/lib/disciplines'
+import { capitalize } from '@/lib/utils'
 import { createFileRoute } from '@tanstack/react-router'
 import { useMemo } from 'react'
 import Calendar from '~icons/lucide/calendar'
@@ -15,103 +11,11 @@ export const Route = createFileRoute('/disciplines')({
   component: RouteComponent,
 })
 
-type Discipline = {
-  id: string
-  name: string
-  description: string
-  type: 'algorithmic' | 'product' | 'drones' | 'robotics' | 'security'
-  icon: any
-  skills: string[]
-  query: string
-}
-
-const DISCIPLINES: Discipline[] = [
-  {
-    id: 'algorithmic',
-    name: 'Программирование алгоритмическое',
-    description: 'Решение группы задач путем написания наиболее оптимальных программных алгоритмов в условиях ограниченного времени.',
-    type: 'algorithmic',
-    icon: AlgorithmIcon,
-    skills: [
-      'Алгоритмическое мышление',
-      'Оптимизация кода',
-      'Анализ сложности алгоритмов',
-      'Отладка и тестирование',
-    ],
-    query: 'алгоритм',
-  },
-  {
-    id: 'product',
-    name: 'Программирование продуктовое',
-    description: 'Создание программных продуктов (приложений, сайтов, сервисов), отвечающих заданным требованиям и выполняющих определенные прикладные задачи.',
-    type: 'product',
-    icon: ProductIcon,
-    skills: [
-      'Full-stack разработка',
-      'UI/UX дизайн',
-      'Работа в команде',
-      'Git и CI/CD',
-    ],
-    query: 'продукт',
-  },
-  {
-    id: 'drones',
-    name: 'Программирование БАС',
-    description: 'Написание кода для автономного полета дрона или роя дронов, а также выполнения им поставленных задач в условиях соревновательного полигона.',
-    type: 'drones',
-    icon: DroneIcon,
-    skills: [
-      'Программирование микроконтроллеров',
-      'Работа с сенсорами',
-      'Алгоритмы навигации',
-      'Обработка сигналов',
-    ],
-    query: 'беспилотн',
-  },
-  {
-    id: 'robotics',
-    name: 'Программирование робототехники',
-    description: 'Написание кода и поведенческих алгоритмов для автономных роботов, соревнующихся по определенным правилам.',
-    type: 'robotics',
-    icon: RobotIcon,
-    skills: [
-      'Программирование микроконтроллеров',
-      'Работа с сенсорами',
-      'Машинное обучение',
-      'Механика',
-    ],
-    query: 'робот',
-  },
-  {
-    id: 'security',
-    name: 'Программирование систем информационной безопасности',
-    description: 'Комплекс соревнований в области кибербезопасности, включающий в себя поиск и устранение системных уязвимостей, отработку кибератак и защиты от них.',
-    type: 'security',
-    icon: SecurityIcon,
-    skills: [
-      'Криптография',
-      'Сетевая безопасность',
-      'Реверс-инжиниринг',
-      'Анализ вредоносного ПО',
-    ],
-    query: 'безопасност',
-  },
-]
-
-function DisciplineEvents({ query }: { query: string }) {
+function DisciplineEvents({ name }: { name: string }) {
   const { data: eventsData } = $api.useQuery('post', '/events/search', {
     body: {
-      filters: {
-        query,
-      },
-      sort: {
-        type: 'date',
-        direction: 1,
-      },
-      pagination: {
-        page_size: 3,
-        page_no: 1,
-      },
+      filters: { discipline: [name] },
+      pagination: { page_size: 3, page_no: 1 },
     },
   })
 
@@ -170,23 +74,28 @@ function RouteComponent() {
       <div>
         <h1 className="text-3xl font-bold">Дисциплины</h1>
         <p className="mt-2 text-muted-foreground">
-          Узнакомьтесь с направлениями в спортивном программировании, представленными на платформе.
+          Познакомьтесь с направлениями в спортивном программировании, представленными на платформе.
         </p>
       </div>
 
-      <div className="space-y-12">
-        {DISCIPLINES.map((discipline, index) => {
+      <div className="flex flex-col gap-12">
+        {DISCIPLINES.map((discipline) => {
           return (
-            <div key={discipline.id}>
-              {index > 0 && <Separator className="mb-12" />}
+            <div key={discipline.name} className="border-b pb-12">
               <div className="grid items-start gap-8 md:grid-cols-2">
                 <div>
                   <div className="flex items-start gap-4">
                     <div className="flex size-16 items-center justify-center rounded-2xl border bg-white sm:size-20">
-                      <img src={discipline.icon} alt={discipline.name} className="size-8 sm:size-10" />
+                      <img
+                        src={discipline.iconSrc}
+                        alt={discipline.name}
+                        className="size-8 sm:size-10"
+                      />
                     </div>
                     <div className="flex-1">
-                      <h2 className="text-2xl font-semibold">{discipline.name}</h2>
+                      <h2 className="text-2xl font-semibold">
+                        {capitalize(discipline.name)}
+                      </h2>
                       <p className="mt-2 text-lg text-muted-foreground">
                         {discipline.description}
                       </p>
@@ -215,7 +124,7 @@ function RouteComponent() {
                     <Calendar className="size-4 text-purple-500" />
                     Ближайшие мероприятия
                   </div>
-                  <DisciplineEvents query={discipline.query} />
+                  <DisciplineEvents name={discipline.name} />
                 </div>
               </div>
             </div>

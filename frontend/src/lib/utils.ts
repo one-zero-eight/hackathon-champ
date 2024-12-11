@@ -220,3 +220,7 @@ export function getProtocolLabel(protocol: SchemaProtocol) {
     return protocol.by_url
   return '—'
 }
+
+export function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
