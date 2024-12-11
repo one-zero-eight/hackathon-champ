@@ -368,7 +368,7 @@ async def count_events_by_month(filters: Filters) -> dict[str, int]:
             date_filter.end_date = datetime.datetime(current_year, month=i + 1, day=1)
         filters.date = date_filter
         count = await events_repository.read_with_filters(
-            filters, Sort(), Pagination(page_size=0, page_no=0), count=True
+            filters, None, Pagination(page_size=0, page_no=0), count=True
         )
         counts[f"{current_year}-{i:02d}"] = count
 
