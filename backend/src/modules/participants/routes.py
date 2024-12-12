@@ -84,6 +84,15 @@ async def get_participant(id: PydanticObjectId) -> Participant:
     return participant
 
 
+@router.get(
+    "/person/get-by-names/",
+    responses={200: {"description": "Info about participants"}},
+)
+async def get_participants_by_names(names: list[str]) -> dict[str, Participant]:
+    participants = await participant_repository.exists_by_name(names)
+    return {p.name: p for p in participants}
+
+
 @router.put(
     "/person/get/{id}",
     responses={
