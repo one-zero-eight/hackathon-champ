@@ -84,6 +84,41 @@ async def get_participant(id: PydanticObjectId) -> Participant:
     return participant
 
 
+@router.put(
+    "/person/get/{id}",
+    responses={
+        200: {"description": "Info about participant"},
+        404: {"description": "Participant not found"},
+        403: {"description": "Only admin can update participant"},
+    },
+)
+async def update_participant(id: PydanticObjectId, data: ParticipantSchema, auth: USER_AUTH) -> Participant:
+    user = await user_repository.read(auth.user_id)
+    if user.role == UserRole.ADMIN:
+        p = await participant_repository.update(id, data)
+        if p is None:
+            raise HTTPException(status_code=404, detail="Participant not found")
+        return p
+    else:
+        raise HTTPException(status_code=403, detail="Only admin can update participant")
+
+
+@router.delete(
+    "/person/get/{id}",
+    responses={200: {"description": "Info about participant"}, 404: {"description": "Participant not found"}},
+)
+async def delete_participant(id: PydanticObjectId, auth: USER_AUTH) -> Participant:
+    user = await user_repository.read(auth.user_id)
+    if user.role == UserRole.ADMIN:
+        participant = await Participant.get(id)
+        if participant is None:
+            raise HTTPException(status_code=404, detail="Participant not found")
+        await participant_repository.delete(id)
+        return participant
+    else:
+        raise HTTPException(status_code=403, detail="Only admin can delete participant")
+
+
 @router.get(
     "/person/many/",
     responses={200: {"description": "Info about participants"}},

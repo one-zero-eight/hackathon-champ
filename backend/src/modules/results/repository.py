@@ -54,5 +54,14 @@ class ResultRepository:
         results = await self.read_for_events(*events_ids)
         return results
 
+    async def replace_id_with_none(self, participant_id: PydanticObjectId) -> None:
+        await Results.find({"solo_places.participant.id": participant_id}).update(
+            {"$set": {"solo_places.$.participant.id": None}}
+        )
+        await Results.find({"team_places.members.id": participant_id}).update(
+            {"$set": {"team_places.$[].members.$[elem].id": None}},
+            array_filters=[{"elem.id": participant_id}],
+        )
+
 
 result_repository: ResultRepository = ResultRepository()
