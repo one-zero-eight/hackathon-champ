@@ -50,6 +50,15 @@ async def create_participant(data: ParticipantSchema, auth: USER_AUTH) -> Partic
         raise HTTPException(status_code=403, detail="Only admin or related federation can create participant")
 
 
+@router.get("/person/")
+async def get_particapnts(auth: USER_AUTH) -> list[Participant]:
+    user = await user_repository.read(auth.user_id)
+    if user.role == UserRole.ADMIN:
+        return await participant_repository.read_all()
+    else:
+        raise HTTPException(status_code=403, detail="Only admin can get all participants")
+
+
 @router.get("/person/count")
 async def get_participant_count() -> int:
     return await result_repository.get_participant_count()

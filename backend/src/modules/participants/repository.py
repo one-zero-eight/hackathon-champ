@@ -9,7 +9,7 @@ class ParticipantRepository:
         return await Participant.all().to_list()
 
     async def read_for_federation(self, federation_id: PydanticObjectId) -> list[Participant]:
-        return await Participant.find({"related_federations": federation_id}).to_list()
+        return await Participant.find({"related_federation": federation_id}).to_list()
 
     async def read_many(self, ids: list[PydanticObjectId]) -> list[Participant]:
         return await Participant.find({"_id": {"$in": ids}}).to_list()
