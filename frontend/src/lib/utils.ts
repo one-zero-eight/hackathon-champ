@@ -204,6 +204,9 @@ export function eventTooltipFormatter(value: number) {
 export function federationTooltipFormatter(value: number) {
   return [`${value} ${pluralize(value, 'федерация', 'федерации', 'федераций')}`, 'Количество']
 }
+export function ranksTooltipFormatter(value: number) {
+  return [`${value} ${pluralize(value, 'участник', 'участника', 'участников')}`, 'Количество']
+}
 
 export function getProtocolUrl(protocol: SchemaProtocol) {
   if (protocol.by_file)

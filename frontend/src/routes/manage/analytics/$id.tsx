@@ -8,8 +8,9 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useMe } from '@/hooks/useMe'
+import { RANK_COLOR, RANKS } from '@/lib/ranks.ts'
 import * as statsLib from '@/lib/stats'
-import { eventTooltipFormatter, getStatusText } from '@/lib/utils'
+import { eventTooltipFormatter, getStatusText, ranksTooltipFormatter } from '@/lib/utils'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
@@ -24,16 +25,25 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import Award from '~icons/lucide/award'
 import Calendar from '~icons/lucide/calendar'
 import CheckCircle from '~icons/lucide/check-circle'
 import Clock from '~icons/lucide/clock'
 import Map from '~icons/lucide/map'
+import Printer from '~icons/lucide/printer'
+import Users from '~icons/lucide/users'
 
 const EVENT_COLOR_BY_STATUS = {
   draft: statsLib.COLOR_NEUTRAL,
   on_consideration: statsLib.COLOR_INFO,
   accredited: statsLib.COLOR_SUCCESS,
   rejected: statsLib.COLOR_DESTRUCTIVE,
+}
+
+const GENDER_COLORS: { [key: string]: string } = {
+  Мужчины: '#0ea5e9',
+  Женщины: '#e838e2',
+  Неизвестно: '#6b7280',
 }
 
 // Helper function to format month
@@ -43,9 +53,6 @@ function formatMonth(date: string) {
 
 export const Route = createFileRoute('/manage/analytics/$id')({
   component: RouteComponent,
-  parseParams: params => ({
-    id: params.id,
-  }),
 })
 
 function RouteComponent() {
@@ -66,6 +73,11 @@ function RouteComponent() {
   const { data: federation } = $api.useQuery(
     'get',
     '/federations/{id}',
+    { params: { path: { id } } },
+  )
+  const { data: federationStats } = $api.useQuery(
+    'get',
+    '/federations/{id}/stats',
     { params: { path: { id } } },
   )
 
@@ -214,6 +226,30 @@ function RouteComponent() {
     return count
   }, [events])
 
+  const federationRanks = Object.entries(federationStats?.ranks ?? {})
+  federationRanks.sort((a, b) => RANKS.indexOf(b[0]) - RANKS.indexOf(a[0]))
+
+  let participantStatsByGender: { name: string, value: number }[] = []
+  if (federationStats) {
+    participantStatsByGender = [
+      {
+        name: 'Мужчины',
+        value: federationStats.total_male_in_registry,
+      },
+      {
+        name: 'Женщины',
+        value: federationStats.total_female_in_registry,
+      },
+      {
+        name: 'Неизвестно',
+        value:
+              federationStats.total_participants_in_registry
+              - federationStats.total_male_in_registry
+              - federationStats.total_female_in_registry,
+      },
+    ].filter(({ value }) => value > 0)
+  }
+
   return (
     <div className="container space-y-6 p-4 md:p-6">
       {!federation
@@ -221,13 +257,149 @@ function RouteComponent() {
         : (<PageHeader federation={federation} isAdmin={isAdmin} />)}
 
       <div className="grid gap-6">
+        {/* Statistics */}
+        {federationStats && (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <QuickStatsCard
+              title="Всего участников"
+              icon={Users}
+              value={federationStats.total_participants_in_registry}
+              color="blue"
+              secondaryText="В реестре"
+            />
+            <QuickStatsCard
+              title="Всего участий"
+              icon={Award}
+              value={federationStats?.total_participations}
+              secondaryValue={federationStats?.participations_for_last_month ?? null}
+              secondaryText="за последний месяц"
+              color="yellow"
+            />
+            <QuickStatsCard
+              title="Всего команд"
+              icon={Users}
+              value={federationStats?.total_teams}
+              secondaryValue={federationStats?.teams_for_last_month ?? null}
+              secondaryText="за последний месяц"
+              color="purple"
+            />
+            <QuickStatsCard
+              title="Всего мероприятий"
+              icon={Calendar}
+              value={federationStats?.total_competitions}
+              secondaryValue={federationStats?.competitions_for_last_month ?? null}
+              secondaryText="за последний месяц"
+              color="blue"
+            />
+          </div>
+        )}
+
+        {federationStats && (
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card className="md:col-span-1">
+              <CardHeader>
+                <CardTitle>Разряды участников</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[250px] md:h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={federationRanks}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={80}
+                        paddingAngle={5}
+                        startAngle={90 + 45}
+                        endAngle={360 + 90 + 45}
+                        dataKey={1}
+                        nameKey={0}
+                        label={({ name }) => name}
+                      >
+                        {federationRanks.map(([rank]) => (
+                          <Cell key={rank} fill={RANK_COLOR[rank] || '#6b7280'} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        formatter={ranksTooltipFormatter}
+                        labelFormatter={label => `${label}`}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="mt-4 flex flex-wrap gap-2 md:gap-4">
+                  {federationRanks.map(([rank, count]) => (
+                    <div key={rank} className="flex items-center gap-2">
+                      <div
+                        className="size-2 rounded-full md:size-3"
+                        style={{ backgroundColor: RANK_COLOR[rank] || '#6b7280' }}
+                      />
+                      <span className="text-xs text-muted-foreground md:text-sm">
+                        {`${rank} (${count})`}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="md:col-span-1">
+              <CardHeader>
+                <CardTitle>Пол участников</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[250px] md:h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={participantStatsByGender}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={80}
+                        paddingAngle={5}
+                        dataKey="value"
+                        nameKey="name"
+                        label={({ name }) => name}
+                      >
+                        {participantStatsByGender.map(({ name }) => (
+                          <Cell key={name} fill={GENDER_COLORS[name] || '#6b7280'} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        formatter={ranksTooltipFormatter}
+                        labelFormatter={label => `${label}`}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="mt-4 flex flex-wrap gap-2 md:gap-4">
+                  {participantStatsByGender.map(({ name, value }) => (
+                    <div key={name} className="flex items-center gap-2">
+                      <div
+                        className="size-2 rounded-full md:size-3"
+                        style={{ backgroundColor: GENDER_COLORS[name] || '#6b7280' }}
+                      />
+                      <span className="text-xs text-muted-foreground md:text-sm">
+                        {`${name} (${value})`}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         {/* Filters */}
         <AnalyticsFilters
           dateRange={dateRange}
           onDateRangeChange={setDateRange}
           districts={[]}
           selectedDistricts={[]}
-          onDistrictsChange={() => {}}
+          onDistrictsChange={() => {
+          }}
           showDistrictsFilter={false}
           onExport={handleExport}
         />
@@ -237,13 +409,13 @@ function RouteComponent() {
               <div className="grid gap-6">
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   {Array.from({ length: 4 }).map((_, i) => (
-                    // eslint-disable-next-line react/no-array-index-key
+                  // eslint-disable-next-line react/no-array-index-key
                     <Skeleton key={i} className="h-[5.875rem] bg-neutral-200" />
                   ))}
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">
                   {Array.from({ length: 4 }).map((_, i) => (
-                    // eslint-disable-next-line react/no-array-index-key
+                  // eslint-disable-next-line react/no-array-index-key
                     <Skeleton key={i} className="h-[300px] bg-neutral-200" />
                   ))}
                 </div>
@@ -254,25 +426,29 @@ function RouteComponent() {
                 {/* Summary Cards */}
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   <QuickStatsCard
-                    title="Всего мероприятий"
+                    title="Мероприятий"
+                    secondaryText="За выбранный период"
                     icon={Calendar}
                     value={stats.total}
                     color="blue"
                   />
                   <QuickStatsCard
                     title="Завершено"
+                    secondaryText="За выбранный период"
                     icon={CheckCircle}
                     value={finishedEventsCount}
                     color="green"
                   />
                   <QuickStatsCard
                     title="Сейчас идёт"
+                    secondaryText="За выбранный период"
                     icon={Clock}
                     value={activeEventsCount}
                     color="yellow"
                   />
                   <QuickStatsCard
                     title="Среднее число участников"
+                    secondaryText="За выбранный период"
                     icon={Map}
                     value={Number.isNaN(stats.averageParticipants) ? '—' : stats.averageParticipants}
                     color="purple"
@@ -393,7 +569,10 @@ function RouteComponent() {
                                 .sort((a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime())
                                 .slice(0, 5)
                                 .map(event => (
-                                  <div key={event.id} className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                  <div
+                                    key={event.id}
+                                    className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
+                                  >
                                     <div>
                                       <p className="text-sm font-medium md:text-base">{event.title}</p>
                                       <p className="text-xs text-muted-foreground md:text-sm">
@@ -432,13 +611,17 @@ function PageHeader({
   isAdmin: boolean
 }) {
   return (
-    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div className="flex flex-col gap-4 md:flex-row md:items-center">
       <div>
         <h1 className="text-xl font-bold md:text-2xl">{federation.region}</h1>
         <p className="text-sm text-muted-foreground md:text-base">
           {federation.district ?? 'Федеральный округ не указан'}
         </p>
       </div>
+      <Button className="do-not-print ml-auto" onClick={() => print()}>
+        <Printer className="mr-2 size-4" />
+        Печать
+      </Button>
       {isAdmin && (
         <Button asChild variant="outline" className="do-not-print w-full md:w-auto">
           <Link to="/manage/analytics">

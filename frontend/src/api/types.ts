@@ -1759,6 +1759,28 @@ export interface components {
              * @description Процент заполненности профиля федерации
              */
             profile_fill_percentage: number;
+            /**
+             * Total Participants In Registry
+             * @description Сколько всего участников зарегистрировано в Реестре
+             */
+            total_participants_in_registry: number;
+            /**
+             * Total Male In Registry
+             * @description Сколько всего мужчин зарегистрировано в Реестре
+             */
+            total_male_in_registry: number;
+            /**
+             * Total Female In Registry
+             * @description Сколько всего женщин зарегистрировано в Реестре
+             */
+            total_female_in_registry: number;
+            /**
+             * Ranks
+             * @description Сколько участников с каждым рангом у этой федерации
+             */
+            ranks: {
+                [key: string]: number;
+            };
         };
         /** Feedback */
         Feedback: {

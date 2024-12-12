@@ -25,7 +25,6 @@ import { cn } from '@/lib/utils'
 import Check from '~icons/lucide/check'
 import ChevronsUpDown from '~icons/lucide/chevrons-up-down'
 import Download from '~icons/lucide/download'
-import Printer from '~icons/lucide/printer'
 import X from '~icons/lucide/x'
 
 const EMPTY_ARRAY: readonly string[] = []
@@ -74,7 +73,7 @@ export function AnalyticsFilters({
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <CardTitle>Фильтры</CardTitle>
+            <CardTitle>Статистика по мероприятиям</CardTitle>
             {hasFilters && (
               <Button
                 variant="ghost"
@@ -87,10 +86,6 @@ export function AnalyticsFilters({
             )}
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => print()}>
-              <Printer className="mr-2 size-4" />
-              Печать
-            </Button>
             <Button variant="outline" onClick={onExport}>
               <Download className="mr-2 size-4" />
               Экспорт
