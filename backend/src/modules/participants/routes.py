@@ -163,7 +163,9 @@ async def federation_participants(federation_id: PydanticObjectId) -> list[Parti
 
 
 @router.get("/person/stats/all")
-async def get_all_participants_stats(limit: int = 100, skip: int = 0) -> list[tuple[int, ParticipantStats]]:
+async def get_all_participants_stats(
+    limit: int = 100, skip: int = 0, query: str | None = None
+) -> list[tuple[int, ParticipantStats]]:
     """
     Список статистик участников: список кортежей (место в рейтинге, ParticipantStats)
     """
@@ -231,6 +233,9 @@ async def get_all_participants_stats(limit: int = 100, skip: int = 0) -> list[tu
         )
         for id in total
     ]
+
+    if query:
+        participants = [p for p in participants if query.lower() in p.name.lower()]
 
     def score(p: ParticipantStats):
         return p.golds, p.silvers, p.bronzes, p.total
