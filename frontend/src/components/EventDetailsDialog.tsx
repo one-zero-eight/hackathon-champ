@@ -58,7 +58,7 @@ function DetailsDialog({ event, open, setOpen }: { event: SchemaEvent, open: boo
         <DialogHeader className="text-left">
           <DialogTitle>{event.title}</DialogTitle>
 
-          <DialogDescription>
+          <DialogDescription className="whitespace-pre-wrap">
             {event.description}
           </DialogDescription>
         </DialogHeader>
@@ -249,13 +249,13 @@ function EventSoloPlaces({ event }: { event: SchemaEvent }) {
         <div className="text-sm">Результаты личных дисциплин</div>
       </div>
       <ul className="flex max-h-[200px] flex-col gap-2 overflow-hidden">
-        {results.solo_places.map(solo => (
-          <li key={solo.participant} className="flex items-center gap-2">
+        {results.solo_places.map((solo, i) => (
+          <li key={i} className="flex items-center gap-2">
             <span className="grow rounded-md border bg-white px-4 py-2">
               {solo.place}
             </span>
             <span className="grow rounded-md border bg-white px-4 py-2">
-              {solo.participant}
+              {solo.participant.name}
             </span>
             <span className="grow rounded-md border bg-white px-4 py-2">
               {solo.score}

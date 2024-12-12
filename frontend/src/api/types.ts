@@ -958,15 +958,15 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/participants/person/stats/": {
+    "/participants/person/get-for-federation/{federation_id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get Participant Stats */
-        get: operations["participants_get_participant_stats"];
+        /** Federation Participants */
+        get: operations["participants_federation_participants"];
         put?: never;
         post?: never;
         delete?: never;
@@ -987,6 +987,23 @@ export interface paths {
          * @description Список статистик участников: список кортежей (место в рейтинге, ParticipantStats)
          */
         get: operations["participants_get_all_participants_stats"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/participants/person/stats/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Participant Stats */
+        get: operations["participants_get_participant_stats"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1758,14 +1775,6 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
-        /** JustName */
-        JustName: {
-            /**
-             * Name
-             * @description ФИО участника
-             */
-            name: string;
-        };
         /** LocationFilter */
         LocationFilter: {
             /** Country */
@@ -1917,8 +1926,8 @@ export interface components {
              */
             email: string | null;
         };
-        /** ParticipantStats */
-        ParticipantStats: {
+        /** ParticipantRef */
+        ParticipantRef: {
             /**
              * Id
              * @description ID участника
@@ -1926,7 +1935,21 @@ export interface components {
             id?: string | null;
             /**
              * Name
-             * @description Имя участника
+             * @description ФИО участника
+             */
+            name: string;
+        };
+        /** ParticipantStats */
+        ParticipantStats: {
+            /**
+             * Id
+             * @description ID участника
+             * @example 5eb7cf5a86d9755df3a6c593
+             */
+            id: string;
+            /**
+             * Name
+             * @description ФИО участника
              */
             name: string;
             /**
@@ -2126,11 +2149,8 @@ export interface components {
              * @description Место (1, 2, 3)
              */
             place: number;
-            /**
-             * Participant
-             * @description ФИО участника
-             */
-            participant: string | components["schemas"]["JustName"];
+            /** @description ФИО участника */
+            participant: components["schemas"]["ParticipantRef"];
             /**
              * Score
              * @description Очки
@@ -2175,7 +2195,7 @@ export interface components {
              * Members
              * @description Состав команды
              */
-            members: (string | components["schemas"]["JustName"])[];
+            members: components["schemas"]["ParticipantRef"][];
             /**
              * Score
              * @description Очки
@@ -2296,7 +2316,6 @@ export type SchemaFeedbackSchema = components['schemas']['FeedbackSchema'];
 export type SchemaFilters = components['schemas']['Filters'];
 export type SchemaGender = components['schemas']['Gender'];
 export type SchemaHttpValidationError = components['schemas']['HTTPValidationError'];
-export type SchemaJustName = components['schemas']['JustName'];
 export type SchemaLocationFilter = components['schemas']['LocationFilter'];
 export type SchemaLocationsFilterVariants = components['schemas']['LocationsFilterVariants'];
 export type SchemaMinMaxFilter = components['schemas']['MinMaxFilter'];
@@ -2305,6 +2324,7 @@ export type SchemaNotify = components['schemas']['Notify'];
 export type SchemaNotifySchema = components['schemas']['NotifySchema'];
 export type SchemaPagination = components['schemas']['Pagination'];
 export type SchemaParticipant = components['schemas']['Participant'];
+export type SchemaParticipantRef = components['schemas']['ParticipantRef'];
 export type SchemaParticipantStats = components['schemas']['ParticipantStats'];
 export type SchemaParticipation = components['schemas']['Participation'];
 export type SchemaProtocol = components['schemas']['Protocol'];
@@ -4090,26 +4110,32 @@ export interface operations {
             };
         };
     };
-    participants_get_participant_stats: {
+    participants_federation_participants: {
         parameters: {
-            query?: {
-                name?: string | null;
-                id?: string | null;
-            };
+            query?: never;
             header?: never;
-            path?: never;
+            path: {
+                federation_id: string;
+            };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description Successful Response */
+            /** @description Info about participant */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ParticipantStats"];
+                    "application/json": components["schemas"]["Participant"][];
                 };
+            };
+            /** @description Participant not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {
@@ -4145,6 +4171,44 @@ export interface operations {
                         components["schemas"]["ParticipantStats"]
                     ][];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    participants_get_participant_stats: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Stats about participant */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ParticipantStats"];
+                };
+            };
+            /** @description Participant not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {

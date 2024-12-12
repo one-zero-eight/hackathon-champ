@@ -1,4 +1,4 @@
-import type { SchemaParticipation } from '@/api/types.ts'
+import type { SchemaParticipantStats, SchemaParticipation, SchemaTeamStats } from '@/api/types.ts'
 import { $api } from '@/api'
 import { EventDetailsDialog } from '@/components/EventDetailsDialog.tsx'
 import { Badge } from '@/components/ui/badge'
@@ -17,29 +17,10 @@ export const Route = createFileRoute('/participants/')({
   component: RouteComponent,
 })
 
-function sortParticipants(participants: any[]) {
-  return [...participants].sort((a, b) => {
-    // Sort by gold medals
-    if (a.golds !== b.golds) {
-      return b.golds - a.golds
-    }
-    // If gold medals are equal, sort by silver
-    if (a.silvers !== b.silvers) {
-      return b.silvers - a.silvers
-    }
-    // If silver medals are equal, sort by bronze
-    if (a.bronzes !== b.bronzes) {
-      return b.bronzes - a.bronzes
-    }
-    // If all medals are equal, sort alphabetically by name
-    return a.name.localeCompare(b.name, 'ru')
-  })
-}
-
-function filterParticipants(participants: any[], search: string) {
+function filterParticipants<T extends [number, { name: string }]>(participants: T[], search: string): T[] {
   const searchLower = search.toLowerCase()
   return participants.filter(p =>
-    p.name.toLowerCase().includes(searchLower),
+    p[1].name.toLowerCase().includes(searchLower),
   )
 }
 
@@ -255,7 +236,7 @@ function StatisticsCard({ participant }: { participant: any }) {
   )
 }
 
-function ParticipantDialog({ participant, rank }: { participant: any, rank: number }) {
+function ParticipantDialog({ participant, rank }: { participant: SchemaParticipantStats | SchemaTeamStats, rank: number }) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -288,7 +269,7 @@ function ParticipantDialog({ participant, rank }: { participant: any, rank: numb
               )
             </h3>
             <div className="space-y-3">
-              {participant.participations.map((p: SchemaParticipation) => (
+              {participant.participations.map(p => (
                 <ParticipationCard key={p.event_id} participation={p} />
               ))}
             </div>
@@ -336,11 +317,8 @@ function RouteComponent() {
   const { data: allTeams, isLoading: isLoadingTeams } = $api.useQuery('get', '/participants/team/all')
   const [search, setSearch] = useState('')
 
-  const sortedPersons = allPersons ? sortParticipants(allPersons) : []
-  const sortedTeams = allTeams ? sortParticipants(allTeams) : []
-
-  const filteredPersons = filterParticipants(sortedPersons, search)
-  const filteredTeams = filterParticipants(sortedTeams, search)
+  const filteredPersons = filterParticipants(allPersons || [], search)
+  const filteredTeams = filterParticipants(allTeams || [], search)
 
   const renderSkeletons = () => (
     <div className="space-y-2">
@@ -380,8 +358,8 @@ function RouteComponent() {
                     </div>
                   )
                 : (
-                    filteredPersons.map((person: any, index: number) => (
-                      <ParticipantDialog key={person.name} participant={person} rank={index + 1} />
+                    filteredPersons.map(([rank, person], i) => (
+                      <ParticipantDialog key={i} participant={person} rank={rank} />
                     ))
                   )}
           </TabsContent>
@@ -398,8 +376,8 @@ function RouteComponent() {
                     </div>
                   )
                 : (
-                    filteredTeams.map((team: any, index: number) => (
-                      <ParticipantDialog key={team.name} participant={team} rank={index + 1} />
+                    filteredTeams.map(([rank, team], i) => (
+                      <ParticipantDialog key={i} participant={team} rank={rank} />
                     ))
                   )}
           </TabsContent>
