@@ -247,10 +247,12 @@ async def get_all_participants_stats(
             place = i + 1
         places.append(place)
 
-    if query:
-        participants = [p for p in participants if query.lower() in p.name.lower()]
+    result = list(zip(places, participants[skip : skip + limit]))
 
-    return list(zip(places, participants[skip : skip + limit]))
+    if query:
+        result = [(place, p) for (place, p) in result if query.lower() in p.name.lower()]
+
+    return result[skip : skip + limit]
 
 
 @router.get(
@@ -399,7 +401,9 @@ async def get_all_teams(limit: int = 100, skip: int = 0, query: str | None = Non
             place = i + 1
         places.append(place)
 
-    if query:
-        teams = [t for t in teams if query.lower() in t.name.lower()]
+    result = list(zip(places, teams))[skip : skip + limit]
 
-    return list(zip(places, teams))[skip : skip + limit]
+    if query:
+        result = [(place, t) for (place, t) in result if query.lower() in t.name.lower()]
+
+    return result[skip : skip + limit]
