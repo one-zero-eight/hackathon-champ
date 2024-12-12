@@ -14,8 +14,15 @@ class ParticipantRepository:
             q = q.limit(limit)
         return await q.to_list()
 
-    async def read_for_federation(self, federation_id: PydanticObjectId) -> list[Participant]:
-        return await Participant.find({"related_federation": federation_id}).to_list()
+    async def read_for_federation(
+        self, federation_id: PydanticObjectId, skip: int | None = None, limit: int | None = None
+    ) -> list[Participant]:
+        q = Participant.find({"related_federation": federation_id}).sort("name")
+        if skip is not None:
+            q = q.skip(skip)
+        if limit is not None:
+            q = q.limit(limit)
+        return await q.to_list()
 
     async def read_many(self, ids: list[PydanticObjectId]) -> list[Participant]:
         return await Participant.find({"_id": {"$in": ids}}).to_list()
