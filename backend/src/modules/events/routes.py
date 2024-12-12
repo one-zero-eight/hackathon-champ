@@ -22,6 +22,7 @@ from src.modules.events.repository import events_repository
 from src.modules.events.schemas import DateFilter, Filters, Pagination, Sort, SortingCriteria
 from src.modules.federation.repository import federation_repository
 from src.modules.notify.repository import notify_repository
+from src.modules.participants.repository import participant_repository
 from src.modules.users.repository import user_repository
 from src.pydantic_base import BaseSchema
 from src.storages.mongo.events import (
@@ -113,6 +114,7 @@ async def hint_results(file: UploadFile) -> Results:
     place_column = next((c for c in df.columns if is_place_column(c)), None)
     score_column = next((c for c in df.columns[::-1] if is_score_column(c)), None)
     team_column = next((c for c in df.columns if is_team_column(c)), None)
+    name_x_id = await participant_repository.name_x_id()
 
     if team_column:
         team_places = []
@@ -124,6 +126,7 @@ async def hint_results(file: UploadFile) -> Results:
                 members = member_sub[-1].replace("(", "").replace(")", "").split(",")
                 members = [m.strip() for m in members]
                 members = [m for m in members if m]
+                members = [{"id": name_x_id.get(m), "name": m} for m in members]
             else:
                 members = []
 
