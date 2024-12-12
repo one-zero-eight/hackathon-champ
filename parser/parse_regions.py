@@ -5,6 +5,74 @@ from fake_headers import Headers
 from bs4 import BeautifulSoup
 
 
+import os
+import requests
+from PIL import Image
+import io
+
+def download_image(url):
+    """Download an image from a URL."""
+    response = requests.get(url)
+    if response.status_code == 200:
+        return Image.open(io.BytesIO(response.content))
+    else:
+        raise Exception(f"Failed to download image from {url}")
+
+def get_background_color(image):
+    """Get the RGBA value of the pixel at (0, 0)."""
+    if image.mode != "RGBA":
+        image = image.convert("RGBA")
+    return image.getpixel((0, 0))
+
+def make_background_transparent(image, background_color):
+    """Make the background transparent based on the given color."""
+    if image.mode != "RGBA":
+        image = image.convert("RGBA")
+
+    # Create a mask for the background
+    data = image.getdata()
+    new_data = []
+    for item in data:
+        # Replace pixels matching the background color with transparent
+        if item[:3] == background_color[:3]:  # Compare RGB values
+            new_data.append((0, 0, 0, 0))  # Make it fully transparent
+        else:
+            new_data.append(item)
+
+    # Update the image data
+    image.putdata(new_data)
+
+    return image
+
+def save_as_webp(image, output_path):
+    """Save the image as WebP."""
+    image.save(output_path, "WEBP")
+
+def resize_image(image, size=(256, 256)):
+    """Resize the image to the specified size."""
+    return image.resize(size, Image.Resampling.LANCZOS)
+
+def process_logo(logo_url, output_folder):
+    """Download the logo, remove its background, and save it as WebP."""
+    try:
+        # Download the logo
+        logo = download_image(logo_url)
+
+        # Get the background color from the pixel at (0, 0)
+        background_color = get_background_color(logo)
+        print(f"Background color at (0, 0): {background_color}")
+
+        # Remove the background and make it white
+        processed_logo = make_background_transparent(logo, background_color)
+
+        resized_logo = resize_image(processed_logo, size=(256, 256))
+
+        # Save the processed logo as WebP
+        save_as_webp(resized_logo, output_folder)
+        print(f"Processed logo saved successfully at: {output_folder}")
+    except Exception as e:
+        print(f"Error processing logo: {e}")
+
 def load_existing_data(file_path):
     if os.path.exists(file_path):
         with open(file_path, "r") as fin:
@@ -37,6 +105,7 @@ if __name__ == "__main__":
                             .find("div", {"class": "detail"})
                             .find("img")["src"]
                         )
+                        process_logo(logo, f"backend/static/{logo.split('/')[-1].split('.')[0]}.webp")
                     else:
                         raise Exception(
                             f"ошибка получения ссылки {sub_resp.status_code}"
@@ -91,6 +160,7 @@ if __name__ == "__main__":
                                 .find("div", {"class": "detail"})
                                 .find("img")["src"]
                             )
+                            process_logo(logo, f"backend/static/{logo.split('/')[-1].split('.')[0]}.webp")
                         else:
                             raise Exception(
                                 f"ошибка получения ссылки {sub_resp.status_code}"
