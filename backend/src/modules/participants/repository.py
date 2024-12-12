@@ -6,8 +6,13 @@ from src.storages.mongo.participant import ParticipantSchema
 
 
 class ParticipantRepository:
-    async def read_all(self) -> list[Participant]:
-        return await Participant.all().to_list()
+    async def read_all(self, skip: int | None = None, limit: int | None = None) -> list[Participant]:
+        q = Participant.all().sort("name")
+        if skip is not None:
+            q = q.skip(skip)
+        if limit is not None:
+            q = q.limit(limit)
+        return await q.to_list()
 
     async def read_for_federation(self, federation_id: PydanticObjectId) -> list[Participant]:
         return await Participant.find({"related_federation": federation_id}).to_list()

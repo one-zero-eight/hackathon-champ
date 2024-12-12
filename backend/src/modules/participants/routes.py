@@ -68,10 +68,10 @@ async def create_many_participant(data: list[dict], auth: USER_AUTH) -> None:
 
 
 @router.get("/person/")
-async def get_particapnts(auth: USER_AUTH) -> list[Participant]:
+async def get_particapnts(auth: USER_AUTH, skip: int = 0, limit: int = 100) -> list[Participant]:
     user = await user_repository.read(auth.user_id)
     if user.role == UserRole.ADMIN:
-        return await participant_repository.read_all()
+        return await participant_repository.read_all(skip=skip, limit=limit)
     else:
         raise HTTPException(status_code=403, detail="Only admin can get all participants")
 
