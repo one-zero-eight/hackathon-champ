@@ -57,7 +57,7 @@ async def create_many_participant(data: list[dict], auth: USER_AUTH) -> None:
     if user.role == UserRole.ADMIN:
         for p in data:
             if "related_federation" in p:
-                p["related_federation"] = await federation_repository.read_by_region(p["related_federation"])
+                p["related_federation"] = (await federation_repository.read_by_region(p["related_federation"])).id
         await participant_repository.create_many([ParticipantSchema.model_validate(p) for p in data])
     else:
         raise HTTPException(status_code=403, detail="Only admin or related federation can create participant")
