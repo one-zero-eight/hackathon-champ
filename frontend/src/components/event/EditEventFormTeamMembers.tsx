@@ -1,12 +1,12 @@
+import type { SchemaParticipantRef } from '@/api/types'
 import type { UseFormReturn } from 'react-hook-form'
 import type { EventResultsType } from './EditEventForm'
 import { useCallback } from 'react'
 import { useFieldArray } from 'react-hook-form'
-import Plus from '~icons/lucide/plus'
 import X from '~icons/lucide/x'
 import { Button } from '../ui/button'
-import { FormControl, FormField, FormItem, FormMessage } from '../ui/form'
-import { Input } from '../ui/input'
+import { FormField } from '../ui/form'
+import { AddParticipantButton } from './AddParticipantButton'
 
 export function EditEventFormTeamMembers({
   form,
@@ -22,8 +22,8 @@ export function EditEventFormTeamMembers({
     name: `team_places.${teamIndex}.members`,
   })
 
-  const handleAdd = useCallback(() => {
-    append({ id: null, name: '' })
+  const handleAdd = useCallback((participant: SchemaParticipantRef) => {
+    append({ id: participant.id ?? null, name: participant.name })
   }, [append])
 
   const handleRemove = useCallback((index: number) => {
@@ -31,28 +31,13 @@ export function EditEventFormTeamMembers({
   }, [remove])
 
   return (
-    <div className="space-y-2 print:flex print:items-start print:gap-2 print:space-y-0">
+    <div className="space-y-2 print:flex print:flex-wrap print:items-start print:gap-2 print:space-y-0">
       {fields.map(({ id }, memberIndex) => (
-        <div key={id} className="flex gap-2">
+        <div key={id} className="flex items-center gap-2 rounded-md border py-2 pl-4 pr-2 print:pl-2">
           <FormField
             control={form.control}
-            name={`team_places.${teamIndex}.members.${memberIndex}.name`}
-            render={({ field }) => (
-              <FormItem className="flex-1">
-                <FormControl>
-                  <Input
-                    {...field}
-                    placeholder="Имя участника"
-                    value={field.value as string}
-                    disabled={disabled}
-                    onChange={(e) => {
-                      field.onChange(e.target.value)
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            name={`team_places.${teamIndex}.members.${memberIndex}`}
+            render={({ field }) => (<span className="flex-1">{field.value.name}</span>)}
           />
           <Button
             type="button"
@@ -66,16 +51,13 @@ export function EditEventFormTeamMembers({
           </Button>
         </div>
       ))}
-      <Button
-        type="button"
-        variant="outline"
-        className="do-not-print w-full"
-        onClick={handleAdd}
+
+      <AddParticipantButton
+        onAdd={handleAdd}
         disabled={disabled}
-      >
-        <Plus className="mr-2 size-4" />
-        Добавить участника
-      </Button>
+        className="do-not-print w-full"
+        variant="outline"
+      />
     </div>
   )
 }

@@ -7,8 +7,8 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import { useFieldArray } from 'react-hook-form'
-import Plus from '~icons/lucide/plus'
 import X from '~icons/lucide/x'
+import { AddParticipantButton } from './AddParticipantButton'
 
 export function EditEventFormSoloPlaces({
   form,
@@ -66,9 +66,9 @@ export function EditEventFormSoloPlaces({
                   render={({ field }) => (
                     <FormItem className="flex-1">
                       <FormLabel>Имя участника</FormLabel>
-                      <FormControl>
-                        <Input {...field} disabled={disabled} />
-                      </FormControl>
+                      <div className="flex-1 rounded-md p-2">
+                        <span>{field.value}</span>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -112,22 +112,20 @@ export function EditEventFormSoloPlaces({
 
         <Separator className="do-not-print" />
 
-        <Button
-          type="button"
-          className="do-not-print"
-          onClick={() => append({
-            participant: {
-              id: null,
-              name: '',
-            },
-            place: fields.length + 1,
-            score: null,
-          })}
+        <AddParticipantButton
+          onAdd={(participant) => {
+            append({
+              participant: {
+                id: participant.id ?? null,
+                name: participant.name,
+              },
+              place: fields.length + 1,
+              score: null,
+            })
+          }}
           disabled={disabled}
-        >
-          <Plus className="mr-2 size-4" />
-          Добавить участника
-        </Button>
+          className="do-not-print"
+        />
       </div>
     </div>
   )

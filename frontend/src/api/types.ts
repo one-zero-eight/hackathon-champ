@@ -907,6 +907,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/participants/person/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Particapnts */
+        get: operations["participants_get_particapnts"];
+        put?: never;
+        /** Create Participant */
+        post: operations["participants_create_participant"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/participants/person/count": {
         parameters: {
             query?: never;
@@ -950,6 +968,23 @@ export interface paths {
         };
         /** Get Participant */
         get: operations["participants_get_participant"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/participants/person/many/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Participants */
+        get: operations["participants_get_participants"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1913,11 +1948,10 @@ export interface components {
              */
             birth_date: string | null;
             /**
-             * Related Federations
+             * Related Federation
              * @description Связанные федерации
-             * @default []
              */
-            related_federations: string[];
+            related_federation: string | null;
             /** @description Пол */
             gender: components["schemas"]["Gender"] | null;
             /**
@@ -1938,6 +1972,31 @@ export interface components {
              * @description ФИО участника
              */
             name: string;
+        };
+        /** ParticipantSchema */
+        ParticipantSchema: {
+            /**
+             * Name
+             * @description ФИО участника
+             */
+            name: string;
+            /**
+             * Birth Date
+             * @description Дата рождения
+             */
+            birth_date?: string | null;
+            /**
+             * Related Federation
+             * @description Связанные федерации
+             */
+            related_federation?: string | null;
+            /** @description Пол */
+            gender?: components["schemas"]["Gender"] | null;
+            /**
+             * Email
+             * @description Электронная почта
+             */
+            email?: string | null;
         };
         /** ParticipantStats */
         ParticipantStats: {
@@ -2325,6 +2384,7 @@ export type SchemaNotifySchema = components['schemas']['NotifySchema'];
 export type SchemaPagination = components['schemas']['Pagination'];
 export type SchemaParticipant = components['schemas']['Participant'];
 export type SchemaParticipantRef = components['schemas']['ParticipantRef'];
+export type SchemaParticipantSchema = components['schemas']['ParticipantSchema'];
 export type SchemaParticipantStats = components['schemas']['ParticipantStats'];
 export type SchemaParticipation = components['schemas']['Participation'];
 export type SchemaProtocol = components['schemas']['Protocol'];
@@ -4021,6 +4081,59 @@ export interface operations {
             };
         };
     };
+    participants_get_particapnts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Participant"][];
+                };
+            };
+        };
+    };
+    participants_create_participant: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ParticipantSchema"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Participant"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     participants_get_participant_count: {
         parameters: {
             query?: never;
@@ -4058,7 +4171,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": (components["schemas"]["Participant"] | string)[];
+                    "application/json": components["schemas"]["Participant"][];
                 };
             };
             /** @description Validation Error */
@@ -4110,6 +4223,39 @@ export interface operations {
             };
         };
     };
+    participants_get_participants: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": string[];
+            };
+        };
+        responses: {
+            /** @description Info about participants */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Participant"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     participants_federation_participants: {
         parameters: {
             query?: never;
@@ -4121,7 +4267,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Info about participant */
+            /** @description Info about participants */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -4129,13 +4275,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Participant"][];
                 };
-            };
-            /** @description Participant not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
             /** @description Validation Error */
             422: {
