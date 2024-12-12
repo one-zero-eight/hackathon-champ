@@ -28,7 +28,10 @@ class ParticipantRepository:
         q = Participant.find({"related_federation": federation_id}).aggregate(
             [{"$group": {"_id": "$rank", "count": {"$sum": 1}}}]
         )
-        return {r["_id"]: r["count"] for r in await q.to_list()}
+        r = {r["_id"]: r["count"] for r in await q.to_list()}
+        without_rank = r.pop(None, 0)
+        r["Без разряда"] = without_rank
+        return r
 
     async def count_for_federation(self, federation_id: PydanticObjectId, gender: str | None = None) -> int:
         q = Participant.find({"related_federation": federation_id})
