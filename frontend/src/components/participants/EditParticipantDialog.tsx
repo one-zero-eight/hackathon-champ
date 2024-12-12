@@ -21,6 +21,7 @@ import {
 import { Input } from '@/components/ui/input.tsx'
 import { Label } from '@/components/ui/label.tsx'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.tsx'
+import { RANKS } from '@/lib/ranks.ts'
 import { cn } from '@/lib/utils.ts'
 import { useQueryClient } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
@@ -184,6 +185,72 @@ export function EditParticipantDialog({
                   жен
                 </Button>
               </div>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="region" className="text-right">
+                Разряд / звание
+              </Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="h-8 w-[230px] justify-between px-3 text-left font-normal"
+                    role="combobox"
+                  >
+                    <span className="truncate">
+                      {formData.rank || 'Нет разряда'}
+                    </span>
+                    <Edit className="ml-2 size-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[300px] p-0" align="start">
+                  <Command>
+                    <CommandList className="max-h-[300px] overflow-y-auto">
+                      <CommandEmpty>Ничего не найдено.</CommandEmpty>
+                      <CommandItem
+                        onSelect={() =>
+                          setFormData(prev => ({
+                            ...prev,
+                            rank: null,
+                          }))}
+                      >
+                        <Check
+                          className={cn(
+                            'mr-2 h-4 w-4',
+                            !formData.rank
+                              ? 'opacity-100'
+                              : 'opacity-0',
+                          )}
+                        />
+                        Нет разряда
+                      </CommandItem>
+                      {RANKS.map(
+                        rank => (
+                          <CommandItem
+                            key={rank}
+                            onSelect={() =>
+                              setFormData(prev => ({
+                                ...prev,
+                                rank,
+                              }))}
+                          >
+                            <Check
+                              className={cn(
+                                'mr-2 h-4 w-4',
+                                formData.rank
+                                === rank
+                                  ? 'opacity-100'
+                                  : 'opacity-0',
+                              )}
+                            />
+                            <span>{rank}</span>
+                          </CommandItem>
+                        ),
+                      )}
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="region" className="text-right">

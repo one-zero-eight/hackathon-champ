@@ -925,6 +925,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/participants/person/create-many": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Many Participant */
+        post: operations["participants_create_many_participant"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/participants/person/count": {
         parameters: {
             query?: never;
@@ -985,10 +1002,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Participants By Names */
-        get: operations["participants_get_participants_by_names"];
+        get?: never;
         put?: never;
-        post?: never;
+        /** Get Participants By Names */
+        post: operations["participants_get_participants_by_names"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1978,6 +1995,11 @@ export interface components {
              * @description Электронная почта
              */
             email: string | null;
+            /**
+             * Rank
+             * @description Разряд: МС; КМС; I разряд; II разряд; III спортивный разряд; I юношеский разряд; II юношеский разряд; III юношеский разряд.
+             */
+            rank: string | null;
         };
         /** ParticipantRef */
         ParticipantRef: {
@@ -2016,6 +2038,11 @@ export interface components {
              * @description Электронная почта
              */
             email?: string | null;
+            /**
+             * Rank
+             * @description Разряд: МС; КМС; I разряд; II разряд; III спортивный разряд; I юношеский разряд; II юношеский разряд; III юношеский разряд.
+             */
+            rank?: string | null;
         };
         /** ParticipantStats */
         ParticipantStats: {
@@ -4140,6 +4167,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Participant"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    participants_create_many_participant: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": Record<string, never>[];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */

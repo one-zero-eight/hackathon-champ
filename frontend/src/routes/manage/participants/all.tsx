@@ -59,8 +59,9 @@ function RouteComponent() {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[200px]">ФИО</TableHead>
-                <TableHead className="w-[250px]">Дата рождения</TableHead>
+                <TableHead className="w-[150px]">Дата рождения</TableHead>
                 <TableHead className="w-[250px]">Контакты</TableHead>
+                <TableHead className="w-[250px]">Разряд / звание</TableHead>
                 <TableHead className="w-[150px]">Федерация</TableHead>
                 <TableHead className="w-[300px]">Действия</TableHead>
               </TableRow>
@@ -90,6 +91,11 @@ function RouteComponent() {
                   <TableCell>
                     {person.email
                       ? <div className="text-sm">{person.email}</div>
+                      : '-'}
+                  </TableCell>
+                  <TableCell>
+                    {person.rank
+                      ? <div className="text-sm">{person.rank}</div>
                       : '-'}
                   </TableCell>
                   <TableCell>
