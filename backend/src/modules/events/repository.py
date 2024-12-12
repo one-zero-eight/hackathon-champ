@@ -159,6 +159,10 @@ class EventsRepository:
     async def read_for_federation(self, federation_id: PydanticObjectId) -> list[Event]:
         return await Event.find({"host_federation": federation_id}).to_list()
 
+    async def read_for_federation_only_ids(self, federation_id: PydanticObjectId) -> list[PydanticObjectId]:
+        _ = await Event.find({"host_federation": federation_id}).aggregate([{"$project": {"_id": 1}}])
+        return [i["_id"] async for i in _]
+
     async def create_selection(self, filters: Filters, sort: Sort | None):
         selection = Selection(filters=filters, sort=sort)
         await selection.insert()

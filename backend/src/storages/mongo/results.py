@@ -1,13 +1,22 @@
 from beanie import PydanticObjectId
+from pydantic import model_validator
 from pymongo import IndexModel
 
 from src.pydantic_base import BaseSchema
 from src.storages.mongo.__base__ import CustomDocument
 
 
-class JustName(BaseSchema):
-    name: str
+class ParticipantRef(BaseSchema):
+    id: PydanticObjectId | None = None
+    "ID участника"
+    name: str | None = None
     "ФИО участника"
+
+    @model_validator(mode="after")
+    def check_id_or_name(self):
+        if not self.id and not self.name:
+            raise ValueError("Either id or name should be provided")
+        return self
 
 
 class TeamPlace(BaseSchema):
@@ -15,7 +24,7 @@ class TeamPlace(BaseSchema):
     "Место (1, 2, 3)"
     team: str
     "Название команды"
-    members: list[PydanticObjectId | JustName]
+    members: list[ParticipantRef]
     "Состав команды"
     score: float | None = None
     "Очки"
@@ -24,7 +33,7 @@ class TeamPlace(BaseSchema):
 class SoloPlace(BaseSchema):
     place: int
     "Место (1, 2, 3)"
-    participant: PydanticObjectId | JustName
+    participant: PydanticObjectId | ParticipantRef
     "ФИО участника"
     score: float | None = None
     "Очки"

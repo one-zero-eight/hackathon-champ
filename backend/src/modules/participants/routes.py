@@ -21,10 +21,10 @@ class Participation(BaseSchema):
 
 
 class ParticipantStats(BaseSchema):
-    id: PydanticObjectId | None = None
+    id: PydanticObjectId
     "ID участника"
     name: str
-    "Имя участника"
+    "ФИО участника"
     participations: list[Participation]
     "Участия"
     total: int = 0
@@ -62,19 +62,17 @@ async def get_participant(id: PydanticObjectId) -> Participant:
     return participant
 
 
-@router.get("/person/stats/")
-async def get_participant_stats(name: str | None = None, id: PydanticObjectId | None = None) -> ParticipantStats:
-    if id:
-        results = await result_repository.read_for_participant(name_or_id=id)
-        participant = await Participant.get(id)
-    elif name:
-        results = await result_repository.read_for_participant(name_or_id=name)
-        participant = None
-    else:
-        raise HTTPException(status_code=400, detail="Either name or id should be provided")
+@router.get(
+    "/person/stats/{id}",
+    responses={200: {"description": "Stats about participant"}, 404: {"description": "Participant not found"}},
+)
+async def get_participant_stats(id: PydanticObjectId) -> ParticipantStats:
+    participant = await Participant.get(id)
 
-    if not results and not participant:
+    if not participant:
         raise HTTPException(status_code=404, detail="Participant not found")
+
+    results = await result_repository.read_for_participant(participant_id=id)
 
     participations = []
     for result in results:
@@ -83,8 +81,8 @@ async def get_participant_stats(name: str | None = None, id: PydanticObjectId | 
                 result_id=result.id,
                 event_id=result.event_id,
                 event_title=result.event_title,
-                solo_place=next((p for p in result.solo_places or [] if p.participant == name), None),
-                team_place=next((p for p in result.team_places or [] if name in p.members), None),
+                solo_place=next((p for p in result.solo_places or [] if p.participant.id == id), None),
+                team_place=next((p for p in result.team_places or [] if p.participant.id == id), None),
             )
         )
 
@@ -97,7 +95,8 @@ async def get_participant_stats(name: str | None = None, id: PydanticObjectId | 
     bronzes += sum(1 for p in participations if p.team_place and p.team_place.place == 3)
 
     return ParticipantStats(
-        name=name,
+        id=id,
+        name=participant.name,
         participations=participations,
         total=total,
         golds=golds,
@@ -112,11 +111,6 @@ async def get_all_participants_stats(limit: int = 100, skip: int = 0) -> list[tu
     Список статистик участников: список кортежей (место в рейтинге, ParticipantStats)
     """
 
-    def key(participant_id_or_name):
-        if isinstance(participant_id_or_name, PydanticObjectId):
-            return participant_id_or_name
-        return (participant_id_or_name["name"],)
-
     results = await result_repository.read_all()
     total = Counter()
     golds = Counter()
@@ -126,7 +120,9 @@ async def get_all_participants_stats(limit: int = 100, skip: int = 0) -> list[tu
 
     for result in results:
         for solo in result.solo_places or []:
-            key_ = key(solo.participant)
+            if not solo.participant.id:
+                continue
+            key_ = solo.participant.id
             total[key_] += 1
             if solo.place == 1:
                 golds[key_] += 1
@@ -145,7 +141,9 @@ async def get_all_participants_stats(limit: int = 100, skip: int = 0) -> list[tu
 
         for team in result.team_places or []:
             for member in team.members:
-                key_ = key(member)
+                if not member.id:
+                    continue
+                key_ = member.id
                 total[key_] += 1
                 if team.place == 1:
                     golds[key_] += 1
@@ -164,26 +162,18 @@ async def get_all_participants_stats(limit: int = 100, skip: int = 0) -> list[tu
     participant_in_registry = await participant_repository.read_all()
     id_to_name = {p.id: p.name for p in participant_in_registry}
 
-    participants = []
-    for key_ in total:
-        if isinstance(key_, PydanticObjectId):
-            name = id_to_name.get(key_, "")
-            id = key_
-        else:
-            name = key_[0]
-            id = None
-
-        participants.append(
-            ParticipantStats(
-                id=id,
-                name=name,
-                participations=participations[name],
-                total=total[name],
-                golds=golds[name],
-                silvers=silvers[name],
-                bronzes=bronzes[name],
-            )
+    participants = [
+        ParticipantStats(
+            id=id,
+            name=id_to_name.get(id, ""),
+            participations=participations[id],
+            total=total[id],
+            golds=golds[id],
+            silvers=silvers[id],
+            bronzes=bronzes[id],
         )
+        for id in total
+    ]
 
     def score(p: ParticipantStats):
         return p.golds, p.silvers, p.bronzes, p.total
