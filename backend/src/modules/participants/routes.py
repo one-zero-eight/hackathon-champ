@@ -63,46 +63,12 @@ async def get_participant(id: PydanticObjectId) -> Participant:
 
 
 @router.get(
-    "/person/stats/{id}",
-    responses={200: {"description": "Stats about participant"}, 404: {"description": "Participant not found"}},
+    "/person/get-for-federation/{federation_id}",
+    responses={200: {"description": "Info about participant"}, 404: {"description": "Participant not found"}},
 )
-async def get_participant_stats(id: PydanticObjectId) -> ParticipantStats:
-    participant = await Participant.get(id)
-
-    if not participant:
-        raise HTTPException(status_code=404, detail="Participant not found")
-
-    results = await result_repository.read_for_participant(participant_id=id)
-
-    participations = []
-    for result in results:
-        participations.append(
-            Participation(
-                result_id=result.id,
-                event_id=result.event_id,
-                event_title=result.event_title,
-                solo_place=next((p for p in result.solo_places or [] if p.participant.id == id), None),
-                team_place=next((p for p in result.team_places or [] if p.participant.id == id), None),
-            )
-        )
-
-    total = len(participations)
-    golds = sum(1 for p in participations if p.solo_place and p.solo_place.place == 1)
-    silvers = sum(1 for p in participations if p.solo_place and p.solo_place.place == 2)
-    bronzes = sum(1 for p in participations if p.solo_place and p.solo_place.place == 3)
-    golds += sum(1 for p in participations if p.team_place and p.team_place.place == 1)
-    silvers += sum(1 for p in participations if p.team_place and p.team_place.place == 2)
-    bronzes += sum(1 for p in participations if p.team_place and p.team_place.place == 3)
-
-    return ParticipantStats(
-        id=id,
-        name=participant.name,
-        participations=participations,
-        total=total,
-        golds=golds,
-        silvers=silvers,
-        bronzes=bronzes,
-    )
+async def federation_participants(federation_id: PydanticObjectId) -> list[Participant]:
+    participants = await participant_repository.read_for_federation(federation_id)
+    return participants
 
 
 @router.get("/person/stats/all")
@@ -189,6 +155,49 @@ async def get_all_participants_stats(limit: int = 100, skip: int = 0) -> list[tu
         places.append(place)
 
     return list(zip(places, participants[skip : skip + limit]))
+
+
+@router.get(
+    "/person/stats/{id}",
+    responses={200: {"description": "Stats about participant"}, 404: {"description": "Participant not found"}},
+)
+async def get_participant_stats(id: PydanticObjectId) -> ParticipantStats:
+    participant = await Participant.get(id)
+
+    if not participant:
+        raise HTTPException(status_code=404, detail="Participant not found")
+
+    results = await result_repository.read_for_participant(participant_id=id)
+
+    participations = []
+    for result in results:
+        participations.append(
+            Participation(
+                result_id=result.id,
+                event_id=result.event_id,
+                event_title=result.event_title,
+                solo_place=next((p for p in result.solo_places or [] if p.participant.id == id), None),
+                team_place=next((p for p in result.team_places or [] if p.participant.id == id), None),
+            )
+        )
+
+    total = len(participations)
+    golds = sum(1 for p in participations if p.solo_place and p.solo_place.place == 1)
+    silvers = sum(1 for p in participations if p.solo_place and p.solo_place.place == 2)
+    bronzes = sum(1 for p in participations if p.solo_place and p.solo_place.place == 3)
+    golds += sum(1 for p in participations if p.team_place and p.team_place.place == 1)
+    silvers += sum(1 for p in participations if p.team_place and p.team_place.place == 2)
+    bronzes += sum(1 for p in participations if p.team_place and p.team_place.place == 3)
+
+    return ParticipantStats(
+        id=id,
+        name=participant.name,
+        participations=participations,
+        total=total,
+        golds=golds,
+        silvers=silvers,
+        bronzes=bronzes,
+    )
 
 
 class TeamStats(BaseSchema):

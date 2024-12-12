@@ -9,7 +9,7 @@ from src.storages.mongo.__base__ import CustomDocument
 class ParticipantRef(BaseSchema):
     id: PydanticObjectId | None = None
     "ID участника"
-    name: str | None = None
+    name: str
     "ФИО участника"
 
     @model_validator(mode="after")
