@@ -70,9 +70,7 @@ function RouteComponent() {
     { params: { path: { selection_id: share ?? '' } } },
     { enabled: !!share },
   )
-  const [sortPreset, setSortPreset] = useState<
-    keyof typeof SORT_PRESETS | undefined
-  >('По умолчанию')
+  const [sortPreset, setSortPreset] = useState<keyof typeof SORT_PRESETS>('По умолчанию')
 
   useEffect(() => {
     const newFilters = shareFilters?.filters ?? routeFilters
@@ -172,7 +170,7 @@ function RouteComponent() {
               onChange={e => handleQueryChange(e.target.value)}
               placeholder="Название, вид спорта, город..."
             />
-            <Select value={sortPreset} onValueChange={setSortPreset as any}>
+            <Select value={sortPreset} onValueChange={setSortPreset as (a: keyof typeof SORT_PRESETS) => void}>
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Сортировка" />
               </SelectTrigger>

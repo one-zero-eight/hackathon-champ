@@ -125,7 +125,7 @@ function FeedbackPage() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">Не выбрано</SelectItem>
-                        {federations?.map((federation: any) => (
+                        {federations?.map(federation => (
                           <SelectItem key={federation.id} value={federation.id}>
                             {federation.region}
                           </SelectItem>

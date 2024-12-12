@@ -226,10 +226,11 @@ function RouteComponent() {
                                           toast({ title: 'Успешно', description: 'Федерация обновлена' })
                                           queryClient.invalidateQueries({ queryKey: ['users'] })
                                         }
-                                        catch (error: any) {
+                                        catch (error) {
+                                          console.error(error)
                                           toast({
                                             title: 'Ошибка',
-                                            description: error?.message || 'Не удалось обновить федерацию',
+                                            description: 'Не удалось обновить федерацию',
                                             variant: 'destructive',
                                           })
                                         }

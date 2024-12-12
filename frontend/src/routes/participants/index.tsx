@@ -51,7 +51,7 @@ function MedalBadge({ count, type }: { count: number, type: 'gold' | 'silver' | 
   )
 }
 
-function MedalDisplay({ participant }: { participant: any }) {
+function MedalDisplay({ participant }: { participant: SchemaParticipantStats | SchemaTeamStats }) {
   return (
     <div className="flex flex-wrap gap-2">
       {participant.golds > 0 && <MedalBadge type="gold" count={participant.golds} />}
@@ -61,7 +61,7 @@ function MedalDisplay({ participant }: { participant: any }) {
   )
 }
 
-function ParticipantCard({ participant, onClick, rank }: { participant: any, onClick: () => void, rank: number }) {
+function ParticipantCard({ participant, onClick, rank }: { participant: SchemaParticipantStats | SchemaTeamStats, onClick: () => void, rank: number }) {
   return (
     <Card
       className="relative flex cursor-pointer overflow-hidden border bg-white shadow-sm transition-all hover:scale-[1.002] hover:bg-muted/50 hover:shadow-md"
@@ -148,7 +148,7 @@ function ParticipationCard({ participation }: { participation: SchemaParticipati
   )
 }
 
-function StatisticsCard({ participant }: { participant: any }) {
+function StatisticsCard({ participant }: { participant: SchemaParticipantStats | SchemaTeamStats }) {
   // Calculate coefficient: (gold * 3 + silver * 2 + bronze * 1) / total_participations
   const coefficient = participant.total > 0
     ? ((participant.golds * 3 + participant.silvers * 2 + participant.bronzes) / participant.total).toFixed(2)
