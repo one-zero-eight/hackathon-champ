@@ -2,6 +2,7 @@ import { $api } from '@/api'
 import { CreateParticipantDialog } from '@/components/participants/CreateParticipantDialog.tsx'
 import { EditParticipantDialog } from '@/components/participants/EditParticipantDialog.tsx'
 import { Button } from '@/components/ui/button.tsx'
+import { Skeleton } from '@/components/ui/skeleton.tsx'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.tsx'
 import { useMe } from '@/hooks/useMe.ts'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
@@ -25,7 +26,12 @@ function RouteComponent() {
     }
   }, [me, meError, navigate])
 
-  const { data: allPersons } = $api.useQuery('get', '/participants/person/')
+  const [page, setPage] = useState(0)
+  const { data: allPersons, isPending } = $api.useQuery(
+    'get',
+    '/participants/person/',
+    { params: { query: { skip: page * 50, limit: 50 } } },
+  )
   const { data: federations } = $api.useQuery('get', '/federations/')
 
   const getFederation = (id: string) => federations?.find(f => f.id === id)
@@ -49,8 +55,34 @@ function RouteComponent() {
         </div>
       </div>
 
-      <div>
+      <div className="flex justify-between">
         <h1 className="text-2xl font-bold">Список</h1>
+        <div>
+          {page > 0 && (
+            <span className="mr-2 text-muted-foreground">
+              {page * 50 + 1}
+              {' '}
+              -
+              {(page + 1) * 50}
+            </span>
+          )}
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setPage(v => v - 1)}
+            disabled={page <= 0}
+          >
+            {'<'}
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setPage(v => v + 1)}
+            disabled={false}
+          >
+            {'>'}
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-4 bg-card">
@@ -67,6 +99,18 @@ function RouteComponent() {
               </TableRow>
             </TableHeader>
             <TableBody>
+              {isPending && (
+                Array.from({ length: 15 }).map((_, index) => (
+                  <TableRow key={`skeleton-${index}`}>
+                    <TableCell><Skeleton className="h-6 w-[120px]" /></TableCell>
+                    <TableCell><Skeleton className="h-6 w-[100px]" /></TableCell>
+                    <TableCell><Skeleton className="h-8 w-[200px]" /></TableCell>
+                    <TableCell><Skeleton className="h-6 w-[100px]" /></TableCell>
+                    <TableCell><Skeleton className="h-6 w-[100px]" /></TableCell>
+                    <TableCell><Skeleton className="h-6 w-[100px]" /></TableCell>
+                  </TableRow>
+                ))
+              )}
               {allPersons?.map(person => (
                 <TableRow key={person.id}>
                   <TableCell className="flex flex-col">

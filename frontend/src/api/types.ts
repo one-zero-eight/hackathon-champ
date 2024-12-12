@@ -4129,7 +4129,10 @@ export interface operations {
     };
     participants_get_particapnts: {
         parameters: {
-            query?: never;
+            query?: {
+                skip?: number;
+                limit?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -4143,6 +4146,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Participant"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

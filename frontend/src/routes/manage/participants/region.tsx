@@ -1,9 +1,11 @@
 import { $api } from '@/api'
 import { CreateParticipantDialog } from '@/components/participants/CreateParticipantDialog.tsx'
+import { EditParticipantDialog } from '@/components/participants/EditParticipantDialog.tsx'
 import { Button } from '@/components/ui/button.tsx'
+import { Skeleton } from '@/components/ui/skeleton.tsx'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.tsx'
 import { useMe } from '@/hooks/useMe.ts'
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import Plus from '~icons/lucide/plus'
 
@@ -24,10 +26,13 @@ function RouteComponent() {
     }
   }, [me, meError, navigate])
 
-  const { data: allPersons } = $api.useQuery(
+  const [page, setPage] = useState(0)
+  const { data: allPersons, isPending } = $api.useQuery(
     'get',
     '/participants/person/get-for-federation/{federation_id}',
-    { params: { path: { federation_id: me?.federation ?? '' } } },
+    { params: {
+      path: { federation_id: me?.federation ?? '' },
+    }, query: { skip: page * 50, limit: 50 } },
   )
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
@@ -49,8 +54,34 @@ function RouteComponent() {
         </div>
       </div>
 
-      <div>
+      <div className="flex justify-between">
         <h1 className="text-2xl font-bold">Список</h1>
+        <div>
+          {page > 0 && (
+            <span className="mr-2 text-muted-foreground">
+              {page * 50 + 1}
+              {' '}
+              -
+              {(page + 1) * 50}
+            </span>
+          )}
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setPage(v => v - 1)}
+            disabled={page <= 0}
+          >
+            {'<'}
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setPage(v => v + 1)}
+            disabled={false}
+          >
+            {'>'}
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-4 bg-card">
@@ -59,12 +90,24 @@ function RouteComponent() {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[200px]">ФИО</TableHead>
-                <TableHead className="w-[250px]">Дата рождения</TableHead>
+                <TableHead className="w-[150px]">Дата рождения</TableHead>
                 <TableHead className="w-[250px]">Контакты</TableHead>
+                <TableHead className="w-[250px]">Разряд / звание</TableHead>
                 <TableHead className="w-[300px]">Действия</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
+              {isPending && (
+                Array.from({ length: 15 }).map((_, index) => (
+                  <TableRow key={`skeleton-${index}`}>
+                    <TableCell><Skeleton className="h-6 w-[120px]" /></TableCell>
+                    <TableCell><Skeleton className="h-6 w-[100px]" /></TableCell>
+                    <TableCell><Skeleton className="h-8 w-[200px]" /></TableCell>
+                    <TableCell><Skeleton className="h-6 w-[100px]" /></TableCell>
+                    <TableCell><Skeleton className="h-6 w-[100px]" /></TableCell>
+                  </TableRow>
+                ))
+              )}
               {allPersons?.map(person => (
                 <TableRow key={person.id}>
                   <TableCell className="flex flex-col">
@@ -91,15 +134,13 @@ function RouteComponent() {
                       ? <div className="text-sm">{person.email}</div>
                       : '-'}
                   </TableCell>
+                  <TableCell>
+                    {person.rank
+                      ? <div className="text-sm">{person.rank}</div>
+                      : '-'}
+                  </TableCell>
                   <TableCell className="space-x-2">
-                    <Button asChild variant="outline">
-                      <Link
-                        to="/manage/participants/$id"
-                        params={{ id: person.id }}
-                      >
-                        Редактировать
-                      </Link>
-                    </Button>
+                    <EditParticipantDialog initialParticipant={person} />
                   </TableCell>
                 </TableRow>
               ))}
