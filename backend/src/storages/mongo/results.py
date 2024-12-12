@@ -33,7 +33,7 @@ class TeamPlace(BaseSchema):
 class SoloPlace(BaseSchema):
     place: int
     "Место (1, 2, 3)"
-    participant: PydanticObjectId | ParticipantRef
+    participant: ParticipantRef
     "ФИО участника"
     score: float | None = None
     "Очки"
