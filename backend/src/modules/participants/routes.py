@@ -50,6 +50,15 @@ async def create_participant(data: ParticipantSchema, auth: USER_AUTH) -> Partic
         raise HTTPException(status_code=403, detail="Only admin or related federation can create participant")
 
 
+@router.post("/person/create-many")
+async def create_many_participant(data: list[ParticipantSchema], auth: USER_AUTH) -> None:
+    user = await user_repository.read(auth.user_id)
+    if user.role == UserRole.ADMIN:
+        await participant_repository.create_many(data)
+    else:
+        raise HTTPException(status_code=403, detail="Only admin or related federation can create participant")
+
+
 @router.get("/person/")
 async def get_particapnts(auth: USER_AUTH) -> list[Participant]:
     user = await user_repository.read(auth.user_id)

@@ -29,5 +29,8 @@ class ParticipantRepository:
         await Participant.find_one({"_id": id}).update({"$set": data.model_dump()})
         return await Participant.get(id)
 
+    async def create_many(self, data: list[ParticipantSchema]) -> None:
+        await Participant.insert_many([Participant.model_validate(p, from_attributes=True) for p in data])
+
 
 participant_repository: ParticipantRepository = ParticipantRepository()
