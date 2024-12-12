@@ -3,11 +3,15 @@ from collections import Counter, defaultdict
 from beanie import PydanticObjectId
 from fastapi import APIRouter, HTTPException
 
+from src.api.dependencies import USER_AUTH
 from src.modules.participants.repository import participant_repository
 from src.modules.results.repository import result_repository
+from src.modules.users.repository import user_repository
 from src.pydantic_base import BaseSchema
 from src.storages.mongo import Participant
+from src.storages.mongo.participant import ParticipantSchema
 from src.storages.mongo.results import SoloPlace, TeamPlace
+from src.storages.mongo.users import UserRole
 
 router = APIRouter(prefix="/participants", tags=["Participants"])
 
@@ -37,6 +41,15 @@ class ParticipantStats(BaseSchema):
     "Общее количество бронзовых медалей"
 
 
+@router.post("/person/")
+async def create_participant(data: ParticipantSchema, auth: USER_AUTH) -> Participant:
+    user = await user_repository.read(auth.user_id)
+    if user.role == UserRole.ADMIN or (user.federation and user.federation == data.related_federation):
+        return await participant_repository.create(data)
+    else:
+        raise HTTPException(status_code=403, detail="Only admin or related federation can create participant")
+
+
 @router.get("/person/count")
 async def get_participant_count() -> int:
     return await result_repository.get_participant_count()
@@ -63,8 +76,16 @@ async def get_participant(id: PydanticObjectId) -> Participant:
 
 
 @router.get(
+    "/person/many/",
+    responses={200: {"description": "Info about participants"}},
+)
+async def get_participants(ids: list[PydanticObjectId]) -> list[Participant]:
+    return await participant_repository.read_many(ids)
+
+
+@router.get(
     "/person/get-for-federation/{federation_id}",
-    responses={200: {"description": "Info about participant"}, 404: {"description": "Participant not found"}},
+    responses={200: {"description": "Info about participants"}},
 )
 async def federation_participants(federation_id: PydanticObjectId) -> list[Participant]:
     participants = await participant_repository.read_for_federation(federation_id)

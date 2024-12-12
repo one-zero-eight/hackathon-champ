@@ -12,7 +12,7 @@ class ParticipantSchema(BaseSchema):
     "ФИО участника"
     birth_date: datetime.date | None = None
     "Дата рождения"
-    related_federations: list[PydanticObjectId] = []
+    related_federation: PydanticObjectId | None = None
     "Связанные федерации"
     gender: Gender | None = None
     "Пол"
