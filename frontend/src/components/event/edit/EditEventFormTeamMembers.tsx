@@ -1,12 +1,12 @@
 import type { SchemaParticipantRef } from '@/api/types'
 import type { UseFormReturn } from 'react-hook-form'
 import type { EventResultsType } from './EditEventForm'
+import { AddParticipantButton } from '@/components/event/AddParticipantButton'
+import { Button } from '@/components/ui/button'
+import { FormField } from '@/components/ui/form'
 import { useCallback } from 'react'
 import { useFieldArray } from 'react-hook-form'
 import X from '~icons/lucide/x'
-import { Button } from '../ui/button'
-import { FormField } from '../ui/form'
-import { AddParticipantButton } from './AddParticipantButton'
 
 export function EditEventFormTeamMembers({
   form,

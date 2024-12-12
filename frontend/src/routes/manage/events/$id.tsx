@@ -1,4 +1,4 @@
-import { EditEventForm } from '@/components/event/EditEventForm.tsx'
+import { EditEventForm } from '@/components/event/edit/EditEventForm'
 import { useMe } from '@/hooks/useMe'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect } from 'react'

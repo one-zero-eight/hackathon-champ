@@ -1,9 +1,9 @@
 import type { UseFormReturn } from 'react-hook-form'
 import type { EventGeneralInfoType } from './EditEventForm'
-import { DisciplineFilter } from '../filters/DisciplineFilter'
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 
-export function EditEventFormDisciplineField({
+export function EditEventFormTitleField({
   form,
   className,
 }: {
@@ -13,14 +13,14 @@ export function EditEventFormDisciplineField({
   return (
     <FormField
       control={form.control}
-      name="discipline"
+      name="title"
       render={({ field }) => (
         <FormItem className={className}>
-          <FormLabel className="text-base">Дисциплины</FormLabel>
+          <FormLabel className="text-base">Название</FormLabel>
           <FormControl>
-            <DisciplineFilter
-              value={field.value}
-              onChange={field.onChange}
+            <Input
+              placeholder="Введите название мероприятия"
+              {...field}
             />
           </FormControl>
           <FormMessage />

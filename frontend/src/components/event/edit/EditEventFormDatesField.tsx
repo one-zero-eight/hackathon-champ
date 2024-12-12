@@ -1,10 +1,10 @@
 import type { UseFormReturn } from 'react-hook-form'
 import type { EventGeneralInfoType } from './EditEventForm'
+import { DatePicker } from '@/components/filters/DatesFilter'
+import { FormControl, FormField, FormFieldMessage, FormItem } from '@/components/ui/form'
+import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { Temporal } from 'temporal-polyfill'
-import { DatePicker } from '../filters/DatesFilter'
-import { FormControl, FormField, FormFieldMessage, FormItem } from '../ui/form'
-import { Label } from '../ui/label'
 
 export function EditEventFormDatesField({
   form,

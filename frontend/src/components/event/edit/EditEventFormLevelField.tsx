@@ -1,7 +1,7 @@
 import type { UseFormReturn } from 'react-hook-form'
 import type { EventGeneralInfoType } from './EditEventForm'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx'
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 
 type Level = 'local' | 'regional' | 'interregional' | 'federal' | 'international'
 const LEVELS: Record<Level, string> = {

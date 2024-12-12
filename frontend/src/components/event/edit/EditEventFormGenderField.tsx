@@ -1,27 +1,27 @@
 import type { UseFormReturn } from 'react-hook-form'
 import type { EventGeneralInfoType } from './EditEventForm'
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
-import { Textarea } from '../ui/textarea'
+import { GenderSelect } from '@/components/filters/GenderSelect'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 
-export function EditEventFormDescriptionField({
+export function EditEventFormGenderField({
   form,
   className,
 }: {
   form: UseFormReturn<EventGeneralInfoType>
   className?: string
-}) {
+},
+) {
   return (
     <FormField
       control={form.control}
-      name="description"
+      name="gender"
       render={({ field }) => (
         <FormItem className={className}>
-          <FormLabel className="text-base">Описание</FormLabel>
+          <FormLabel className="text-base">Пол</FormLabel>
           <FormControl>
-            <Textarea
-              placeholder="Введите описание мероприятия"
-              className="min-h-[120px] resize-y"
-              {...field}
+            <GenderSelect
+              value={field.value}
+              onChange={field.onChange}
             />
           </FormControl>
           <FormMessage />

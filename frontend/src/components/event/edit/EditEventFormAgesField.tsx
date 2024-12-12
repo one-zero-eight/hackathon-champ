@@ -1,9 +1,9 @@
 import type { UseFormReturn } from 'react-hook-form'
 import type { EventGeneralInfoType } from './EditEventForm'
+import { FormControl, FormField, FormFieldMessage, FormItem } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
-import { FormControl, FormField, FormFieldMessage, FormItem } from '../ui/form'
-import { Input } from '../ui/input'
-import { Label } from '../ui/label'
 
 export function EditEventFormAgesField({
   form,

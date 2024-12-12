@@ -4,13 +4,13 @@ import type { EventResultsType } from './EditEventForm'
 import { Button } from '@/components/ui/button'
 import { FormField, FormItem } from '@/components/ui/form'
 import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
 import { cn, getProtocolLabel, getProtocolUrl } from '@/lib/utils'
 import { useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Download from '~icons/lucide/download'
 import Plus from '~icons/lucide/plus'
 import Trash from '~icons/lucide/trash'
-import { Separator } from '../ui/separator'
 
 interface EditEventFormProtocolsProps {
   form: UseFormReturn<EventResultsType>

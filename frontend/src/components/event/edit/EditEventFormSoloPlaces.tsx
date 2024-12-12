@@ -1,5 +1,6 @@
 import type { UseFormReturn } from 'react-hook-form'
 import type { EventResultsType } from './EditEventForm'
+import { AddParticipantButton } from '@/components/event/AddParticipantButton'
 import { Button } from '@/components/ui/button'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -8,7 +9,6 @@ import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import { useFieldArray } from 'react-hook-form'
 import X from '~icons/lucide/x'
-import { AddParticipantButton } from './AddParticipantButton'
 
 export function EditEventFormSoloPlaces({
   form,
