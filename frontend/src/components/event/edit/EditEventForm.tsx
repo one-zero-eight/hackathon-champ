@@ -268,7 +268,14 @@ function GeneralInfoCard({ event }: { event: SchemaEvent }) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="do-not-print">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          form.handleSubmit(onSubmit)(e)
+        }}
+        className="do-not-print"
+      >
         <Card className="w-full">
           <CardHeader className="space-y-2">
             <CardTitle className="text-center text-xl font-semibold sm:text-left">
@@ -402,7 +409,7 @@ function ResultsCard({ event }: { event: SchemaEvent }) {
       },
     }, {
       onSuccess: () => {
-        toast({ title: 'Результаты мероприятия успешно обновлены.' })
+        toast({ description: 'Результаты мероприятия успешно обновлены.' })
       },
       onError: (error) => {
         console.error(error)
@@ -466,7 +473,13 @@ function ResultsCard({ event }: { event: SchemaEvent }) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)}>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          form.handleSubmit(handleSubmit)(e)
+        }}
+      >
         <Card className="relative w-full print:border-0 print:p-0 print:shadow-none">
           <CardHeader className="space-y-2 print:py-0">
             <CardTitle className="text-center text-xl font-semibold sm:text-left">

@@ -1,4 +1,4 @@
-import type { SchemaFederation } from '@/api/types.ts'
+import type { SchemaFederation, SchemaParticipant } from '@/api/types.ts'
 import { $api } from '@/api'
 import { Button } from '@/components/ui/button.tsx'
 import {
@@ -28,23 +28,34 @@ import Check from '~icons/lucide/check'
 import Edit from '~icons/lucide/edit'
 import Loader2 from '~icons/lucide/loader'
 
+export type CreateParticipantData = {
+  name: string
+  birth_date: string
+  related_federation: string | null
+  gender: 'male' | 'female' | null
+  email: string
+  rank: string | null
+}
+
 export function CreateParticipantDialog({
   open,
   setOpen,
-  federationId = undefined,
+  initialData,
+  onParticipantCreated,
 }: {
   open: boolean
   setOpen: (open: boolean) => void
-  federationId?: string
+  initialData?: Partial<CreateParticipantData>
+  onParticipantCreated?: (participant: SchemaParticipant) => void
 }) {
   const queryClient = useQueryClient()
-  const [formData, setFormData] = useState({
-    name: '',
-    birth_date: '',
-    related_federation: (federationId || null) as string | null,
-    gender: null as 'male' | 'female' | null,
-    email: '',
-    rank: null as string | null,
+  const [formData, setFormData] = useState<CreateParticipantData>({
+    name: initialData?.name || '',
+    birth_date: initialData?.birth_date || '',
+    related_federation: initialData?.related_federation || null,
+    gender: initialData?.gender || null,
+    email: initialData?.email || '',
+    rank: initialData?.rank || null,
   })
 
   const { mutate: createParticipant, isPending } = $api.useMutation('post', '/participants/person/', {
@@ -62,6 +73,7 @@ export function CreateParticipantDialog({
         })
       }
       setOpen(false)
+      onParticipantCreated?.(data)
     },
   })
   const { data: federations } = $api.useQuery('get', '/federations/')
@@ -81,6 +93,7 @@ export function CreateParticipantDialog({
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    e.stopPropagation()
     createParticipant({
       body: {
         ...formData,
@@ -108,8 +121,7 @@ export function CreateParticipantDialog({
               <Input
                 id="name"
                 value={formData.name}
-                onChange={e =>
-                  setFormData(prev => ({ ...prev, name: e.target.value }))}
+                onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
                 className="col-span-3"
                 placeholder="Например: Иванов Иван Иванович"
                 required
@@ -124,11 +136,7 @@ export function CreateParticipantDialog({
                 id="birth_date"
                 type="date"
                 value={formData.birth_date}
-                onChange={e =>
-                  setFormData(prev => ({
-                    ...prev,
-                    birth_date: e.target.value,
-                  }))}
+                onChange={e => setFormData(prev => ({ ...prev, birth_date: e.target.value }))}
                 className="col-span-3"
                 placeholder="Например: 01.01.2000"
               />
@@ -143,8 +151,7 @@ export function CreateParticipantDialog({
                   variant="outline"
                   className={cn(
                     'rounded-r-none border-r-0',
-                    formData.gender == null
-                    && 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+                    formData.gender == null && 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
                   )}
                   onClick={() => setFormData(prev => ({ ...prev, gender: null }))}
                 >
@@ -155,8 +162,7 @@ export function CreateParticipantDialog({
                   variant="outline"
                   className={cn(
                     'rounded-none',
-                    formData.gender === 'male'
-                    && 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+                    formData.gender === 'male' && 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
                   )}
                   onClick={() => setFormData(prev => ({ ...prev, gender: 'male' }))}
                 >
@@ -167,8 +173,7 @@ export function CreateParticipantDialog({
                   variant="outline"
                   className={cn(
                     'rounded-l-none border-l-0',
-                    formData.gender === 'female'
-                    && 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+                    formData.gender === 'female' && 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
                   )}
                   onClick={() => setFormData(prev => ({ ...prev, gender: 'female' }))}
                 >
@@ -340,7 +345,10 @@ export function CreateParticipantDialog({
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit" disabled={isPending}>
+            <Button
+              type="submit"
+              disabled={isPending}
+            >
               {isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
               Создать
             </Button>

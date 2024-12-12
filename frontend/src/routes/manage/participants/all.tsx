@@ -160,7 +160,6 @@ function RouteComponent() {
       <CreateParticipantDialog
         open={isCreateDialogOpen}
         setOpen={setIsCreateDialogOpen}
-        federationId={undefined}
       />
     </div>
   )

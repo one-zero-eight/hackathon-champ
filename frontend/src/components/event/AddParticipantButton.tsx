@@ -26,6 +26,7 @@ export function AddParticipantButton({
     isPending: suggestedLoading,
   } = $api.useQuery('get', '/participants/person/hint', {
     params: { query: { name: inputValue } },
+    enabled: inputValue.trim().length > 0,
   })
 
   useEffect(() => {
@@ -48,32 +49,16 @@ export function AddParticipantButton({
           Добавить участника
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0">
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
         <Command shouldFilter={false}>
           <CommandInput
             placeholder="ФИО участника..."
             value={inputValue}
             onValueChange={setInputValue}
             disabled={disabled}
+            isLoading={suggestedLoading}
           />
           <CommandList>
-            {suggestedLoading
-              ? ('Загрузка...')
-              : (
-                  suggested?.map(participant => (
-                    <CommandItem
-                      key={participant.id}
-                      value={participant.id}
-                      onSelect={() => {
-                        onAdd?.(participant)
-                        setOpen(false)
-                      }}
-                    >
-                      {participant.name}
-                    </CommandItem>
-                  ))
-                )}
-
             {inputValue.trim().length > 0 && (
               <CommandItem
                 onSelect={() => {
@@ -86,6 +71,18 @@ export function AddParticipantButton({
                 </span>
               </CommandItem>
             )}
+            {suggested?.map(participant => (
+              <CommandItem
+                key={participant.id}
+                value={participant.id}
+                onSelect={() => {
+                  onAdd?.(participant)
+                  setOpen(false)
+                }}
+              >
+                {participant.name}
+              </CommandItem>
+            ))}
           </CommandList>
         </Command>
       </PopoverContent>
