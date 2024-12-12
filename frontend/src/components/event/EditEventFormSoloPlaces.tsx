@@ -60,7 +60,7 @@ export function EditEventFormSoloPlaces({
 
                 <FormField
                   control={form.control}
-                  name={`solo_places.${index}.participant`}
+                  name={`solo_places.${index}.participant.name`}
                   render={({ field }) => (
                     <FormItem className="flex-1">
                       <FormLabel>Имя участника</FormLabel>

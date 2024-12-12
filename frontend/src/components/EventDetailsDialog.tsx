@@ -1,4 +1,5 @@
 import type { SchemaEvent } from '@/api/types'
+import { $api } from '@/api'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -146,7 +147,11 @@ function DetailsDialog({ event, open, setOpen }: { event: SchemaEvent, open: boo
 }
 
 function EventProtocols({ event }: { event: SchemaEvent }) {
-  if (!event.results?.protocols)
+  const { data: results } = $api.useQuery('get', '/results/for-event', {
+    params: { query: { event_id: event.id } },
+  })
+
+  if (!results?.protocols)
     return null
 
   return (
@@ -160,7 +165,7 @@ function EventProtocols({ event }: { event: SchemaEvent }) {
         </div>
       </div>
       <ul className="flex max-h-[200px] flex-col gap-2 overflow-auto">
-        {event.results.protocols.map((protocol, index) => (
+        {results.protocols.map((protocol, index) => (
           <li key={index} className="flex items-center gap-2">
             <span className="grow rounded-md border bg-white px-4 py-2">
               {getProtocolLabel(protocol)}
@@ -186,7 +191,11 @@ function EventProtocols({ event }: { event: SchemaEvent }) {
 }
 
 function EventTeamPlaces({ event }: { event: SchemaEvent }) {
-  if (!event.results?.team_places?.length)
+  const { data: results } = $api.useQuery('get', '/results/for-event', {
+    params: { query: { event_id: event.id } },
+  })
+
+  if (!results?.team_places?.length)
     return null
 
   const emoji = {
@@ -202,7 +211,7 @@ function EventTeamPlaces({ event }: { event: SchemaEvent }) {
         <div className="text-sm">Результаты командных соревнований</div>
       </div>
       <ul className="flex max-h-[200px] flex-col gap-2 overflow-auto">
-        {event.results.team_places.map(team => (
+        {results.team_places.map(team => (
           <li key={team.team} className="flex items-center gap-2">
             <span className="min-w-8 shrink-0 rounded-md border bg-white px-4 py-2">
               {team.place}
@@ -226,7 +235,11 @@ function EventTeamPlaces({ event }: { event: SchemaEvent }) {
 }
 
 function EventSoloPlaces({ event }: { event: SchemaEvent }) {
-  if (!event.results?.solo_places?.length)
+  const { data: results } = $api.useQuery('get', '/results/for-event', {
+    params: { query: { event_id: event.id } },
+  })
+
+  if (!results?.solo_places?.length)
     return null
 
   return (
@@ -236,7 +249,7 @@ function EventSoloPlaces({ event }: { event: SchemaEvent }) {
         <div className="text-sm">Результаты личных дисциплин</div>
       </div>
       <ul className="flex max-h-[200px] flex-col gap-2 overflow-hidden">
-        {event.results.solo_places.map(solo => (
+        {results.solo_places.map(solo => (
           <li key={solo.participant} className="flex items-center gap-2">
             <span className="grow rounded-md border bg-white px-4 py-2">
               {solo.place}

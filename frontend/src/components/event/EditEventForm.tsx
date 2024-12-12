@@ -1,4 +1,4 @@
-import type { SchemaEvent, SchemaViewUser } from '@/api/types.ts'
+import type { SchemaEvent, SchemaResults, SchemaViewUser } from '@/api/types.ts'
 import { $api, apiFetch } from '@/api'
 import { AccrediteDialog } from '@/components/event/AccrediteDialog.tsx'
 import { EditEventFormLevelField } from '@/components/event/EditEventFormLevelField.tsx'
@@ -34,80 +34,12 @@ import { EventSuggestResultsButton } from './EventSuggestResultsButton'
 
 export function EditEventForm({ eventId }: { eventId: string }) {
   const { data: me } = useMe()
-  const queryClient = useQueryClient()
-  const { toast } = useToast()
 
   const { data: event } = $api.useQuery(
     'get',
     '/events/{id}',
     { params: { path: { id: eventId } } },
   )
-
-  const {
-    mutate: updateEvent,
-    isPending,
-  } = $api.useMutation('put', '/events/{id}', {
-    onSettled: (data) => {
-      queryClient.invalidateQueries({
-        queryKey: $api.queryOptions('get', '/events/{id}', { params: { path: { id: data?.id ?? '' } } }).queryKey,
-      })
-      queryClient.invalidateQueries({
-        queryKey: $api.queryOptions('get', '/events/').queryKey,
-      })
-    },
-  })
-
-  const handleGeneralInfoSubmit = async (data: EventGeneralInfoType) => {
-    if (!event)
-      return
-
-    try {
-      updateEvent({
-        params: { path: { id: event.id } },
-        body: {
-          ...event,
-          title: data.title,
-          description: data.description,
-          start_date: data.start_date,
-          end_date: data.end_date,
-          status: event.status,
-          discipline: data.discipline,
-          participant_count: data.participant_count,
-          age_min: data.age_min,
-          age_max: data.age_max,
-          gender: data.gender,
-          ekp_id: data.ekp_id,
-          level: data.level,
-
-          // TODO
-          location: [],
-        },
-      }, {
-        onSuccess: () => {
-          toast({ description: 'Данные успешно изменены.' })
-        },
-      })
-    }
-    catch (error) {
-      console.error(error)
-      toast({ description: 'Не удалось отредактировать мероприятие. Попробуйте еще раз.' })
-    }
-  }
-
-  const handleUpdateResults = useCallback((
-    results: SchemaEvent['results'],
-    successMessage: string = 'Результаты мероприятия успешно обновлены.',
-  ) => {
-    if (!event)
-      return
-
-    updateEvent({
-      params: { path: { id: event.id } },
-      body: { ...event, results },
-    }, {
-      onSuccess: () => { toast({ title: successMessage }) },
-    })
-  }, [event, updateEvent, toast])
 
   if (!me || !event) {
     return (
@@ -126,23 +58,9 @@ export function EditEventForm({ eventId }: { eventId: string }) {
     <div className="container mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
       <div className="space-y-6">
         <PageHeader />
-
-        <StatusCard
-          event={event}
-          me={me}
-        />
-
-        <GeneralInfoCard
-          event={event}
-          isLoading={isPending}
-          onSubmit={handleGeneralInfoSubmit}
-        />
-
-        <ResultsCard
-          event={event}
-          isLoading={isPending}
-          onSubmit={handleUpdateResults}
-        />
+        <StatusCard event={event} me={me} />
+        <GeneralInfoCard event={event} />
+        <ResultsCard event={event} />
       </div>
     </div>
   )
@@ -296,16 +214,47 @@ function eventToDefaultValues(event: SchemaEvent): EventGeneralInfoType {
   }
 }
 
-function GeneralInfoCard({
-  event,
-  isLoading,
-  onSubmit,
-}: {
-  event: SchemaEvent
-  isLoading: boolean
-  onSubmit: (data: EventGeneralInfoType) => void
-}) {
+function GeneralInfoCard({ event }: { event: SchemaEvent }) {
+  const queryClient = useQueryClient()
   const { toast } = useToast()
+  const {
+    mutate: updateEvent,
+    isPending,
+  } = $api.useMutation('put', '/events/{id}', {
+    onSettled: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: $api.queryOptions('get', '/events/{id}', { params: { path: { id: data?.id ?? '' } } }).queryKey,
+      })
+      queryClient.invalidateQueries({
+        queryKey: $api.queryOptions('get', '/events/').queryKey,
+      })
+    },
+  })
+
+  const onSubmit = async (data: EventGeneralInfoType) => {
+    if (!event)
+      return
+
+    try {
+      updateEvent({
+        params: { path: { id: event.id } },
+        body: {
+          ...event,
+          ...data,
+          // TODO: location
+        },
+      }, {
+        onSuccess: () => {
+          toast({ description: 'Данные успешно изменены.' })
+        },
+      })
+    }
+    catch (error) {
+      console.error(error)
+      toast({ description: 'Не удалось отредактировать мероприятие. Попробуйте еще раз.' })
+    }
+  }
+
   const form = useForm<EventGeneralInfoType>({
     resolver: zodResolver(EventGeneralInfoSchema),
     defaultValues: eventToDefaultValues(event),
@@ -324,7 +273,8 @@ function GeneralInfoCard({
   useEffect(() => {
     // Reset form to default values when event changes.
     form.reset(eventToDefaultValues(event))
-  }, [event, form])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [event])
 
   return (
     <Form {...form}>
@@ -363,14 +313,14 @@ function GeneralInfoCard({
               type="button"
               variant="outline"
               onClick={handleCancel}
-              disabled={isLoading || !hasChanges}
+              disabled={isPending || !hasChanges}
               className="w-full sm:ml-auto sm:w-auto"
             >
               Отмена
             </Button>
             <Button
               type="submit"
-              disabled={isLoading || !hasChanges}
+              disabled={isPending || !hasChanges}
               className="w-full sm:w-auto"
             >
               Сохранить изменения
@@ -390,18 +340,28 @@ const EventResultsSchema = z.object({
   team_places: z.array(z.object({
     team: z.string().min(1, 'Название команды должно не должно быть пустым'),
     place: z.number().min(1, 'Место команды должно быть неотрицательным числом'),
-    members: z.array(z.string().min(1, 'Имя участника должно не должно быть пустым')),
+    members: z.array(z.union([
+      z.string(), // by participant id
+      z.object({ // by participant name
+        name: z.string().min(1, 'Имя участника должно не должно быть пустым'),
+      }),
+    ])),
     score: z.number().min(0, 'Результат команды должен быть неотрицательным числом').nullable(),
   })),
   solo_places: z.array(z.object({
     place: z.number().min(1, 'Место участника должно быть неотрицательным числом'),
-    participant: z.string().min(1, 'Имя участника должно не должно быть пустым'),
+    participant: z.union([
+      z.string(), // by participant id
+      z.object({ // by participant name
+        name: z.string().min(1, 'Имя участника должно не должно быть пустым'),
+      }),
+    ]),
     score: z.number().min(0, 'Результат участника должен быть неотрицательным числом').nullable(),
   })),
 })
 export type EventResultsType = z.infer<typeof EventResultsSchema>
 
-function eventResultsToDefaultValues(results?: SchemaEvent['results']): EventResultsType {
+function eventResultsToDefaultValues(results: SchemaResults | null | undefined): EventResultsType {
   return {
     protocols: (results?.protocols ?? []).map(v => ({
       by_file: v.by_file ?? null,
@@ -421,22 +381,34 @@ function eventResultsToDefaultValues(results?: SchemaEvent['results']): EventRes
   }
 }
 
-function ResultsCard({
-  event,
-  isLoading,
-  onSubmit,
-}: {
-  event: SchemaEvent
-  isLoading: boolean
-  onSubmit: (results: EventResultsType) => void
-}) {
+function ResultsCard({ event }: { event: SchemaEvent }) {
   const { toast } = useToast()
   const [isSuggesting, setIsSuggesting] = useState(false)
-  const disabled = isLoading || isSuggesting
+
+  const { data: results } = $api.useQuery('get', '/results/for-event', {
+    params: { query: { event_id: event.id } },
+  })
+  const { mutate: updateResults, isPending } = $api.useMutation('put', '/results/')
+
+  const disabled = isPending || isSuggesting
+
+  const onSubmit = useCallback((
+    results: EventResultsType,
+    successMessage: string = 'Результаты мероприятия успешно обновлены.',
+  ) => {
+    if (!event)
+      return
+
+    updateResults({
+      body: { event_id: event.id, event_title: event.title, ...results },
+    }, {
+      onSuccess: () => { toast({ title: successMessage }) },
+    })
+  }, [event, updateResults, toast])
 
   const form = useForm<EventResultsType>({
     resolver: zodResolver(EventResultsSchema),
-    defaultValues: eventResultsToDefaultValues(event.results),
+    defaultValues: eventResultsToDefaultValues(results),
     disabled,
   })
 
@@ -460,8 +432,9 @@ function ResultsCard({
 
   useEffect(() => {
     // Reset form to default values when event changes.
-    form.reset(eventResultsToDefaultValues(event.results))
-  }, [event, form])
+    form.reset(eventResultsToDefaultValues(results))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [results])
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (!event)
@@ -483,7 +456,9 @@ function ResultsCard({
 
     const newProtocols = fileNames.map(fileName => ({ by_file: fileName, by_url: null }))
     form.setValue('protocols', [...form.getValues('protocols'), ...newProtocols], { shouldDirty: true })
-  }, [event, form])
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [event, form.setValue, form.getValues])
 
   return (
     <Form {...form}>

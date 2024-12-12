@@ -178,11 +178,7 @@ export interface paths {
          */
         get: operations["events_get_all_events"];
         put?: never;
-        /**
-         * Create Many Events
-         * @description Create multiple events.
-         */
-        post: operations["events_create_many_events"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -200,6 +196,26 @@ export interface paths {
         put?: never;
         /** Hint Results */
         post: operations["events_hint_results"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/create-many": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Many Events
+         * @description Create multiple events.
+         */
+        post: operations["events_create_many_events"];
         delete?: never;
         options?: never;
         head?: never;
@@ -908,7 +924,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/participants/person/": {
+    "/participants/person/hint": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Participant Hint */
+        get: operations["participants_get_participant_hint"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/participants/person/get/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -925,15 +958,35 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/participants/person/all": {
+    "/participants/person/stats/": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get All Participants */
-        get: operations["participants_get_all_participants"];
+        /** Get Participant Stats */
+        get: operations["participants_get_participant_stats"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/participants/person/stats/all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get All Participants Stats
+         * @description Список статистик участников: список кортежей (место в рейтинге, ParticipantStats)
+         */
+        get: operations["participants_get_all_participants_stats"];
         put?: never;
         post?: never;
         delete?: never;
@@ -966,8 +1019,62 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get All Teams */
+        /**
+         * Get All Teams
+         * @description Список статистик команд: список кортежей (место в рейтинге, ParticipantStats)
+         */
         get: operations["participants_get_all_teams"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/results/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Upload Results */
+        put: operations["results_upload_results"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/results/for-event": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Result For Event */
+        get: operations["results_get_result_for_event"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/results/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Result */
+        get: operations["results_get_result"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1245,8 +1352,6 @@ export interface components {
              * @description Страница в ЕКП
              */
             page: number | null;
-            /** @description Результаты мероприятия */
-            results: components["schemas"]["Results"] | null;
             /** @description Уровень мероприятия */
             level: components["schemas"]["EventLevelEnum"] | null;
         };
@@ -1355,8 +1460,6 @@ export interface components {
              * @description Страница в ЕКП
              */
             page?: number | null;
-            /** @description Результаты мероприятия */
-            results?: components["schemas"]["Results"] | null;
             /** @description Уровень мероприятия */
             level?: components["schemas"]["EventLevelEnum"] | null;
         };
@@ -1655,6 +1758,14 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        /** JustName */
+        JustName: {
+            /**
+             * Name
+             * @description ФИО участника
+             */
+            name: string;
+        };
         /** LocationFilter */
         LocationFilter: {
             /** Country */
@@ -1772,8 +1883,47 @@ export interface components {
             /** Page No */
             page_no: number;
         };
+        /** Participant */
+        Participant: {
+            /**
+             * Id
+             * Format: objectid
+             * @description MongoDB document ObjectID
+             * @default None
+             * @example 5eb7cf5a86d9755df3a6c593
+             */
+            id: string;
+            /**
+             * Name
+             * @description ФИО участника
+             */
+            name: string;
+            /**
+             * Birth Date
+             * @description Дата рождения
+             */
+            birth_date: string | null;
+            /**
+             * Related Federations
+             * @description Связанные федерации
+             * @default []
+             */
+            related_federations: string[];
+            /** @description Пол */
+            gender: components["schemas"]["Gender"] | null;
+            /**
+             * Email
+             * @description Электронная почта
+             */
+            email: string | null;
+        };
         /** ParticipantStats */
         ParticipantStats: {
+            /**
+             * Id
+             * @description ID участника
+             */
+            id?: string | null;
             /**
              * Name
              * @description Имя участника
@@ -1812,6 +1962,11 @@ export interface components {
         /** Participation */
         Participation: {
             /**
+             * Result Id
+             * @example 5eb7cf5a86d9755df3a6c593
+             */
+            result_id: string;
+            /**
              * Event Id
              * @example 5eb7cf5a86d9755df3a6c593
              */
@@ -1843,6 +1998,54 @@ export interface components {
         };
         /** Results */
         Results: {
+            /**
+             * Id
+             * Format: objectid
+             * @description MongoDB document ObjectID
+             * @default None
+             * @example 5eb7cf5a86d9755df3a6c593
+             */
+            id: string;
+            /**
+             * Event Id
+             * @description ID мероприятия, к которому относятся результаты
+             * @example 5eb7cf5a86d9755df3a6c593
+             */
+            event_id: string;
+            /**
+             * Event Title
+             * @description Название мероприятия
+             */
+            event_title: string;
+            /**
+             * Protocols
+             * @description Протоколы зачёта, список ссылок
+             */
+            protocols: components["schemas"]["Protocol"][] | null;
+            /**
+             * Team Places
+             * @description Места команд
+             */
+            team_places: components["schemas"]["TeamPlace"][] | null;
+            /**
+             * Solo Places
+             * @description Места участников
+             */
+            solo_places: components["schemas"]["SoloPlace"][] | null;
+        };
+        /** ResultsSchema */
+        ResultsSchema: {
+            /**
+             * Event Id
+             * @description ID мероприятия, к которому относятся результаты
+             * @example 5eb7cf5a86d9755df3a6c593
+             */
+            event_id: string;
+            /**
+             * Event Title
+             * @description Название мероприятия
+             */
+            event_title: string;
             /**
              * Protocols
              * @description Протоколы зачёта, список ссылок
@@ -1927,7 +2130,7 @@ export interface components {
              * Participant
              * @description ФИО участника
              */
-            participant: string;
+            participant: string | components["schemas"]["JustName"];
             /**
              * Score
              * @description Очки
@@ -1972,7 +2175,7 @@ export interface components {
              * Members
              * @description Состав команды
              */
-            members: (string)[];
+            members: (string | components["schemas"]["JustName"])[];
             /**
              * Score
              * @description Очки
@@ -2093,6 +2296,7 @@ export type SchemaFeedbackSchema = components['schemas']['FeedbackSchema'];
 export type SchemaFilters = components['schemas']['Filters'];
 export type SchemaGender = components['schemas']['Gender'];
 export type SchemaHttpValidationError = components['schemas']['HTTPValidationError'];
+export type SchemaJustName = components['schemas']['JustName'];
 export type SchemaLocationFilter = components['schemas']['LocationFilter'];
 export type SchemaLocationsFilterVariants = components['schemas']['LocationsFilterVariants'];
 export type SchemaMinMaxFilter = components['schemas']['MinMaxFilter'];
@@ -2100,11 +2304,13 @@ export type SchemaNewFeedback = components['schemas']['NewFeedback'];
 export type SchemaNotify = components['schemas']['Notify'];
 export type SchemaNotifySchema = components['schemas']['NotifySchema'];
 export type SchemaPagination = components['schemas']['Pagination'];
+export type SchemaParticipant = components['schemas']['Participant'];
 export type SchemaParticipantStats = components['schemas']['ParticipantStats'];
 export type SchemaParticipation = components['schemas']['Participation'];
 export type SchemaProtocol = components['schemas']['Protocol'];
 export type SchemaRegionsFilterVariants = components['schemas']['RegionsFilterVariants'];
 export type SchemaResults = components['schemas']['Results'];
+export type SchemaResultsSchema = components['schemas']['ResultsSchema'];
 export type SchemaSearchEventsResponse = components['schemas']['SearchEventsResponse'];
 export type SchemaSelection = components['schemas']['Selection'];
 export type SchemaShortenEvent = components['schemas']['ShortenEvent'];
@@ -2426,46 +2632,6 @@ export interface operations {
             };
         };
     };
-    events_create_many_events: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["EventSchema"][];
-            };
-        };
-        responses: {
-            /** @description Create many events */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": boolean;
-                };
-            };
-            /** @description Only admin can create events */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
     events_hint_results: {
         parameters: {
             query?: never;
@@ -2490,6 +2656,46 @@ export interface operations {
             };
             /** @description Cannot parse file */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    events_create_many_events: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EventSchema"][];
+            };
+        };
+        responses: {
+            /** @description Create many events */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": boolean;
+                };
+            };
+            /** @description Only admin can create events */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3815,10 +4021,80 @@ export interface operations {
             };
         };
     };
-    participants_get_participant: {
+    participants_get_participant_hint: {
         parameters: {
             query: {
                 name: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": (components["schemas"]["Participant"] | string)[];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    participants_get_participant: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Info about participant */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Participant"];
+                };
+            };
+            /** @description Participant not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    participants_get_participant_stats: {
+        parameters: {
+            query?: {
+                name?: string | null;
+                id?: string | null;
             };
             header?: never;
             path?: never;
@@ -3846,10 +4122,11 @@ export interface operations {
             };
         };
     };
-    participants_get_all_participants: {
+    participants_get_all_participants_stats: {
         parameters: {
             query?: {
                 limit?: number;
+                skip?: number;
             };
             header?: never;
             path?: never;
@@ -3863,7 +4140,10 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ParticipantStats"][];
+                    "application/json": [
+                        number,
+                        components["schemas"]["ParticipantStats"]
+                    ][];
                 };
             };
             /** @description Validation Error */
@@ -3912,6 +4192,7 @@ export interface operations {
         parameters: {
             query?: {
                 limit?: number;
+                skip?: number;
             };
             header?: never;
             path?: never;
@@ -3925,8 +4206,127 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TeamStats"][];
+                    "application/json": [
+                        number,
+                        components["schemas"]["TeamStats"]
+                    ][];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    results_upload_results: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResultsSchema"];
+            };
+        };
+        responses: {
+            /** @description Results uploaded or updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Results"];
+                };
+            };
+            /** @description Only admin or related federation can upload results for event */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Event not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    results_get_result_for_event: {
+        parameters: {
+            query: {
+                event_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Results about event */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Results"] | null;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    results_get_result: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Results about event */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Results"];
+                };
+            };
+            /** @description Results not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {

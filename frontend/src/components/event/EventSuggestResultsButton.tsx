@@ -1,4 +1,4 @@
-import type { SchemaEventSchema } from '@/api/types'
+import type { SchemaResults } from '@/api/types'
 import { apiFetch } from '@/api'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
@@ -14,7 +14,7 @@ export function EventSuggestResultsButton({
 }: {
   className?: string
   onSuggestStart?: () => void
-  onSuggestSettled?: (result: { ok: true, results: SchemaEventSchema['results'] } | { ok: false, error: unknown }) => void
+  onSuggestSettled?: (result: { ok: true, results: SchemaResults } | { ok: false, error: unknown }) => void
   disabled?: boolean
 }) {
   const [isSuggesting, setIsSuggesting] = useState(false)

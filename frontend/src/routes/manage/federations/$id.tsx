@@ -119,7 +119,8 @@ function RouteComponent() {
       form.reset(values)
       setInitialValues(values)
     }
-  }, [federation, form])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [federation])
 
   const handleCancel = () => {
     if (initialValues) {

@@ -332,7 +332,7 @@ function ParticipantCardSkeleton() {
 }
 
 function RouteComponent() {
-  const { data: allPersons, isLoading: isLoadingPersons } = $api.useQuery('get', '/participants/person/all')
+  const { data: allPersons, isLoading: isLoadingPersons } = $api.useQuery('get', '/participants/person/stats/all')
   const { data: allTeams, isLoading: isLoadingTeams } = $api.useQuery('get', '/participants/team/all')
   const [search, setSearch] = useState('')
 
