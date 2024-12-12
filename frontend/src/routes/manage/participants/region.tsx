@@ -111,7 +111,7 @@ function RouteComponent() {
       <CreateParticipantDialog
         open={isCreateDialogOpen}
         setOpen={setIsCreateDialogOpen}
-        federationId={me?.federation}
+        federationId={me?.federation ?? undefined}
       />
     </div>
   )
