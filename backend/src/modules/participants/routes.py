@@ -97,7 +97,7 @@ async def get_participant(id: PydanticObjectId) -> Participant:
     return participant
 
 
-@router.get(
+@router.post(
     "/person/get-by-names/",
     responses={200: {"description": "Info about participants"}},
 )
