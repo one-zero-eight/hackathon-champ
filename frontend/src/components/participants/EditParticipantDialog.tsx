@@ -1,4 +1,4 @@
-import type { SchemaFederation } from '@/api/types.ts'
+import type { SchemaFederation, SchemaParticipant } from '@/api/types.ts'
 import { $api } from '@/api'
 import { Button } from '@/components/ui/button.tsx'
 import {
@@ -16,6 +16,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from '@/components/ui/dialog.tsx'
 import { Input } from '@/components/ui/input.tsx'
 import { Label } from '@/components/ui/label.tsx'
@@ -27,25 +28,15 @@ import Check from '~icons/lucide/check'
 import Edit from '~icons/lucide/edit'
 import Loader2 from '~icons/lucide/loader'
 
-export function CreateParticipantDialog({
-  open,
-  setOpen,
-  federationId = undefined,
+export function EditParticipantDialog({
+  initialParticipant,
 }: {
-  open: boolean
-  setOpen: (open: boolean) => void
-  federationId?: string
+  initialParticipant: SchemaParticipant
 }) {
   const queryClient = useQueryClient()
-  const [formData, setFormData] = useState({
-    name: '',
-    birth_date: '',
-    related_federation: (federationId || null) as string | null,
-    gender: null as 'male' | 'female' | null,
-    email: '',
-  })
+  const [formData, setFormData] = useState(initialParticipant)
 
-  const { mutate: createParticipant, isPending } = $api.useMutation('post', '/participants/person/', {
+  const { mutate: editParticipant, isPending } = $api.useMutation('put', '/participants/person/get/{id}', {
     onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: $api.queryOptions('get', '/participants/person/').queryKey,
@@ -59,7 +50,22 @@ export function CreateParticipantDialog({
           ).queryKey,
         })
       }
-      setOpen(false)
+    },
+  })
+  const { mutate: deleteParticipant, isPending: deleteIsPending } = $api.useMutation('delete', '/participants/person/get/{id}', {
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: $api.queryOptions('get', '/participants/person/').queryKey,
+      })
+      if (data.related_federation) {
+        queryClient.invalidateQueries({
+          queryKey: $api.queryOptions(
+            'get',
+            '/participants/person/get-for-federation/{federation_id}',
+            { params: { path: { federation_id: data.related_federation } } },
+          ).queryKey,
+        })
+      }
     },
   })
   const { data: federations } = $api.useQuery('get', '/federations/')
@@ -79,7 +85,8 @@ export function CreateParticipantDialog({
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    createParticipant({
+    editParticipant({
+      params: { path: { id: initialParticipant.id } },
       body: {
         ...formData,
         birth_date: formData.birth_date || null,
@@ -89,12 +96,17 @@ export function CreateParticipantDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button type="button" variant="outline">
+          Редактировать
+        </Button>
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Создать участника</DialogTitle>
+          <DialogTitle>Редактирование участника</DialogTitle>
           <DialogDescription>
-            Укажите данные участника, прикрепите федерацию и нажмите "Создать".
+            Укажите данные участника, прикрепите федерацию и нажмите "Сохранить".
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={onSubmit}>
@@ -111,7 +123,6 @@ export function CreateParticipantDialog({
                 className="col-span-3"
                 placeholder="Например: Иванов Иван Иванович"
                 required
-                autoFocus
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -121,7 +132,7 @@ export function CreateParticipantDialog({
               <Input
                 id="birth_date"
                 type="date"
-                value={formData.birth_date}
+                value={formData.birth_date ?? ''}
                 onChange={e =>
                   setFormData(prev => ({
                     ...prev,
@@ -263,7 +274,7 @@ export function CreateParticipantDialog({
               <Input
                 id="email"
                 type="email"
-                value={formData.email}
+                value={formData.email ?? ''}
                 onChange={e =>
                   setFormData(prev => ({ ...prev, email: e.target.value }))}
                 className="col-span-3"
@@ -272,9 +283,18 @@ export function CreateParticipantDialog({
             </div>
           </div>
           <DialogFooter>
+            <Button
+              type="button"
+              variant="destructive"
+              disabled={deleteIsPending}
+              onClick={() => deleteParticipant({ params: { path: { id: initialParticipant.id } } })}
+            >
+              {deleteIsPending && <Loader2 className="mr-2 size-4 animate-spin" />}
+              Удалить
+            </Button>
             <Button type="submit" disabled={isPending}>
               {isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
-              Создать
+              Сохранить
             </Button>
           </DialogFooter>
         </form>

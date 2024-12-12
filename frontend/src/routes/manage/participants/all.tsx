@@ -1,9 +1,10 @@
 import { $api } from '@/api'
 import { CreateParticipantDialog } from '@/components/participants/CreateParticipantDialog.tsx'
+import { EditParticipantDialog } from '@/components/participants/EditParticipantDialog.tsx'
 import { Button } from '@/components/ui/button.tsx'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.tsx'
 import { useMe } from '@/hooks/useMe.ts'
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import Plus from '~icons/lucide/plus'
 
@@ -97,14 +98,7 @@ function RouteComponent() {
                       : '-'}
                   </TableCell>
                   <TableCell className="space-x-2">
-                    <Button asChild variant="outline">
-                      <Link
-                        to="/manage/participants/$id"
-                        params={{ id: person.id }}
-                      >
-                        Редактировать
-                      </Link>
-                    </Button>
+                    <EditParticipantDialog initialParticipant={person} />
                   </TableCell>
                 </TableRow>
               ))}
