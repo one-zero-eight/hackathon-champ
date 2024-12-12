@@ -1,5 +1,6 @@
 import type { SchemaEvent } from '@/api/types'
 import { $api } from '@/api'
+import { EventDetailsDialog } from '@/components/EventDetailsDialog.tsx'
 import { DISCIPLINES } from '@/lib/disciplines'
 import { capitalize } from '@/lib/utils'
 import { createFileRoute } from '@tanstack/react-router'
@@ -28,7 +29,8 @@ function DisciplineEvents({ name }: { name: string }) {
   }, [federations])
 
   const events = useMemo(() => {
-    const allEvents = (eventsData as { events: SchemaEvent[] } | undefined)?.events ?? []
+    const allEvents
+      = (eventsData as { events: SchemaEvent[] } | undefined)?.events ?? []
     // Only show events from accredited federations
     return allEvents.filter((event) => {
       if (!event.host_federation)
@@ -48,18 +50,28 @@ function DisciplineEvents({ name }: { name: string }) {
   return (
     <div className="space-y-4">
       {events.map(event => (
-        <div key={event.id} className="flex items-start gap-3 rounded-lg border p-4">
+        <div
+          key={event.id}
+          className="flex items-start gap-3 rounded-lg border p-4"
+        >
           <Calendar className="mt-0.5 size-5 shrink-0 text-purple-500" />
           <div className="min-w-0 flex-1">
-            <h3 className="truncate font-medium">{event.title}</h3>
-            <div className="mt-1 text-sm text-muted-foreground">
-              {new Date(event.start_date).toLocaleDateString('ru')}
-              {' '}
-              -
-              {new Date(event.end_date).toLocaleDateString('ru')}
+            <div className="flex justify-between">
+              <div>
+                <h3 className="font-medium">{event.title}</h3>
+                <div className="mt-1 text-sm text-muted-foreground">
+                  {new Date(event.start_date).toLocaleDateString('ru')}
+                  {' '}
+                  -
+                  {new Date(event.end_date).toLocaleDateString('ru')}
+                </div>
+              </div>
+              <EventDetailsDialog event={event} />
             </div>
             {event.description && (
-              <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{event.description}</p>
+              <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+                {event.description}
+              </p>
             )}
           </div>
         </div>
@@ -74,7 +86,8 @@ function RouteComponent() {
       <div>
         <h1 className="text-3xl font-bold">Дисциплины</h1>
         <p className="mt-2 text-muted-foreground">
-          Познакомьтесь с направлениями в спортивном программировании, представленными на платформе.
+          Познакомьтесь с направлениями в спортивном программировании,
+          представленными на платформе.
         </p>
       </div>
 
@@ -114,7 +127,10 @@ function RouteComponent() {
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {discipline.skills.map(skill => (
-                          <div key={skill} className="rounded-full bg-muted px-3 py-1 text-sm">
+                          <div
+                            key={skill}
+                            className="rounded-full bg-muted px-3 py-1 text-sm"
+                          >
                             {skill}
                           </div>
                         ))}

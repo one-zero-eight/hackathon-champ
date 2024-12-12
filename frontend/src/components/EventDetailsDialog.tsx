@@ -151,7 +151,7 @@ function EventProtocols({ event }: { event: SchemaEvent }) {
     params: { query: { event_id: event.id } },
   })
 
-  if (!results?.protocols)
+  if (!results?.protocols?.length)
     return null
 
   return (
