@@ -336,22 +336,18 @@ const EventResultsSchema = z.object({
   team_places: z.array(z.object({
     team: z.string().min(1, 'Название команды должно не должно быть пустым'),
     place: z.number().min(1, 'Место команды должно быть неотрицательным числом'),
-    members: z.array(z.union([
-      z.string(), // by participant id
-      z.object({ // by participant name
-        name: z.string().min(1, 'Имя участника должно не должно быть пустым'),
-      }),
-    ])),
+    members: z.array(z.object({
+      id: z.string().nullable(),
+      name: z.string().min(1, 'Имя участника должно не должно быть пустым'),
+    })),
     score: z.number().min(0, 'Результат команды должен быть неотрицательным числом').nullable(),
   })),
   solo_places: z.array(z.object({
     place: z.number().min(1, 'Место участника должно быть неотрицательным числом'),
-    participant: z.union([
-      z.string(), // by participant id
-      z.object({ // by participant name
-        name: z.string().min(1, 'Имя участника должно не должно быть пустым'),
-      }),
-    ]),
+    participant: z.object({
+      id: z.string().nullable(),
+      name: z.string().min(1, 'Имя участника должно не должно быть пустым'),
+    }),
     score: z.number().min(0, 'Результат участника должен быть неотрицательным числом').nullable(),
   })),
 })
@@ -366,12 +362,18 @@ function eventResultsToDefaultValues(results: SchemaResults | null | undefined):
     team_places: (results?.team_places ?? []).map(v => ({
       team: v.team,
       place: v.place,
-      members: v.members,
+      members: v.members.map(m => ({
+        id: m.id ?? null,
+        name: m.name,
+      })),
       score: v.score ?? null,
     })),
     solo_places: (results?.solo_places ?? []).map(v => ({
       place: v.place,
-      participant: v.participant,
+      participant: {
+        ...v.participant,
+        id: v.participant.id ?? null,
+      },
       score: v.score ?? null,
     })),
   }

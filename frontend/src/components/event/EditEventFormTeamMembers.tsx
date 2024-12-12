@@ -23,7 +23,7 @@ export function EditEventFormTeamMembers({
   })
 
   const handleAdd = useCallback(() => {
-    append({ name: '' })
+    append({ id: null, name: '' })
   }, [append])
 
   const handleRemove = useCallback((index: number) => {

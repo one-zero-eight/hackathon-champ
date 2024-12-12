@@ -116,7 +116,10 @@ export function EditEventFormSoloPlaces({
           type="button"
           className="do-not-print"
           onClick={() => append({
-            participant: '',
+            participant: {
+              id: null,
+              name: '',
+            },
             place: fields.length + 1,
             score: null,
           })}
