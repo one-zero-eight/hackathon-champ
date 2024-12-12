@@ -65,7 +65,7 @@ async def get_participant_count() -> int:
 
 
 @router.get("/person/hint")
-async def get_participant_hint(name: str) -> list[Participant | str]:
+async def get_participant_hint(name: str) -> list[Participant]:
     if not name:
         return []
 
