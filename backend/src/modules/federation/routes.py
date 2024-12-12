@@ -5,9 +5,11 @@ from beanie import PydanticObjectId
 from fastapi import APIRouter, HTTPException, Response
 
 from src.api.dependencies import USER_AUTH
+from src.logging_ import logger
 from src.modules.events.repository import events_repository
 from src.modules.federation.repository import federation_repository
 from src.modules.notify.repository import notify_repository
+from src.modules.participants.repository import participant_repository
 from src.modules.results.repository import result_repository
 from src.modules.users.repository import user_repository
 from src.pydantic_base import BaseSchema
@@ -72,6 +74,14 @@ class FederationStats(BaseSchema):
     "Сколько мероприятий провела эта федерация за последний месяц"
     profile_fill_percentage: int
     "Процент заполненности профиля федерации"
+    total_participants_in_registry: int
+    "Сколько всего участников зарегистрировано в Реестре"
+    total_male_in_registry: int
+    "Сколько всего мужчин зарегистрировано в Реестре"
+    total_female_in_registry: int
+    "Сколько всего женщин зарегистрировано в Реестре"
+    ranks: dict[str, int]
+    "Сколько участников с каждым рангом у этой федерации"
 
 
 @router.get("/{id}/stats")
@@ -127,6 +137,8 @@ async def stats_federation(id: PydanticObjectId) -> FederationStats:
     total_fields = 8
     profile_fill_percentage = (filled_fields / total_fields) * 100
 
+    ranks = await participant_repository.stats_for_federation(id)
+    logger.info(ranks)
     return FederationStats(
         total_participations=total_participation,
         participations_for_last_month=participations_for_last_month,
@@ -135,6 +147,10 @@ async def stats_federation(id: PydanticObjectId) -> FederationStats:
         total_competitions=total_competitions,
         competitions_for_last_month=competitions_for_last_month,
         profile_fill_percentage=round(profile_fill_percentage),
+        total_participants_in_registry=await participant_repository.count_for_federation(id),
+        total_male_in_registry=await participant_repository.count_for_federation(id, gender="male"),
+        total_female_in_registry=await participant_repository.count_for_federation(id, gender="female"),
+        ranks=await participant_repository.stats_for_federation(id),
     )
 
 

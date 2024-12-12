@@ -24,6 +24,18 @@ class ParticipantRepository:
             q = q.limit(limit)
         return await q.to_list()
 
+    async def stats_for_federation(self, federation_id: PydanticObjectId) -> dict[str, int]:
+        q = Participant.find({"related_federation": federation_id}).aggregate(
+            [{"$group": {"_id": "$rank", "count": {"$sum": 1}}}]
+        )
+        return await q.to_list()
+
+    async def count_for_federation(self, federation_id: PydanticObjectId, gender: str | None = None) -> int:
+        q = Participant.find({"related_federation": federation_id})
+        if gender is not None:
+            q = q.find({"gender": gender})
+        return await q.count()
+
     async def read_many(self, ids: list[PydanticObjectId]) -> list[Participant]:
         return await Participant.find({"_id": {"$in": ids}}).to_list()
 
