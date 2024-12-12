@@ -234,9 +234,6 @@ async def get_all_participants_stats(
         for id in total
     ]
 
-    if query:
-        participants = [p for p in participants if query.lower() in p.name.lower()]
-
     def score(p: ParticipantStats):
         return p.golds, p.silvers, p.bronzes, p.total
 
@@ -249,6 +246,9 @@ async def get_all_participants_stats(
         if i > 0 and score(participants[i]) != score(participants[i - 1]):
             place = i + 1
         places.append(place)
+
+    if query:
+        participants = [p for p in participants if query.lower() in p.name.lower()]
 
     return list(zip(places, participants[skip : skip + limit]))
 
@@ -386,9 +386,6 @@ async def get_all_teams(limit: int = 100, skip: int = 0, query: str | None = Non
         if team
     ]
 
-    if query:
-        teams = [t for t in teams if query.lower() in t.name.lower()]
-
     def score(t: TeamStats):
         return t.golds, t.silvers, t.bronzes, t.total
 
@@ -401,5 +398,8 @@ async def get_all_teams(limit: int = 100, skip: int = 0, query: str | None = Non
         if i > 0 and score(teams[i]) != score(teams[i - 1]):
             place = i + 1
         places.append(place)
+
+    if query:
+        teams = [t for t in teams if query.lower() in t.name.lower()]
 
     return list(zip(places, teams))[skip : skip + limit]
