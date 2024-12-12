@@ -365,15 +365,17 @@ function RouteComponent() {
                 <CommandItem onSelect={() => setSelectedDistrict(null)}>
                   Все округа
                 </CommandItem>
-                {Array.from(byDistrict.keys()).map(district => (
-                  <CommandItem
-                    key={district}
-                    onSelect={() => setSelectedDistrict(district)}
-                    className="flex items-center"
-                  >
-                    <span className="truncate">{district || 'Без округа'}</span>
-                  </CommandItem>
-                ))}
+                {Array.from(byDistrict.keys())
+                  .filter(district => district !== '')
+                  .map(district => (
+                    <CommandItem
+                      key={district}
+                      onSelect={() => setSelectedDistrict(district)}
+                      className="flex items-center"
+                    >
+                      <span className="truncate">{district}</span>
+                    </CommandItem>
+                  ))}
               </CommandList>
             </Command>
           </PopoverContent>
