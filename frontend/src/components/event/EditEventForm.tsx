@@ -231,24 +231,22 @@ function GeneralInfoCard({ event }: { event: SchemaEvent }) {
     if (!event)
       return
 
-    try {
-      updateEvent({
-        params: { path: { id: event.id } },
-        body: {
-          ...event,
-          ...data,
-          // TODO: location
-        },
-      }, {
-        onSuccess: () => {
-          toast({ description: 'Данные успешно изменены.' })
-        },
-      })
-    }
-    catch (error) {
-      console.error(error)
-      toast({ description: 'Не удалось отредактировать мероприятие. Попробуйте еще раз.' })
-    }
+    updateEvent({
+      params: { path: { id: event.id } },
+      body: {
+        ...event,
+        ...data,
+        // TODO: location
+      },
+    }, {
+      onSuccess: () => {
+        toast({ description: 'Данные успешно изменены.' })
+      },
+      onError: (error) => {
+        console.error(error)
+        toast({ description: 'Не удалось отредактировать мероприятие. Попробуйте еще раз.' })
+      },
+    })
   }
 
   const form = useForm<EventGeneralInfoType>({
@@ -260,10 +258,6 @@ function GeneralInfoCard({ event }: { event: SchemaEvent }) {
 
   const handleCancel = () => {
     form.reset()
-    toast({
-      description: 'Изменения отменены',
-      duration: 3000,
-    })
   }
 
   useEffect(() => {
@@ -383,7 +377,10 @@ function ResultsCard({ event }: { event: SchemaEvent }) {
   const { toast } = useToast()
   const [isSuggesting, setIsSuggesting] = useState(false)
 
-  const { data: results } = $api.useQuery('get', '/results/for-event', {
+  const {
+    data: results,
+    refetch: refetchResults,
+  } = $api.useQuery('get', '/results/for-event', {
     params: { query: { event_id: event.id } },
   })
   const {
@@ -411,8 +408,11 @@ function ResultsCard({ event }: { event: SchemaEvent }) {
         console.error(error)
         toast({ description: 'Произошла ошибка при обновлении результатов мероприятия.' })
       },
+      onSettled: () => {
+        refetchResults()
+      },
     })
-  }, [event, updateResults, toast])
+  }, [event, updateResults, toast, refetchResults])
 
   const form = useForm<EventResultsType>({
     resolver: zodResolver(EventResultsSchema),
@@ -424,10 +424,6 @@ function ResultsCard({ event }: { event: SchemaEvent }) {
 
   const handleCancel = () => {
     form.reset()
-    toast({
-      description: 'Изменения отменены',
-      duration: 3000,
-    })
   }
 
   const handleSubmit = (data: EventResultsType) => {

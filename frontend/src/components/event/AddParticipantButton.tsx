@@ -57,19 +57,6 @@ export function AddParticipantButton({
             disabled={disabled}
           />
           <CommandList>
-            {inputValue.trim().length > 0 && (
-              <CommandItem
-                onSelect={() => {
-                  onAdd?.({ id: null, name: inputValue })
-                  setOpen(false)
-                }}
-              >
-                <span>
-                  {`Добавить: "${inputValue}"`}
-                </span>
-              </CommandItem>
-            )}
-
             {suggestedLoading
               ? ('Загрузка...')
               : (
@@ -86,6 +73,19 @@ export function AddParticipantButton({
                     </CommandItem>
                   ))
                 )}
+
+            {inputValue.trim().length > 0 && (
+              <CommandItem
+                onSelect={() => {
+                  onAdd?.({ id: null, name: inputValue })
+                  setOpen(false)
+                }}
+              >
+                <span>
+                  {`Добавить: "${inputValue}"`}
+                </span>
+              </CommandItem>
+            )}
           </CommandList>
         </Command>
       </PopoverContent>
