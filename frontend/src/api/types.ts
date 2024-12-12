@@ -4527,6 +4527,7 @@ export interface operations {
             query?: {
                 limit?: number;
                 skip?: number;
+                query?: string | null;
             };
             header?: never;
             path?: never;
@@ -4631,6 +4632,7 @@ export interface operations {
             query?: {
                 limit?: number;
                 skip?: number;
+                query?: string | null;
             };
             header?: never;
             path?: never;

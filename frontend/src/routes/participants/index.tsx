@@ -11,18 +11,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn, pluralize } from '@/lib/utils'
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
+import { useDebounce } from 'react-use'
 import Search from '~icons/lucide/search'
 
 export const Route = createFileRoute('/participants/')({
   component: RouteComponent,
 })
-
-function filterParticipants<T extends [number, { name: string }]>(participants: T[], search: string): T[] {
-  const searchLower = search.toLowerCase()
-  return participants.filter(p =>
-    p[1].name.toLowerCase().includes(searchLower),
-  )
-}
 
 function MedalBadge({ count, type }: { count: number, type: 'gold' | 'silver' | 'bronze' }) {
   const colors = {
@@ -236,21 +230,21 @@ function StatisticsCard({ participant }: { participant: SchemaParticipantStats |
   )
 }
 
-function ParticipantDialog({ participant, rank }: { participant: SchemaParticipantStats | SchemaTeamStats, rank: number }) {
+function ParticipantDialog({ participant, place }: { participant: SchemaParticipantStats | SchemaTeamStats, place: number }) {
   const [open, setOpen] = useState(false)
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <div>
-          <ParticipantCard participant={participant} onClick={() => setOpen(true)} rank={rank} />
+          <ParticipantCard participant={participant} onClick={() => setOpen(true)} rank={place} />
         </div>
       </DialogTrigger>
       <DialogContent className="max-h-full max-w-3xl overflow-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold">
             #
-            {rank}
+            {place}
             {' '}
             {participant.name}
           </DialogTitle>
@@ -313,12 +307,26 @@ function ParticipantCardSkeleton() {
 }
 
 function RouteComponent() {
-  const { data: allPersons, isLoading: isLoadingPersons } = $api.useQuery('get', '/participants/person/stats/all')
-  const { data: allTeams, isLoading: isLoadingTeams } = $api.useQuery('get', '/participants/team/all')
   const [search, setSearch] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+  useDebounce(
+    () => {
+      setDebouncedSearch(search)
+    },
+    500,
+    [search],
+  )
 
-  const filteredPersons = filterParticipants(allPersons || [], search)
-  const filteredTeams = filterParticipants(allTeams || [], search)
+  const { data: persons, isPending: isLoadingPersons } = $api.useQuery(
+    'get',
+    '/participants/person/stats/all',
+    { params: { query: { query: debouncedSearch } } },
+  )
+  const { data: teams, isPending: isLoadingTeams } = $api.useQuery(
+    'get',
+    '/participants/team/all',
+    { params: { query: { query: debouncedSearch } } },
+  )
 
   const renderSkeletons = () => (
     <div className="space-y-2">
@@ -351,17 +359,17 @@ function RouteComponent() {
               ? (
                   renderSkeletons()
                 )
-              : filteredPersons.length === 0
-                ? (
-                    <div className="py-8 text-center text-muted-foreground">
-                      Участники не найдены
-                    </div>
-                  )
-                : (
-                    filteredPersons.map(([rank, person], i) => (
-                      <ParticipantDialog key={i} participant={person} rank={rank} />
-                    ))
-                  )}
+              : (!persons || persons.length === 0)
+                  ? (
+                      <div className="py-8 text-center text-muted-foreground">
+                        Участники не найдены
+                      </div>
+                    )
+                  : (
+                      persons.map(([place, person], i) => (
+                        <ParticipantDialog key={i} participant={person} place={place} />
+                      ))
+                    )}
           </TabsContent>
 
           <TabsContent value="teams" className="mt-6 space-y-2">
@@ -369,17 +377,17 @@ function RouteComponent() {
               ? (
                   renderSkeletons()
                 )
-              : filteredTeams.length === 0
-                ? (
-                    <div className="py-8 text-center text-muted-foreground">
-                      Команды не найдены
-                    </div>
-                  )
-                : (
-                    filteredTeams.map(([rank, team], i) => (
-                      <ParticipantDialog key={i} participant={team} rank={rank} />
-                    ))
-                  )}
+              : (!teams || teams.length === 0)
+                  ? (
+                      <div className="py-8 text-center text-muted-foreground">
+                        Команды не найдены
+                      </div>
+                    )
+                  : (
+                      teams.map(([place, team], i) => (
+                        <ParticipantDialog key={i} participant={team} place={place} />
+                      ))
+                    )}
           </TabsContent>
         </Tabs>
       </div>
