@@ -13,7 +13,8 @@ class ResultRepository:
         return await Results.get(result_id)
 
     async def update(self, result_id: PydanticObjectId, results: ResultsSchema) -> Results | None:
-        return await Results.find_one({"_id": result_id}).update({"$set": results.model_dump()})
+        await Results.find_one({"_id": result_id}).update({"$set": results.model_dump()})
+        return await Results.get(result_id)
 
     async def read_all(self) -> list[Results]:
         return await Results.all().to_list()
