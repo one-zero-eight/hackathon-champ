@@ -263,8 +263,8 @@ function ParticipantDialog({ participant, place }: { participant: SchemaParticip
               )
             </h3>
             <div className="space-y-3">
-              {participant.participations.map(p => (
-                <ParticipationCard key={p.event_id} participation={p} />
+              {participant.participations.map((p, i) => (
+                <ParticipationCard key={i} participation={p} />
               ))}
             </div>
           </div>
