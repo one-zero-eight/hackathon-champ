@@ -5,7 +5,9 @@ import { useMe, useMyFederation } from '@/hooks/useMe'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import Award from '~icons/lucide/award'
 import BarChart from '~icons/lucide/bar-chart-2'
+import Building from '~icons/lucide/building'
 import Home from '~icons/lucide/home'
+import Laptop from '~icons/lucide/laptop'
 import Mail from '~icons/lucide/mail'
 import MessageSquare from '~icons/lucide/message-square'
 import User from '~icons/lucide/user'
@@ -65,7 +67,7 @@ function AdminNav() {
         <NavLink to="/manage/admin/home" icon={Home}>
           Самое важное
         </NavLink>
-        <NavLink to="/manage/federations" icon={Users}>
+        <NavLink to="/manage/federations" icon={Building}>
           Федерации
         </NavLink>
         <NavLink to="/manage/admin/users" icon={Users}>
@@ -73,6 +75,9 @@ function AdminNav() {
         </NavLink>
         <NavLink to="/manage/events/all" icon={Award}>
           Мероприятия
+        </NavLink>
+        <NavLink to="/manage/participants/all" icon={Laptop}>
+          Участники
         </NavLink>
         <NavLink to="/manage/analytics" icon={BarChart}>
           Аналитика
@@ -107,6 +112,9 @@ function FederationNav() {
         </NavLink>
         <NavLink to="/manage/events/region" icon={Award}>
           Мероприятия
+        </NavLink>
+        <NavLink to="/manage/participants/region" icon={Laptop}>
+          Участники
         </NavLink>
         <NavLink
           to="/manage/analytics/$id"
