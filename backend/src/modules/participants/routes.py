@@ -344,7 +344,7 @@ async def get_team(name: str):
 
 
 @router.get("/team/all")
-async def get_all_teams(limit: int = 100, skip: int = 0) -> list[tuple[int, TeamStats]]:
+async def get_all_teams(limit: int = 100, skip: int = 0, query: str | None = None) -> list[tuple[int, TeamStats]]:
     """
     Список статистик команд: список кортежей (место в рейтинге, ParticipantStats)
     """
@@ -385,6 +385,9 @@ async def get_all_teams(limit: int = 100, skip: int = 0) -> list[tuple[int, Team
         for team in total
         if team
     ]
+
+    if query:
+        teams = [t for t in teams if query.lower() in t.name.lower()]
 
     def score(t: TeamStats):
         return t.golds, t.silvers, t.bronzes, t.total
