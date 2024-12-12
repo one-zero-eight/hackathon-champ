@@ -139,7 +139,7 @@ async def hint_results(file: UploadFile) -> Results:
                 )
             )
 
-        return Results(team_places=team_places)
+        return Results(team_places=team_places, event_id=PydanticObjectId(), event_title="")
     else:
         raise HTTPException(status_code=400, detail="Cannot parse file (no team column)")
 
