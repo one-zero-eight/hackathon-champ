@@ -13,11 +13,12 @@ import X from '~icons/lucide/x'
 export function EditEventFormSoloPlaces({
   form,
   className,
+  disabled,
 }: {
   form: UseFormReturn<EventResultsType>
   className?: string
-},
-) {
+  disabled?: boolean
+}) {
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: 'solo_places',
@@ -51,6 +52,7 @@ export function EditEventFormSoloPlaces({
                           {...field}
                           value={field.value ?? ''}
                           onChange={e => field.onChange(e.target.value ? Number(e.target.value) : null)}
+                          disabled={disabled}
                         />
                       </FormControl>
                       <FormMessage />
@@ -65,7 +67,7 @@ export function EditEventFormSoloPlaces({
                     <FormItem className="flex-1">
                       <FormLabel>Имя участника</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} disabled={disabled} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -85,6 +87,7 @@ export function EditEventFormSoloPlaces({
                           {...field}
                           value={field.value ?? ''}
                           onChange={e => field.onChange(e.target.value ? Number(e.target.value) : null)}
+                          disabled={disabled}
                         />
                       </FormControl>
                       <FormMessage />
@@ -98,6 +101,7 @@ export function EditEventFormSoloPlaces({
                   size="icon"
                   className="do-not-print mt-6"
                   onClick={() => remove(index)}
+                  disabled={disabled}
                 >
                   <X className="size-4" />
                 </Button>
@@ -116,6 +120,7 @@ export function EditEventFormSoloPlaces({
             place: fields.length + 1,
             score: null,
           })}
+          disabled={disabled}
         >
           <Plus className="mr-2 size-4" />
           Добавить участника

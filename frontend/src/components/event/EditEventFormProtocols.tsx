@@ -16,9 +16,15 @@ interface EditEventFormProtocolsProps {
   form: UseFormReturn<EventResultsType>
   onDrop: DropzoneOptions['onDrop']
   className?: string
+  disabled?: boolean
 }
 
-export function EditEventFormProtocols({ form, onDrop, className }: EditEventFormProtocolsProps) {
+export function EditEventFormProtocols({
+  form,
+  onDrop,
+  className,
+  disabled,
+}: EditEventFormProtocolsProps) {
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
     maxSize: 50 * 1024 * 1024, // 50 MB
@@ -49,7 +55,7 @@ export function EditEventFormProtocols({ form, onDrop, className }: EditEventFor
             className="relative rounded-md border bg-neutral-100 p-4"
             {...getRootProps()}
             onClick={(e) => {
-              if (field.value.length === 0) {
+              if (field.value.length === 0 && !disabled) {
                 e.preventDefault()
                 e.stopPropagation()
                 open()
@@ -86,6 +92,7 @@ export function EditEventFormProtocols({ form, onDrop, className }: EditEventFor
                             asChild
                             variant="outline"
                             size="icon"
+                            disabled={disabled}
                           >
                             <a
                               href={getProtocolUrl(protocol)}
@@ -99,6 +106,7 @@ export function EditEventFormProtocols({ form, onDrop, className }: EditEventFor
                             type="button"
                             variant="destructive"
                             size="icon"
+                            disabled={disabled}
                             onClick={(e) => {
                               e.preventDefault()
                               e.stopPropagation()
@@ -114,6 +122,7 @@ export function EditEventFormProtocols({ form, onDrop, className }: EditEventFor
                     <Button
                       type="button"
                       onClick={open}
+                      disabled={disabled}
                     >
                       <Plus />
                       Загрузить файл

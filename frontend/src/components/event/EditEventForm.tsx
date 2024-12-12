@@ -86,6 +86,11 @@ function StatusCard({
   event: SchemaEvent
   me: SchemaViewUser
 }) {
+  const requiresAccreditation
+    = event.level === 'interregional'
+    || event.level === 'federal'
+    || event.level === 'international'
+
   return (
     <Card className="do-not-print mb-6">
       <CardHeader className="space-y-1">
@@ -123,9 +128,7 @@ function StatusCard({
             </div>
           )}
 
-          {(event.level === 'interregional' || event.level === 'federal' || event.level === 'international')
-          && (event.status === 'draft' || event.status === 'rejected')
-          && (
+          {requiresAccreditation && (event.status === 'draft' || event.status === 'rejected') && (
             <div className="flex flex-col gap-1.5">
               <div className="flex gap-2">
                 <OnConsiderationDialog event={event} />
@@ -133,10 +136,7 @@ function StatusCard({
             </div>
           )}
 
-          {me?.role === 'admin'
-          && (event.level === 'interregional' || event.level === 'federal' || event.level === 'international')
-          && (event.status === 'on_consideration' || event.status === 'accredited' || event.status === 'rejected')
-          && (
+          {me?.role === 'admin' && requiresAccreditation && event.status !== 'draft' && (
             <div className="flex flex-col gap-1.5">
               <span className="font-medium">Рассмотреть:</span>
               <div className="flex gap-2">
@@ -146,9 +146,7 @@ function StatusCard({
             </div>
           )}
 
-          {(event.level !== 'interregional' && event.level !== 'federal' && event.level !== 'international')
-          && (event.status === 'draft' || event.status === 'on_consideration' || event.status === 'rejected')
-          && (
+          {!requiresAccreditation && event.status !== 'accredited' && (
             <div className="flex flex-col gap-1.5">
               <span className="font-medium">Сменить статус:</span>
               <div className="flex gap-2">
@@ -157,9 +155,7 @@ function StatusCard({
             </div>
           )}
 
-          {(event.level !== 'interregional' && event.level !== 'federal' && event.level !== 'international')
-          && event.status === 'accredited'
-          && (
+          {!requiresAccreditation && event.status === 'accredited' && (
             <div className="flex flex-col gap-1.5">
               <span className="font-medium">Сменить статус:</span>
               <div className="flex gap-2">
@@ -388,21 +384,31 @@ function ResultsCard({ event }: { event: SchemaEvent }) {
   const { data: results } = $api.useQuery('get', '/results/for-event', {
     params: { query: { event_id: event.id } },
   })
-  const { mutate: updateResults, isPending } = $api.useMutation('put', '/results/')
+  const {
+    mutate: updateResults,
+    isPending,
+  } = $api.useMutation('put', '/results/')
 
   const disabled = isPending || isSuggesting
 
-  const onSubmit = useCallback((
-    results: EventResultsType,
-    successMessage: string = 'Результаты мероприятия успешно обновлены.',
-  ) => {
+  const onSubmit = useCallback((results: EventResultsType) => {
     if (!event)
       return
 
     updateResults({
-      body: { event_id: event.id, event_title: event.title, ...results },
+      body: {
+        event_id: event.id,
+        event_title: event.title,
+        ...results,
+      },
     }, {
-      onSuccess: () => { toast({ title: successMessage }) },
+      onSuccess: () => {
+        toast({ title: 'Результаты мероприятия успешно обновлены.' })
+      },
+      onError: (error) => {
+        console.error(error)
+        toast({ description: 'Произошла ошибка при обновлении результатов мероприятия.' })
+      },
     })
   }, [event, updateResults, toast])
 
@@ -482,9 +488,9 @@ function ResultsCard({ event }: { event: SchemaEvent }) {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <EditEventFormProtocols form={form} onDrop={onDrop} />
-            <EditEventFormTeamPlaces form={form} />
-            <EditEventFormSoloPlaces form={form} />
+            <EditEventFormProtocols disabled={disabled} form={form} onDrop={onDrop} />
+            <EditEventFormTeamPlaces disabled={disabled} form={form} />
+            <EditEventFormSoloPlaces disabled={disabled} form={form} />
           </CardContent>
           <CardFooter className="do-not-print sticky bottom-0 flex flex-col gap-3 rounded-b-lg border-t bg-white py-4 sm:flex-row sm:gap-4">
             <EventSuggestResultsButton

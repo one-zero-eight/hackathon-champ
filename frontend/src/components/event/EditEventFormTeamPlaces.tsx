@@ -9,13 +9,16 @@ import { cn } from '@/lib/utils'
 import { useFieldArray } from 'react-hook-form'
 import Plus from '~icons/lucide/plus'
 import X from '~icons/lucide/x'
+import { EditEventFormTeamMembers } from './EditEventFormTeamMembers'
 
 export function EditEventFormTeamPlaces({
   form,
   className,
+  disabled,
 }: {
   form: UseFormReturn<EventResultsType>
   className?: string
+  disabled?: boolean
 }) {
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -51,6 +54,7 @@ export function EditEventFormTeamPlaces({
                             {...field}
                             value={field.value ?? ''}
                             onChange={e => field.onChange(e.target.value ? Number(e.target.value) : null)}
+                            disabled={disabled}
                           />
                         </FormControl>
                         <FormMessage />
@@ -65,7 +69,7 @@ export function EditEventFormTeamPlaces({
                       <FormItem className="flex-1">
                         <FormLabel>Название команды</FormLabel>
                         <FormControl>
-                          <Input {...field} />
+                          <Input {...field} disabled={disabled} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -85,6 +89,7 @@ export function EditEventFormTeamPlaces({
                             {...field}
                             value={field.value ?? ''}
                             onChange={e => field.onChange(e.target.value ? Number(e.target.value) : null)}
+                            disabled={disabled}
                           />
                         </FormControl>
                         <FormMessage />
@@ -105,56 +110,7 @@ export function EditEventFormTeamPlaces({
 
                 <div className="space-y-2">
                   <FormLabel>Участники команды</FormLabel>
-                  <div className="space-y-2 print:flex print:items-start print:gap-2 print:space-y-0">
-                    {form.watch(`team_places.${index}.members`).map((_, memberIndex) => (
-                      <div key={memberIndex} className="flex gap-2">
-                        <FormField
-                          control={form.control}
-                          name={`team_places.${index}.members.${memberIndex}`}
-                          render={({ field }) => (
-                            <FormItem className="flex-1">
-                              <FormControl>
-                                <Input {...field} placeholder="Имя участника" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          className="do-not-print"
-                          onClick={() => {
-                            const members = form.getValues(`team_places.${index}.members`)
-                            form.setValue(
-                              `team_places.${index}.members`,
-                              members.filter((_, i) => i !== memberIndex),
-                              { shouldDirty: true },
-                            )
-                          }}
-                        >
-                          <X className="size-4" />
-                        </Button>
-                      </div>
-                    ))}
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="do-not-print w-full"
-                      onClick={() => {
-                        const members = form.getValues(`team_places.${index}.members`)
-                        form.setValue(
-                          `team_places.${index}.members`,
-                          [...members, ''],
-                          { shouldDirty: true },
-                        )
-                      }}
-                    >
-                      <Plus className="mr-2 size-4" />
-                      Добавить участника
-                    </Button>
-                  </div>
+                  <EditEventFormTeamMembers form={form} teamIndex={index} disabled={disabled} />
                 </div>
               </div>
             ))}
@@ -166,6 +122,7 @@ export function EditEventFormTeamPlaces({
         <Button
           type="button"
           className="do-not-print"
+          disabled={disabled}
           onClick={() => append({
             team: '',
             place: fields.length + 1,
