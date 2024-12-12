@@ -30,6 +30,7 @@ import BarChart from '~icons/lucide/bar-chart-2'
 import Building from '~icons/lucide/building'
 import Calendar from '~icons/lucide/calendar'
 import Map from '~icons/lucide/map'
+import Printer from '~icons/lucide/printer'
 
 const FEDERATION_COLOR_BY_STATUS: Record<FederationStatus, string> = {
   accredited: statsLib.COLOR_SUCCESS,
@@ -311,11 +312,18 @@ function RouteComponent() {
 
   return (
     <div className="p-6">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold">Аналитика федераций</h1>
-        <p className="text-muted-foreground">
-          Статистика и аналитика по региональным федерациям
-        </p>
+      <div className="mb-8 flex justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Аналитика федераций</h1>
+          <p className="text-muted-foreground">
+            Статистика и аналитика по региональным федерациям
+          </p>
+        </div>
+
+        <Button className="do-not-print ml-auto" onClick={() => print()}>
+          <Printer className="mr-2 size-4" />
+          Печать
+        </Button>
       </div>
 
       <div className="grid gap-6">
