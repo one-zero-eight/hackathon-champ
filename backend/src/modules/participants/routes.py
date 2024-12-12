@@ -4,6 +4,7 @@ from beanie import PydanticObjectId
 from fastapi import APIRouter, HTTPException
 
 from src.api.dependencies import USER_AUTH
+from src.logging_ import logger
 from src.modules.federation.repository import federation_repository
 from src.modules.participants.repository import participant_repository
 from src.modules.results.repository import result_repository
@@ -57,6 +58,9 @@ async def create_many_participant(data: list[dict], auth: USER_AUTH) -> None:
     if user.role == UserRole.ADMIN:
         for p in data:
             if "related_federation" in p:
+                federation = await federation_repository.read_by_region(p["related_federation"])
+                if federation is None:
+                    logger.error(f"Federation with region {p['related_federation']} not found")
                 p["related_federation"] = (await federation_repository.read_by_region(p["related_federation"])).id
         await participant_repository.create_many([ParticipantSchema.model_validate(p) for p in data])
     else:
