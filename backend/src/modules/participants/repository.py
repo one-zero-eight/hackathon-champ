@@ -59,5 +59,10 @@ class ParticipantRepository:
     async def create_many(self, data: list[ParticipantSchema]) -> None:
         await Participant.insert_many([Participant.model_validate(p, from_attributes=True) for p in data])
 
+    async def name_x_id(self) -> dict[str, PydanticObjectId]:
+        q = Participant.find().aggregate([{"$project": {"name": 1, "_id": 1}}])
+        r = await q.to_list()
+        return {p["name"]: p["_id"] for p in r}
+
 
 participant_repository: ParticipantRepository = ParticipantRepository()
