@@ -19,11 +19,19 @@ const STATUS_LABELS = {
   accredited: 'Аккредитована',
   rejected: 'Отклонена',
 } as const
-
 const STATUS_COLORS = {
   on_consideration: 'blue',
   accredited: 'green',
   rejected: 'red',
+} as const
+
+const FRESH_LABELS = {
+  fresh: 'Актуальные данные',
+  stale: 'Данные устарели',
+} as const
+const FRESH_COLORS = {
+  fresh: 'green',
+  stale: 'red',
 } as const
 
 export const Route = createFileRoute('/federations/$federationId')({
@@ -80,6 +88,9 @@ function RouteComponent() {
   if (!federation)
     return null
 
+  const isFresh = federation.last_interaction_at !== null
+    && new Date(federation.last_interaction_at).getTime() > Date.now() - 1000 * 60 * 60 * 24 * 7 // 7 days
+
   return (
     <div className="container mx-auto space-y-6 py-8">
       <div className="flex items-center gap-6">
@@ -103,7 +114,14 @@ function RouteComponent() {
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Контактная информация</CardTitle>
+            <CardTitle>
+              <span className="mr-4">
+                Контактная информация
+              </span>
+              <ColoredBadge color={FRESH_COLORS[isFresh ? 'fresh' : 'stale']}>
+                {FRESH_LABELS[isFresh ? 'fresh' : 'stale']}
+              </ColoredBadge>
+            </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             {federation.head && (
