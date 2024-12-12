@@ -4,6 +4,7 @@ from beanie import PydanticObjectId
 from fastapi import APIRouter, HTTPException
 
 from src.api.dependencies import USER_AUTH
+from src.modules.federation.repository import federation_repository
 from src.modules.participants.repository import participant_repository
 from src.modules.results.repository import result_repository
 from src.modules.users.repository import user_repository
@@ -51,10 +52,13 @@ async def create_participant(data: ParticipantSchema, auth: USER_AUTH) -> Partic
 
 
 @router.post("/person/create-many")
-async def create_many_participant(data: list[ParticipantSchema], auth: USER_AUTH) -> None:
+async def create_many_participant(data: list[dict], auth: USER_AUTH) -> None:
     user = await user_repository.read(auth.user_id)
     if user.role == UserRole.ADMIN:
-        await participant_repository.create_many(data)
+        for p in data:
+            if "related_federation" in p:
+                p["related_federation"] = await federation_repository.read_by_region(p["related_federation"])
+        await participant_repository.create_many([ParticipantSchema.model_validate(p) for p in data])
     else:
         raise HTTPException(status_code=403, detail="Only admin or related federation can create participant")
 
