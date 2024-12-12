@@ -320,15 +320,15 @@ async def search_events(
 
     def key(event: Event):
         if event.end_date < now_ and event.start_date < now_:  # past
-            return 3
+            return 3, abs((now_ - event.start_date).total_seconds())
 
         if event.start_date > now_:  # future
-            return 2
+            return 2, abs((now_ - event.start_date).total_seconds())
 
         if event.start_date < now_ < event.end_date:  # current
-            return 1
+            return 1, abs((now_ - event.start_date).total_seconds())
 
-        return 4  # ?
+        return 4, abs((now_ - event.start_date).total_seconds())  # ?
 
     if sort is None or sort.type == SortingCriteria.default:
         events.sort(key=key)
