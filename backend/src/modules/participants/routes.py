@@ -314,7 +314,7 @@ class TeamStats(BaseSchema):
 
 
 @router.get("/team/")
-async def get_team(name: str):
+async def get_team(name: str) -> TeamStats:
     if not name:
         return TeamStats(name=name, participations=[])
     results = await result_repository.read_for_team(name)
