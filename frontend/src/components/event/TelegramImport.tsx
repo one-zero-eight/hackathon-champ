@@ -56,48 +56,47 @@ export function TelegramImport() {
           Импорт из Telegram
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-full max-w-4xl overflow-auto">
+      <DialogContent className="max-h-full max-w-2xl overflow-auto">
         <DialogHeader className="text-left">
           <DialogTitle>Импорт из Telegram</DialogTitle>
 
           <DialogDescription>
-            Введите ссылку на пост в Telegram, чтобы импортировать его в систему.
-            <p className="mt-2 text-sm">Среднее время ожидания 15 секунд</p>
+            Введите ссылку на пост в Telegram, чтобы импортировать его в
+            систему.
           </DialogDescription>
 
-          <div className="flex gap-4">
-            <div className="space-y-4">
-              <Input
-                value={url}
-                onChange={e => setUrl(e.target.value)}
-              />
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">Примеры постов:</p>
-                <div className="flex flex-wrap gap-2">
-                  {exampleLinks.map((link) => (
-                    <Button
-                      key={link}
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setUrl(link)}
-                    >
-                      {link.split('/').slice(-2).join('/')}
-                    </Button>
-                  ))}
-                </div>
+          <div className="space-y-4">
+            <Input value={url} onChange={e => setUrl(e.target.value)} />
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">Примеры постов:</p>
+              <div className="flex flex-wrap gap-2">
+                {exampleLinks.map(link => (
+                  <Button
+                    key={link}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setUrl(link)}
+                  >
+                    {link.split('/').slice(-2).join('/')}
+                  </Button>
+                ))}
               </div>
-              <Button
-                type="button"
-                variant="default"
-                disabled={!telegramPost || isPending || createIsPending}
-                onClick={() => submit()}
-              >
-                {(isPending || createIsPending) && <Loader2 />}
-                Импортировать
-              </Button>
             </div>
+            <Button
+              type="button"
+              variant="default"
+              disabled={!telegramPost || isPending || createIsPending}
+              onClick={() => submit()}
+            >
+              {(isPending || createIsPending) && <Loader2 className="animate-spin" />}
+              Импортировать
+            </Button>
+            <p className="mt-2 text-sm">Среднее время ожидания 15 секунд</p>
 
-            <TelegramPostWidget telegramPost={telegramPost} className="max-w-lg grow" />
+            <TelegramPostWidget
+              telegramPost={telegramPost}
+              className="max-w-lg grow"
+            />
           </div>
         </DialogHeader>
       </DialogContent>
