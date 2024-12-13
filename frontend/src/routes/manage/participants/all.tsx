@@ -1,4 +1,4 @@
-import { $api } from '@/api'
+import { $api, apiFetch } from '@/api'
 import { CreateParticipantDialog } from '@/components/participants/CreateParticipantDialog.tsx'
 import { EditParticipantDialog } from '@/components/participants/EditParticipantDialog.tsx'
 import { Button } from '@/components/ui/button.tsx'
@@ -6,7 +6,8 @@ import { Skeleton } from '@/components/ui/skeleton.tsx'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.tsx'
 import { useMe } from '@/hooks/useMe.ts'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import Download from '~icons/lucide/download'
 import Plus from '~icons/lucide/plus'
 
 export const Route = createFileRoute('/manage/participants/all')({
@@ -38,6 +39,23 @@ function RouteComponent() {
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
+  const handleExportCsv = useCallback(() => {
+    apiFetch.GET('/participants/person/.csv', { parseAs: 'blob' }).then((response) => {
+      if (!response.data)
+        return
+
+      const blob = new Blob([response.data as any], { type: 'text/csv' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `participants.csv`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    })
+  }, [])
+
   return (
     <div className="container mx-auto space-y-6 p-6">
       <div className="mb-8 flex items-center justify-between">
@@ -48,6 +66,10 @@ function RouteComponent() {
           </p>
         </div>
         <div className="flex items-center gap-4">
+          <Button variant="outline" onClick={handleExportCsv}>
+            <Download className="mr-2 size-4" />
+            Экспорт в CSV
+          </Button>
           <Button variant="default" onClick={() => setIsCreateDialogOpen(true)}>
             <Plus className="mr-2 size-4" />
             Добавить участника
