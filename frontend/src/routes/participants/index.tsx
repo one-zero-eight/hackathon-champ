@@ -119,22 +119,32 @@ function ParticipationCard({ participation }: { participation: SchemaParticipati
           </div>
         )}
         {participation.team_place && (
-          <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="bg-green-100 text-green-700 hover:bg-green-100">
-              {participation.team_place.place}
-              {' '}
-              место
-            </Badge>
-            {participation.team_place.score && (
-              <span className="text-sm text-muted-foreground">
-                {participation.team_place.score}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary" className="bg-green-100 text-green-700 hover:bg-green-100">
+                {participation.team_place.place}
                 {' '}
-                очков
-              </span>
-            )}
-            <Badge variant="outline" className="ml-auto">
-              Командный зачёт
-            </Badge>
+                место
+              </Badge>
+              {participation.team_place.score && (
+                <span className="text-sm text-muted-foreground">
+                  {participation.team_place.score}
+                  {' '}
+                  очков
+                </span>
+              )}
+              <Badge variant="outline" className="ml-auto">
+                Командный зачёт
+              </Badge>
+            </div>
+            <div className="flex flex-col gap-1">
+              <div className="text-sm font-medium">
+                Команда: {participation.team_place.team}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Состав: {participation.team_place.members.map(m => m.name).join(', ')}
+              </div>
+            </div>
           </div>
         )}
       </div>
