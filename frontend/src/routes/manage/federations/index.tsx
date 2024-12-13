@@ -37,8 +37,10 @@ import { useMe } from '@/hooks/useMe'
 import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import Analytics from '~icons/lucide/chart-no-axes-combined'
 import Download from '~icons/lucide/download'
 import Loader2 from '~icons/lucide/loader'
+import Pencil from '~icons/lucide/pencil'
 import Plus from '~icons/lucide/plus'
 import Search from '~icons/lucide/search'
 
@@ -429,7 +431,7 @@ function RouteComponent() {
                 <TableHead className="w-[150px]">Округ</TableHead>
                 <TableHead className="w-[150px]">Руководитель</TableHead>
                 <TableHead className="w-[200px]">Контакты</TableHead>
-                <TableHead className="w-[300px]">Действия</TableHead>
+                <TableHead className="w-[125px]">Действия</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -461,20 +463,20 @@ function RouteComponent() {
                     </div>
                   </TableCell>
                   <TableCell className="space-x-2">
-                    <Button asChild variant="outline">
+                    <Button asChild variant="outline" size="icon">
                       <Link
                         to="/manage/analytics/$id"
                         params={{ id: federation.id }}
                       >
-                        Аналитика
+                        <Analytics />
                       </Link>
                     </Button>
-                    <Button asChild variant="outline">
+                    <Button asChild variant="outline" size="icon">
                       <Link
                         to="/manage/federations/$id"
                         params={{ id: federation.id }}
                       >
-                        Редактировать
+                        <Pencil />
                       </Link>
                     </Button>
                   </TableCell>
