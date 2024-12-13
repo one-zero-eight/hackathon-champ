@@ -34,8 +34,8 @@ class ResultRepository:
         return await Results.find(
             {
                 "$or": [
-                    {"solo_places.participant": {"id": participant_id}},
-                    {"team_places.members": {"id": participant_id}},
+                    {"solo_places.participant.id": participant_id},
+                    {"team_places.members.id": participant_id},
                 ]
             }
         ).to_list()
