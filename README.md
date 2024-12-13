@@ -13,7 +13,7 @@
   password: tatarstan108
 ```
 
-- Видео-демонстрация: ...
+- Видео-демонстрация: [Яндекс Диск](https://disk.yandex.ru/i/fMlr7NznCaHJ-g) / [YouTube](https://www.youtube.com/watch?v=kw7T3A_s3EE)
 - Презентация: [presentation.pdf](./presentation.pdf)
 - Репозиторий: https://github.com/hackathonsrus/pp_final_50040_pfo_ta_onezeroeight_69
 
