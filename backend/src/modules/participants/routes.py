@@ -97,8 +97,9 @@ async def get_participants_csv(auth: USER_AUTH) -> Response:
             writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
             writer.writeheader()
             for p in participants:
-                p["related_federation"] = id_x_federation.get(p["related_federation"], "")
-                writer.writerow(p.model_dump())
+                as_dict = p.model_dump()
+                as_dict["related_federation"] = id_x_federation.get(as_dict["related_federation"], "")
+                writer.writerow(as_dict)
             f.seek(0)
             resp = f.getvalue()
 
