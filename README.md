@@ -87,6 +87,21 @@
 
 > [!NOTE]
 > (Необязательно)
+> 
+> Для работы ИИ-агента нужно запустить [Ollama](https://ollama.com/). Рекомендуется использование видеокарты V100 32 GB или мощнее.
+> - [Установить Ollama](https://ollama.com/download)
+> - Скачать модель:
+>   ```
+>   ollama pull rscr/ruadapt_qwen2.5_32b:Q2_K_M
+>   ```
+> - Запустить Ollama:
+>   ```
+>   ollama serve &
+>   ``` 
+
+> [!NOTE]
+> (Необязательно)
+> 
 > Для активации отправки email-уведомлений необходимо отредактировать настройки `backend/settings.docker.yaml`:
 > ```yaml
 > smtp:
