@@ -1,7 +1,8 @@
 from collections import Counter, defaultdict
+from io import StringIO
 
 from beanie import PydanticObjectId
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response
 
 from src.api.dependencies import USER_AUTH
 from src.logging_ import logger
@@ -72,6 +73,40 @@ async def get_particapnts(auth: USER_AUTH, skip: int = 0, limit: int = 100) -> l
     user = await user_repository.read(auth.user_id)
     if user.role == UserRole.ADMIN:
         return await participant_repository.read_all(skip=skip, limit=limit)
+    else:
+        raise HTTPException(status_code=403, detail="Only admin can get all participants")
+
+
+@router.get("/person/.csv")
+async def get_participants_csv(auth: USER_AUTH) -> Response:
+    import csv
+
+    user = await user_repository.read(auth.user_id)
+    if user.role == UserRole.ADMIN:
+        participants = await participant_repository.read_all()
+        federations = await federation_repository.read_all()
+        id_x_federation = {f.id: f.region for f in federations}
+
+        with StringIO() as f:
+            fieldnames = list(ParticipantSchema.__pydantic_fields__.keys())
+            for exclude in ["id"]:
+                try:
+                    fieldnames.remove(exclude)
+                except ValueError:
+                    pass
+            writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
+            writer.writeheader()
+            for p in participants:
+                p["related_federation"] = id_x_federation.get(p["related_federation"], "")
+                writer.writerow(p.model_dump())
+            f.seek(0)
+            resp = f.getvalue()
+
+        return Response(
+            content=resp,
+            media_type="application/csv",
+            headers={"Content-Disposition": "attachment; filename=participants.csv"},
+        )
     else:
         raise HTTPException(status_code=403, detail="Only admin can get all participants")
 
