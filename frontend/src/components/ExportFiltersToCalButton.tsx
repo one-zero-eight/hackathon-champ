@@ -14,7 +14,7 @@ export function ExportFiltersToCalButton({
     <>
       <Button className="w-full" variant="default" onClick={() => setOpen(true)}>
         <CalendarPlus />
-        Экспортировать подборку в календарь
+        Экспорт в календарь
       </Button>
       <ExportFiltersToCalDialog
         open={open}

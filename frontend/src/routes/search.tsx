@@ -4,6 +4,7 @@ import { $api } from '@/api'
 import { EventCard } from '@/components/EventCard.tsx'
 import { ExportFiltersToCalButton } from '@/components/ExportFiltersToCalButton'
 import { AllFilters } from '@/components/filters/AllFilters'
+import { ShareFiltersButton } from '@/components/ShareFiltersButton'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -16,10 +17,11 @@ import {
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useDebouncedState } from '@/hooks/useDebouncedState'
 import { normalizeFilters } from '@/lib/utils'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
-import { useDebounce } from 'react-use'
+import Share from '~icons/lucide/share-2'
 
 export const Route = createFileRoute('/search')({
   component: RouteComponent,
@@ -56,72 +58,77 @@ const SORT_PRESETS = {
 function RouteComponent() {
   const navigate = useNavigate()
   const { filters: routeFilters, share } = Route.useSearch()
-  const [actualFilters, setActualFilters] = useState<Filters | undefined>(
-    getInitialFilters,
-  )
-  const [filtersChanging, setFiltersChanging] = useState(false)
-  const [debouncedFilters, setDebouncedFilters] = useState<Filters | undefined>(
-    actualFilters,
-  )
-  const [query, setQuery] = useState('')
-  const { data: shareFilters, isLoading: sharedLoading } = $api.useQuery(
+  const [sortPreset, setSortPreset] = useState<keyof typeof SORT_PRESETS>('По умолчанию')
+
+  const [shareDialogOpen, setShareDialogOpen] = useState(false)
+
+  const {
+    actualValue: filters,
+    debouncedValue: filtersDebounced,
+    setValue: setFilters,
+    setValueFlushed: setFiltersFlushed,
+    debouncing: filtersDebouncing,
+  } = useDebouncedState(routeFilters, 300)
+
+  const normalizedFilters = useMemo(() => {
+    return normalizeFilters(filters)
+  }, [filters])
+
+  const normalizedFiltersDebounced = useMemo(() => {
+    return normalizeFilters(filtersDebounced)
+  }, [filtersDebounced])
+
+  const hasShared = Boolean(share)
+
+  const {
+    data: sharedFilters,
+    isPending: sharedPending,
+  } = $api.useQuery(
     'get',
     '/events/search/share/{selection_id}',
     { params: { path: { selection_id: share ?? '' } } },
-    { enabled: !!share },
+    { enabled: hasShared },
   )
-  const [sortPreset, setSortPreset] = useState<keyof typeof SORT_PRESETS>('По умолчанию')
+
+  const sharedLoading = hasShared && sharedPending
+
+  // Set filters to shared, when they are loaded.
+  useEffect(() => {
+    if (hasShared && !sharedPending && sharedFilters) {
+      setFiltersFlushed(sharedFilters.filters)
+    }
+  }, [hasShared, sharedPending, sharedFilters, setFiltersFlushed])
 
   useEffect(() => {
-    const newFilters = shareFilters?.filters ?? routeFilters
-    if (newFilters) {
-      setActualFilters(newFilters)
-      setQuery(newFilters.query ?? '')
-    }
-  }, [routeFilters, shareFilters])
-
-  useDebounce(
-    () => {
-      setDebouncedFilters(actualFilters)
-      setFiltersChanging(false)
-      if (!sharedLoading) {
-        const newFilters = { ...actualFilters, query: query || undefined }
-        navigate({
-          to: '/search',
-          search: {
-            filters: Object.keys(newFilters).length ? newFilters : undefined,
-          },
-        })
-      }
-    },
-    300,
-    [actualFilters, query, filtersChanging],
-  )
+    navigate({
+      to: '/search',
+      search: { filters: normalizedFiltersDebounced },
+    })
+  }, [navigate, normalizedFiltersDebounced])
 
   const handleFiltersChange = (newFilters: Filters) => {
-    setFiltersChanging(true)
-    setActualFilters(newFilters)
+    setFilters(newFilters)
   }
 
   const handleQueryChange = (newQuery: string) => {
-    setFiltersChanging(true)
-    setQuery(newQuery)
+    setFilters({
+      ...normalizedFiltersDebounced,
+      query: newQuery,
+    })
   }
 
   const handleResetFilters = () => {
     const initial = getInitialFilters()
-    setActualFilters(initial)
-    setDebouncedFilters(initial)
-    setQuery('')
+    setFiltersFlushed(initial)
   }
 
-  const { data, isPending: dataLoading } = $api.useQuery(
+  const { data, isPending: eventsLoading } = $api.useQuery(
     'post',
     '/events/search',
     {
       body: {
         filters: {
-          ...normalizeFilters(debouncedFilters || {}),
+          ...normalizedFiltersDebounced,
           status: ['accredited'],
         },
         pagination: {
@@ -131,7 +138,7 @@ function RouteComponent() {
         sort: sortPreset ? SORT_PRESETS[sortPreset] : null,
       },
     },
-    { enabled: !filtersChanging && !sharedLoading },
+    { enabled: !sharedLoading },
   )
   const accreditedEvents = useMemo(() => {
     return data
@@ -139,7 +146,9 @@ function RouteComponent() {
       .filter(event => event.status === 'accredited') ?? []
   }, [data])
 
-  const loading = dataLoading || filtersChanging || sharedLoading
+  const loading = eventsLoading
+    || sharedLoading
+    || filtersDebouncing
 
   return (
     <div className="flex flex-grow flex-col pl-[var(--search-sidebar-width)]">
@@ -151,10 +160,22 @@ function RouteComponent() {
               Сбросить
             </Button>
           </div>
-          <ExportFiltersToCalButton filters={debouncedFilters} />
+
+          <ExportFiltersToCalButton filters={normalizedFilters} />
+          <Button onClick={() => setShareDialogOpen(true)}>
+            <Share />
+            Поделиться подборкой
+          </Button>
+          <ShareFiltersButton
+            open={shareDialogOpen}
+            setOpen={setShareDialogOpen}
+            filters={normalizedFilters}
+            sort={sortPreset ? SORT_PRESETS[sortPreset] : undefined}
+          />
+
           <Separator />
           <AllFilters
-            filters={actualFilters || {}}
+            filters={filters || {}}
             onChange={handleFiltersChange}
             className="w-full"
           />
@@ -166,7 +187,7 @@ function RouteComponent() {
           <div className="flex items-center gap-2">
             <Input
               className="rounded-md border border-gray-300 px-2 py-1"
-              value={query}
+              value={filters?.query ?? ''}
               onChange={e => handleQueryChange(e.target.value)}
               placeholder="Название, вид спорта, город..."
             />

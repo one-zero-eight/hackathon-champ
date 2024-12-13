@@ -103,7 +103,11 @@ export function pluralize<T>(n: number, one: T, few: T, many: T): T {
   return many
 }
 
-export function normalizeFilters(f: Filters): Filters {
+export function normalizeFilters(f: Filters | undefined): Filters {
+  if (!f) {
+    return {}
+  }
+
   const { age, date, gender, participant_count, ...rest } = f
   const out: Filters = { ...rest }
   if (age?.min != null || age?.max != null) {
