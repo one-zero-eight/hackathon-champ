@@ -287,7 +287,8 @@ with httpx.Client() as client:
     events = r.json()
 
     r = client.post(
-        "https://fsp-link-portal.ru/results/for-events", json=[e["id"] for e in events]
+        "https://fsp-link-portal.ru/api/results/for-events",
+        json=[e["id"] for e in events],
     )
     r.raise_for_status()
 
