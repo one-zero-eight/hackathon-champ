@@ -1154,6 +1154,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/results/for-events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Get Results For Events */
+        post: operations["results_get_results_for_events"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/results/{id}": {
         parameters: {
             query?: never;
@@ -4613,7 +4630,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["TeamStats"];
                 };
             };
             /** @description Validation Error */
@@ -4728,6 +4745,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Results"] | null;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    results_get_results_for_events: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": string[];
+            };
+        };
+        responses: {
+            /** @description Results for events */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Results"][];
                 };
             };
             /** @description Validation Error */

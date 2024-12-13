@@ -10,7 +10,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Separator } from '@/components/ui/separator'
-import { getProtocolLabel, getProtocolUrl, infoForDateRange, locationText, plainDateStr, urlToMaps } from '@/lib/utils'
+import { cn, getProtocolLabel, getProtocolUrl, infoForDateRange, locationText, plainDateStr, urlToMaps } from '@/lib/utils'
+import { ParticipantDialogContent } from '@/routes/participants'
 import { useState } from 'react'
 import Download from '~icons/lucide/download'
 import MapPin from '~icons/lucide/map-pin'
@@ -54,7 +55,7 @@ function DetailsDialog({ event, open, setOpen }: { event: SchemaEvent, open: boo
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="max-h-full overflow-auto">
+      <DialogContent className="max-h-full max-w-3xl overflow-auto">
         <DialogHeader className="text-left">
           <DialogTitle>{event.title}</DialogTitle>
 
@@ -191,6 +192,8 @@ function EventProtocols({ event }: { event: SchemaEvent }) {
 }
 
 function EventTeamPlaces({ event }: { event: SchemaEvent }) {
+  const [open, setOpen] = useState(false)
+  const [teamName, setTeamName] = useState('')
   const { data: results } = $api.useQuery('get', '/results/for-event', {
     params: { query: { event_id: event.id } },
   })
@@ -213,28 +216,68 @@ function EventTeamPlaces({ event }: { event: SchemaEvent }) {
       <ul className="flex max-h-[200px] flex-col gap-2 overflow-auto">
         {results.team_places.map(team => (
           <li key={team.team} className="flex items-center gap-2">
-            <span className="min-w-8 shrink-0 rounded-md border bg-white px-4 py-2">
-              {team.place}
-            </span>
-            <span className="grow rounded-md border bg-white px-4 py-2">
-              {team.team}
-              {team.place <= 3 && (
-                <span className="ml-2">
-                  {emoji[team.place === 1 ? 'gold' : team.place === 2 ? 'silver' : 'bronze']}
-                </span>
-              )}
-            </span>
-            <span className=" rounded-md border bg-white px-4 py-2">
-              {team.score}
+            <div className="flex h-full min-w-8 shrink-0 flex-col items-center justify-center rounded-md border bg-white px-4 py-2">
+              <div className="flex size-12 items-center justify-center rounded-full bg-muted text-xl font-semibold text-muted-foreground">
+                #
+                {team.place}
+              </div>
+              <span className="text-xs">{team.score}</span>
+              <span className="text-xs">очков</span>
+            </div>
+
+            <span
+              className="h-full grow cursor-pointer rounded-md border bg-white px-4 py-2 hover:bg-muted"
+              onClick={() => {
+                setTeamName(team.team)
+                setOpen(true)
+              }}
+            >
+              <div>
+                {team.team}
+                {team.place <= 3 && (
+                  <span className="ml-2">
+                    {
+                      emoji[
+                        team.place === 1
+                          ? 'gold'
+                          : team.place === 2
+                            ? 'silver'
+                            : 'bronze'
+                      ]
+                    }
+                  </span>
+                )}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                {team.members.map(m => m.name).join(', ')}
+              </div>
             </span>
           </li>
         ))}
       </ul>
+      <ParticipantTeamDialog
+        teamName={teamName}
+        open={open}
+        setOpen={setOpen}
+      />
     </div>
   )
 }
 
+function ParticipantTeamDialog({ teamName, open, setOpen }: { teamName: string, open: boolean, setOpen: (open: boolean) => void }) {
+  const { data: participant } = $api.useQuery('get', '/participants/team/', {
+    params: { query: { name: teamName } },
+  }, { enabled: open })
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      {participant ? <ParticipantDialogContent participant={participant} place={undefined} /> : null}
+    </Dialog>
+  )
+}
+
 function EventSoloPlaces({ event }: { event: SchemaEvent }) {
+  const [open, setOpen] = useState(false)
+  const [participantId, setParticipantId] = useState('')
   const { data: results } = $api.useQuery('get', '/results/for-event', {
     params: { query: { event_id: event.id } },
   })
@@ -242,27 +285,82 @@ function EventSoloPlaces({ event }: { event: SchemaEvent }) {
   if (!results?.solo_places?.length)
     return null
 
+  const emoji = {
+    gold: '🥇',
+    silver: '🥈',
+    bronze: '🥉',
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <div>
         <div className="text-xl font-semibold">Места по личным дисциплинам</div>
         <div className="text-sm">Результаты личных дисциплин</div>
       </div>
-      <ul className="flex max-h-[200px] flex-col gap-2 overflow-hidden">
+      <ul className="flex max-h-[200px] flex-col gap-2 overflow-auto">
         {results.solo_places.map((solo, i) => (
           <li key={i} className="flex items-center gap-2">
-            <span className="grow rounded-md border bg-white px-4 py-2">
-              {solo.place}
-            </span>
-            <span className="grow rounded-md border bg-white px-4 py-2">
-              {solo.participant.name}
-            </span>
-            <span className="grow rounded-md border bg-white px-4 py-2">
-              {solo.score}
+            <div className="flex h-full min-w-8 shrink-0 flex-col items-center justify-center rounded-md border bg-white px-4 py-2">
+              <div className="flex size-12 items-center justify-center rounded-full bg-muted text-xl font-semibold text-muted-foreground">
+                #
+                {solo.place}
+              </div>
+              {solo.score && (
+                <>
+                  <span className="text-xs">{solo.score}</span>
+                  <span className="text-xs">очков</span>
+                </>
+              )}
+            </div>
+
+            <span
+              className={cn(
+                'grow cursor-pointer rounded-md border bg-white px-4 py-2 hover:bg-muted h-full flex items-center',
+                !solo.participant.id && 'cursor-default hover:bg-white',
+              )}
+              onClick={() => {
+                if (solo.participant.id) {
+                  setParticipantId(solo.participant.id)
+                  setOpen(true)
+                }
+              }}
+            >
+              <div>
+                {solo.participant.name}
+                {solo.place <= 3 && (
+                  <span className="ml-2">
+                    {
+                      emoji[
+                        solo.place === 1
+                          ? 'gold'
+                          : solo.place === 2
+                            ? 'silver'
+                            : 'bronze'
+                      ]
+                    }
+                  </span>
+                )}
+              </div>
             </span>
           </li>
         ))}
       </ul>
+      <ParticipantSoloDialog
+        participantId={participantId}
+        open={open}
+        setOpen={setOpen}
+      />
     </div>
+  )
+}
+
+function ParticipantSoloDialog({ participantId, open, setOpen }: { participantId: string, open: boolean, setOpen: (open: boolean) => void }) {
+  const { data: participant } = $api.useQuery('get', '/participants/person/stats/{id}', {
+    params: { path: { id: participantId } },
+  }, { enabled: open })
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      {participant ? <ParticipantDialogContent participant={participant} place={undefined} /> : null}
+    </Dialog>
   )
 }

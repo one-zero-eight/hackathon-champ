@@ -139,10 +139,14 @@ function ParticipationCard({ participation }: { participation: SchemaParticipati
             </div>
             <div className="flex flex-col gap-1">
               <div className="text-sm font-medium">
-                Команда: {participation.team_place.team}
+                Команда:
+                {' '}
+                {participation.team_place.team}
               </div>
               <div className="text-sm text-muted-foreground">
-                Состав: {participation.team_place.members.map(m => m.name).join(', ')}
+                Состав:
+                {' '}
+                {participation.team_place.members.map(m => m.name).join(', ')}
               </div>
             </div>
           </div>
@@ -250,37 +254,41 @@ function ParticipantDialog({ participant, place }: { participant: SchemaParticip
           <ParticipantCard participant={participant} onClick={() => setOpen(true)} rank={place} />
         </div>
       </DialogTrigger>
-      <DialogContent className="max-h-full max-w-3xl overflow-auto">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-semibold">
-            #
-            {place}
-            {' '}
-            {participant.name}
-          </DialogTitle>
-        </DialogHeader>
-        <div className="space-y-6">
-          <MedalDisplay participant={participant} />
+      <ParticipantDialogContent participant={participant} place={place} />
+    </Dialog>
+  )
+}
 
-          <StatisticsCard participant={participant} />
+export function ParticipantDialogContent({ participant, place }: { participant: SchemaParticipantStats | SchemaTeamStats, place?: number }) {
+  return (
+    <DialogContent className="max-h-full max-w-3xl overflow-auto">
+      <DialogHeader>
+        <DialogTitle className="text-2xl font-semibold">
+          {place !== undefined ? `#${place} ` : ''}
+          {participant.name}
+        </DialogTitle>
+      </DialogHeader>
+      <div className="space-y-6">
+        <MedalDisplay participant={participant} />
 
-          <Separator />
+        <StatisticsCard participant={participant} />
 
-          <div>
-            <h3 className="mb-3 text-lg font-medium">
-              Участия (
-              {participant.total}
-              )
-            </h3>
-            <div className="space-y-3">
-              {participant.participations.map((p, i) => (
-                <ParticipationCard key={i} participation={p} />
-              ))}
-            </div>
+        <Separator />
+
+        <div>
+          <h3 className="mb-3 text-lg font-medium">
+            Участия (
+            {participant.total}
+            )
+          </h3>
+          <div className="space-y-3">
+            {participant.participations.map((p, i) => (
+              <ParticipationCard key={i} participation={p} />
+            ))}
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </DialogContent>
   )
 }
 
