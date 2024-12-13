@@ -44,6 +44,12 @@ async def get_result_for_event(event_id: PydanticObjectId) -> Results | None:
     return r
 
 
+@router.post("/for-events", responses={200: {"description": "Results for events"}})
+async def get_results_for_events(event_ids: list[PydanticObjectId]) -> list[Results]:
+    r = await result_repository.read_for_event(*event_ids)
+    return r
+
+
 @router.get("/{id}", responses={200: {"description": "Results about event"}, 404: {"description": "Results not found"}})
 async def get_result(id: PydanticObjectId) -> Results:
     r = await result_repository.read(id)
