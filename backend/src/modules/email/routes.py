@@ -79,7 +79,7 @@ if smtp_repository:
             raise HTTPException(404, "User has no email")
 
         email_flow = await email_flow_repository.start_flow(user.email, user.id)
-        url = f"https://champ.innohassle.ru/auth/reset-password?email_flow_id={email_flow.id}&verification_code={email_flow.verification_code}"
+        url = f"https://fsp-link-portal.ru/auth/reset-password?email_flow_id={email_flow.id}&verification_code={email_flow.verification_code}"
         message = smtp_repository.render_reset_password_message(email_flow.email, url=url)
         smtp_repository.send(message, email_flow.email)
         await email_flow_repository.set_sent(email_flow.id)

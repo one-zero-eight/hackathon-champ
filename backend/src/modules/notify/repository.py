@@ -40,31 +40,31 @@ class NotifyRepository:
 
         if isinstance(created.inner, AccreditationRequestFederation):
             federation = await federation_repository.read_one(created.inner.federation_id)
-            href = f"https://champ.innohassle.ru/manage/federations/{created.inner.federation_id}"
+            href = f"https://fsp-link-portal.ru/manage/federations/{created.inner.federation_id}"
             msg = f'<p>Поступила <a href="{href}">заявка на аккредитацию федерации {federation.region}</a></p>'
             if federation.accreditation_comment:
                 msg += f"<p>Комментарий: {federation.accreditation_comment}</p>"
         elif isinstance(created.inner, AccreditationRequestEvent):
             event = await events_repository.read_one(created.inner.event_id)
-            href = f"https://champ.innohassle.ru/manage/events/{created.inner.event_id}"
+            href = f"https://fsp-link-portal.ru/manage/events/{created.inner.event_id}"
             msg = f'<p>Поступила <a href="{href}">заявка на аккредитацию события {event.name}</a></p>'
             if event.comment:
                 msg += f"<p>Комментарий: {event.accreditation_comment}</p>"
         elif isinstance(created.inner, AccreditedFederation):
             federation = await federation_repository.read_one(created.inner.federation_id)
-            href = "https://champ.innohassle.ru/manage/region/home"
+            href = "https://fsp-link-portal.ru/manage/region/home"
             status_element = f'<span style="color: {created.inner.status.color()}">{created.inner.status.ru()}</span>'
             msg = f'<p>Обновление <a href="{href}">статуса аккредитации федерации {federation.region}</a></p><p>Статус: {status_element}</p>'
             if created.inner.status_comment:
                 msg += f"<p>Комментарий: {created.inner.status_comment}</p>"
         elif isinstance(created.inner, AccreditedEvent):
             event = await events_repository.read_one(created.inner.event_id)
-            href = f"https://champ.innohassle.ru/manage/events/{created.inner.event_id}"
+            href = f"https://fsp-link-portal.ru/manage/events/{created.inner.event_id}"
             status_element = f'<span style="color: {created.inner.status.color()}">{created.inner.status.ru()}</span>'
             msg = f'<p>Обновление <a href="{href}">статуса аккредитации события {event.name}</a></p><p>Статус: {status_element}</p><p>Комментарий: {created.inner.status_comment}</p>'
         elif isinstance(created.inner, NewFeedback):
             feedback = await feedback_repository.get(created.inner.feedback_id)
-            href = "https://champ.innohassle.ru/manage/feedback/all"
+            href = "https://fsp-link-portal.ru/manage/feedback/all"
             msg = f'<p>Получена <a href="{href}">новая обратная связь</a>: {feedback.text}</p><p>{feedback.email}</p>'
         else:
             msg = "Новое уведомление!"

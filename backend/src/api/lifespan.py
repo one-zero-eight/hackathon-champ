@@ -37,7 +37,7 @@ async def notification_loop():
                 related_users = await user_repository.read_for_federation(federation.id)
                 emails = [user.email for user in related_users if user.email]
                 if emails:
-                    href = f"https://champ.innohassle.ru/manage/federations/{federation.id}"
+                    href = f"https://fsp-link-portal.ru/manage/federations/{federation.id}"
                     msg = f'Данные Федерации Спортивного Программирования `{federation.region}` не обновлялись более 30 дней. Пожалуйста, <a href="{href}">обновите их</a>.'
                     message = smtp_repository.render_notify_message(msg)
                     smtp_repository.send(message, emails)
