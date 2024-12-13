@@ -193,7 +193,7 @@ def generate_random_lists(elements, num_lists):
 
 
 # generate teams (without overlapping members)
-teams = []
+teams: list[dict] = []
 
 for members, (team_name, mean_score) in zip(
     generate_random_lists(persons, 1000), teams_distribution
@@ -281,6 +281,13 @@ with httpx.Client() as client:
         )
         r.raise_for_status()
 
+    r = client.post(
+        "https://fsp-link-portal.ru/api/participants/person/get-by-names/",
+        json=[p["name"] for p in persons],
+    )
+    r.raise_for_status()
+    existing_participants: dict[str, dict] = r.json()
+
     r = client.get("https://fsp-link-portal.ru/api/events/")
     r.raise_for_status()
 
@@ -297,12 +304,63 @@ with httpx.Client() as client:
 
     current = datetime.datetime.now(datetime.UTC)
 
-    before_events = [e for e in events if pd.to_datetime(e["start_date"]) < current]
-    has_not_results = [
-        e for e in before_events if e["id"] not in event_id_x_results is None
+    before_events = [
+        e
+        for e in events
+        if pd.to_datetime(e["start_date"]) < current and e["status"] == "accredited"
     ]
-    has_results = [e for e in before_events if e["id"] in event_id_x_results is None]
+    has_not_results = [e for e in before_events if e["id"] not in event_id_x_results]
+    has_results = [e for e in before_events if e["id"] in event_id_x_results]
 
     print(f"Total events: {len(events)}")
     print(f"Before events: {len(before_events)}")
     print(f"Events without results: {len(has_not_results)}")
+
+    # Half of before events should be chosen
+    count = len(before_events) // 2
+
+    if len(has_results) >= count:
+        print("We have enough events with results")
+    else:
+        to_add = count - len(has_results)
+        random_events = random.sample(has_not_results, to_add)
+        results = []
+
+        for e in random_events:
+            team_count = random.choice([10, 25, 50])
+            chosen_teams = random.sample(teams, team_count)
+            if random.random() < 0.5:
+                chosen_teams += [our_team]
+            team_places = []
+            for team in chosen_teams:
+                team: dict
+                team_places.append(
+                    {
+                        "team": team["name"],
+                        "members": [
+                            {
+                                "id": existing_participants[p["name"]]["id"],
+                                "name": p["name"],
+                            }
+                            for p in team["members"]
+                        ],
+                        "score": team["mean_score"] + random.randint(-10, 10),
+                    }
+                )
+            team_places.sort(key=lambda x: -x["score"])
+            for i, team_place in enumerate(team_places):
+                team_place["place"] = i + 1
+
+            results.append(
+                {
+                    "event_id": e["id"],
+                    "event_title": e["title"],
+                    "protocols": None,
+                    "team_places": team_places,
+                    "solo_places": None,
+                }
+            )
+
+        for result in results:
+            r = client.put("https://fsp-link-portal.ru/api/results/", json=result)
+            r.raise_for_status()
