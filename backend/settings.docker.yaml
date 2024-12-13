@@ -9,3 +9,5 @@ minio:
   endpoint: minio:9000
   access_key: "minioadmin"
   secret_key: "password"
+ai:
+  ollama_host: http://host.docker.internal:11434
