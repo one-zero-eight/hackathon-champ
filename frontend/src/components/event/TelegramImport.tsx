@@ -26,6 +26,14 @@ export function TelegramImport() {
     },
   })
 
+  const exampleLinks = [
+    'https://t.me/fsp_RT/77',
+    'https://t.me/fsp_RT/67',
+    'https://t.me/fsp_RT/66',
+    'https://t.me/fsp_RT/53',
+    'https://t.me/fsprussia/1162',
+  ]
+
   const submit = async () => {
     const res = await hint({ body: { telegram_post_link: `https://t.me/${telegramPost}` } })
     if (res) {
@@ -54,6 +62,7 @@ export function TelegramImport() {
 
           <DialogDescription>
             Введите ссылку на пост в Telegram, чтобы импортировать его в систему.
+            <p className="mt-2 text-sm">Среднее время ожидания 15 секунд</p>
           </DialogDescription>
 
           <div className="flex gap-4">
@@ -62,6 +71,21 @@ export function TelegramImport() {
                 value={url}
                 onChange={e => setUrl(e.target.value)}
               />
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Примеры постов:</p>
+                <div className="flex flex-wrap gap-2">
+                  {exampleLinks.map((link) => (
+                    <Button
+                      key={link}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setUrl(link)}
+                    >
+                      {link.split('/').slice(-2).join('/')}
+                    </Button>
+                  ))}
+                </div>
+              </div>
               <Button
                 type="button"
                 variant="default"
